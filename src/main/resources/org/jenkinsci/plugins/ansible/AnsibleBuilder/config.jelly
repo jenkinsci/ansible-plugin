@@ -1,0 +1,67 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
+
+  <j:set var="installations" value="${descriptor.getInstallations()}"/>
+    <j:if test="${empty(installations)}">
+      <!-- no Ansible installation is configured, so warn the user now -->
+      <f:entry title="${%Ansible version}">
+        <div class="error">Missing Ansible installation</div>
+      </f:entry>
+    </j:if>
+    <j:if test="${installations.size() gt 1}">
+      <!-- choice not necessary if there's no choice -->
+      <f:entry title="${%Ansible version}">
+        <select class="setting-input" name="ansibleName">
+          <j:forEach var="inst" items="${installations}">
+            <f:option value="${inst.name}" selected="${inst.name==instance.ansibleName}">${inst.name}</f:option>
+          </j:forEach>
+        </select>
+      </f:entry>
+    </j:if>
+
+  <f:entry title="${%Host pattern}" field="hostPattern">
+    <f:textbox />
+  </f:entry>
+
+  <f:entry title="${%Path to inventory file}" field="inventory">
+    <f:textbox />
+  </f:entry>
+
+  <f:entry title="${%Module}" field="module">
+    <f:textbox />
+  </f:entry>
+
+  <f:entry title="${%Module arguments or command to execute}" field="command">
+    <f:textarea />
+  </f:entry>
+
+  <f:entry title="${%Credentials}" field="credentialsId">
+    <c:select/>
+  </f:entry>
+
+  <f:optionalBlock name="sudo" title="${%sudo}" checked="${instance.sudo}" inline="true">
+    <f:entry title="${%sudo user}" field="sudoUser">
+      <f:textbox />
+    </f:entry>
+  </f:optionalBlock>
+
+  <f:advanced>
+    <f:entry title="${%Forks}" field="forks">
+      <f:number default="5"/>
+    </f:entry>
+
+    <f:entry title="${%Check host SSH key}" field="hostKeyChecking">
+      <f:checkbox checked="true"/>
+    </f:entry>
+
+    <f:entry title="${%Unbuffered stdout}" field="unbufferedOutput">
+      <f:checkbox checked="true"/>
+    </f:entry>
+
+    <f:entry title="${%Colorized stdout}" field="colorizedOutput">
+      <f:checkbox/>
+    </f:entry>
+
+  </f:advanced>
+
+</j:jelly>
