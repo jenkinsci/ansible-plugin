@@ -32,7 +32,9 @@ import hudson.tools.ToolDescriptor;
 import hudson.tools.ToolInstallation;
 import hudson.tools.ToolProperty;
 import jenkins.model.Jenkins;
+import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * {@code ToolInstallation} for Ansible
@@ -79,9 +81,15 @@ public class AnsibleInstallation extends ToolInstallation
         }
 
         @Override
+        public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
+            super.configure(req, json);
+            save();
+            return true;
+        }
+
+        @Override
         public String getDisplayName() {
             return "Ansible";
         }
     }
-
 }
