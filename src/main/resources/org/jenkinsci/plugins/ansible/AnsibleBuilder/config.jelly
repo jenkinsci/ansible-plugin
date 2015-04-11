@@ -23,8 +23,8 @@
     <f:textbox />
   </f:entry>
 
-  <f:entry title="${%Path to inventory file}" field="inventory">
-    <f:textbox />
+  <f:entry title="${%Inventory}">
+    <f:hetero-radio field="inventory" descriptors="${descriptor.inventories}"/>
   </f:entry>
 
   <f:entry title="${%Module}" field="module">

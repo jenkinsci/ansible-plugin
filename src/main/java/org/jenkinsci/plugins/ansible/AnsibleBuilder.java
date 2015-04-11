@@ -40,6 +40,9 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
 import hudson.util.ListBoxModel;
+import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.ansible.Inventory.InventoryDescriptor;
+import org.jenkinsci.plugins.ansible.Inventory.InventoryHandler;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -61,7 +64,7 @@ public class AnsibleBuilder extends Builder {
     /**
      * Path to the inventory file.
      */
-    public final String inventory;
+    public final Inventory inventory;
 
     public final  String module;
 
@@ -81,7 +84,7 @@ public class AnsibleBuilder extends Builder {
 
 
     @DataBoundConstructor
-    public AnsibleBuilder(String ansibleName, String hostPattern, String inventory, String module, String command,
+    public AnsibleBuilder(String ansibleName, String hostPattern, Inventory inventory, String module, String command,
                           String credentialsId, boolean sudo, String sudoUser, int forks, boolean unbufferedOutput,
                           boolean colorizedOutput, boolean hostKeyChecking)
     {
@@ -114,14 +117,15 @@ public class AnsibleBuilder extends Builder {
         Map<String, String> env = buildEnvironment();
 
         String hostPattern = envVars.expand(this.hostPattern);
-        String inventory = envVars.expand(this.inventory);
         String module = envVars.expand(this.module);
         String command = envVars.expand(this.command);
         String sudoUser = envVars.expand(this.sudoUser);
 
+        InventoryHandler inventoryHandler = inventory.getHandler();
+
         args.add(exe);
         args.add(hostPattern);
-        args.add("-i").add(inventory);
+        inventoryHandler.addArgument(args, envVars, listener);
 
         if (module != null && ! module.isEmpty()) {
             args.add("-m").add(module);
@@ -155,7 +159,8 @@ public class AnsibleBuilder extends Builder {
             ioe.printStackTrace(listener.fatalError(hudson.tasks.Messages.CommandInterpreter_CommandFailed()));
             return false;
         } finally {
-            deleteTempFile(key, listener);
+            inventoryHandler.tearDown(listener);
+            Utils.deleteTempFile(key, listener);
         }
         return true;
     }
@@ -186,16 +191,6 @@ public class AnsibleBuilder extends Builder {
         return key;
     }
 
-    private void deleteTempFile(File tempFile, BuildListener listener) {
-        if (tempFile != null) {
-            if (!tempFile.delete()) {
-                if (tempFile.exists()) {
-                    listener.getLogger().println("[WARNING] temp file " + tempFile + " not deleted");
-                }
-            }
-        }
-    }
-
     public AnsibleInstallation getInstallation() throws IOException {
         if (ansibleName == null) {
             if (AnsibleInstallation.allInstallations().length == 0) {
@@ -224,6 +219,10 @@ public class AnsibleBuilder extends Builder {
                     .withEmptySelection()
                     .withMatching(CredentialsMatchers.instanceOf(SSHUserPrivateKey.class),
                             CredentialsProvider.lookupCredentials(StandardUsernameCredentials.class, project));
+        }
+
+        public List<InventoryDescriptor> getInventories() {
+            return Jenkins.getInstance().getDescriptorList(Inventory.class);
         }
 
         @Override
