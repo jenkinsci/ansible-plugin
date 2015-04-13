@@ -31,10 +31,12 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class InventoryContent extends Inventory
 {
     public final String content;
+    public final boolean dynamic;
 
     @DataBoundConstructor
-    public InventoryContent(String content) {
+    public InventoryContent(String content, boolean dynamic) {
         this.content = content;
+        this.dynamic = dynamic;
     }
 
     @Override
@@ -60,7 +62,7 @@ public class InventoryContent extends Inventory
                 PrintWriter w = new PrintWriter(inventory);
                 w.println(content);
                 w.close();
-                new FilePath(inventory).chmod(0400);
+                new FilePath(inventory).chmod(dynamic ? 0500 :  0400);
                 return inventory;
             }
         };
