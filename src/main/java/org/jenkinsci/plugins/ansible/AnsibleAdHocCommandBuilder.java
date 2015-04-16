@@ -41,6 +41,7 @@ import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.ansible.Inventory.InventoryDescriptor;
 import org.jenkinsci.plugins.ansible.Inventory.InventoryHandler;
 import org.kohsuke.stapler.AncestorInPath;
@@ -131,17 +132,17 @@ public class AnsibleAdHocCommandBuilder extends Builder {
         args.add(hostPattern);
         inventoryHandler.addArgument(args, envVars, listener);
 
-        if (module != null && ! module.isEmpty()) {
+        if (StringUtils.isNotBlank(module)) {
             args.add("-m").add(module);
         }
 
-        if (command != null && ! command.isEmpty()) {
+        if (StringUtils.isNotBlank(command)) {
             args.add("-a").add(command);
         }
 
         if (sudo) {
             args.add("-S");
-            if (sudoUser != null && !sudoUser.isEmpty()) {
+            if (StringUtils.isNotBlank(sudoUser)) {
                 args.add("-R").add(sudoUser);
             }
         }
@@ -150,7 +151,7 @@ public class AnsibleAdHocCommandBuilder extends Builder {
 
         if (credentialsId != null) {
             SSHUserPrivateKey credentials = CredentialsProvider.findCredentialById(credentialsId, SSHUserPrivateKey.class, build);
-            key = createSshKeyFile(key, credentials);
+            key = Utils.createSshKeyFile(key, credentials);
             args.add("--private-key").add(key);
         }
         args.addTokenized(additionalParameters);
@@ -184,18 +185,6 @@ public class AnsibleAdHocCommandBuilder extends Builder {
         return env;
     }
 
-    private File createSshKeyFile(File key, SSHUserPrivateKey credentials) throws IOException, InterruptedException {
-        key = File.createTempFile("ssh", "key");
-        PrintWriter w = new PrintWriter(key);
-        List<String> privateKeys = credentials.getPrivateKeys();
-        for (String s : privateKeys) {
-            w.println(s);
-        }
-        w.close();
-        new FilePath(key).chmod(0400);
-        return key;
-    }
-
     public AnsibleInstallation getInstallation() throws IOException {
         if (ansibleName == null) {
             if (AnsibleInstallation.allInstallations().length == 0) {
@@ -213,35 +202,10 @@ public class AnsibleAdHocCommandBuilder extends Builder {
     }
 
     @Extension
-    public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
+    public static final class DescriptorImpl extends AbstractAnsibleBuilderDescriptor {
 
         public DescriptorImpl() {
-            load();
-        }
-
-        public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Project project) {
-            return new StandardListBoxModel()
-                    .withEmptySelection()
-                    .withMatching(CredentialsMatchers.instanceOf(SSHUserPrivateKey.class),
-                            CredentialsProvider.lookupCredentials(StandardUsernameCredentials.class, project));
-        }
-
-        public List<InventoryDescriptor> getInventories() {
-            return Jenkins.getInstance().getDescriptorList(Inventory.class);
-        }
-
-        @Override
-        public boolean isApplicable(Class<? extends AbstractProject> klass) {
-            return true;
-        }
-
-        @Override
-        public String getDisplayName() {
-            return "Invoke Ansible Ad-Hoc Command";
-        }
-
-        public AnsibleInstallation[] getInstallations() {
-            return AnsibleInstallation.allInstallations();
+            super("Invoke Ansible Ad-Hoc Command");
         }
     }
 }

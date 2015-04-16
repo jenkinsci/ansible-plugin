@@ -16,11 +16,28 @@
 package org.jenkinsci.plugins.ansible;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
 
+import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
+import hudson.FilePath;
 import hudson.model.BuildListener;
 
 class Utils
 {
+    static File createSshKeyFile(File key, SSHUserPrivateKey credentials) throws IOException, InterruptedException {
+        key = File.createTempFile("ssh", "key");
+        PrintWriter w = new PrintWriter(key);
+        List<String> privateKeys = credentials.getPrivateKeys();
+        for (String s : privateKeys) {
+            w.println(s);
+        }
+        w.close();
+        new FilePath(key).chmod(0400);
+        return key;
+    }
+
     static void deleteTempFile(File tempFile, BuildListener listener) {
         if (tempFile != null) {
             if (!tempFile.delete()) {
