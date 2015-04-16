@@ -49,7 +49,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 /**
  * A builder which wraps an Ansible invocation.
  */
-public class AnsibleBuilder extends Builder {
+public class AnsibleAdHocCommandBuilder extends Builder {
 
     public final String ansibleName;
 
@@ -82,11 +82,13 @@ public class AnsibleBuilder extends Builder {
 
     public final boolean hostKeyChecking;
 
+    public final String additionalParameters;
+
 
     @DataBoundConstructor
-    public AnsibleBuilder(String ansibleName, String hostPattern, Inventory inventory, String module, String command,
-                          String credentialsId, boolean sudo, String sudoUser, int forks, boolean unbufferedOutput,
-                          boolean colorizedOutput, boolean hostKeyChecking)
+    public AnsibleAdHocCommandBuilder(String ansibleName, String hostPattern, Inventory inventory, String module, String command,
+                                      String credentialsId, boolean sudo, String sudoUser, int forks, boolean unbufferedOutput,
+                                      boolean colorizedOutput, boolean hostKeyChecking, String additionalParameters)
     {
         this.ansibleName = ansibleName;
         this.hostPattern = hostPattern;
@@ -100,6 +102,7 @@ public class AnsibleBuilder extends Builder {
         this.unbufferedOutput = unbufferedOutput;
         this.colorizedOutput = colorizedOutput;
         this.hostKeyChecking = hostKeyChecking;
+        this.additionalParameters = additionalParameters;
     }
 
     @Override
@@ -120,6 +123,7 @@ public class AnsibleBuilder extends Builder {
         String module = envVars.expand(this.module);
         String command = envVars.expand(this.command);
         String sudoUser = envVars.expand(this.sudoUser);
+        String additionalParameters = envVars.expand(this.additionalParameters);
 
         InventoryHandler inventoryHandler = inventory.getHandler();
 
@@ -149,6 +153,7 @@ public class AnsibleBuilder extends Builder {
             key = createSshKeyFile(key, credentials);
             args.add("--private-key").add(key);
         }
+        args.addTokenized(additionalParameters);
 
         try {
             if (launcher.launch().pwd(build.getWorkspace()).envs(env).cmds(args).stdout(listener).join() != 0) {
@@ -232,7 +237,7 @@ public class AnsibleBuilder extends Builder {
 
         @Override
         public String getDisplayName() {
-            return "Invoke Ansible";
+            return "Invoke Ansible Ad-Hoc Command";
         }
 
         public AnsibleInstallation[] getInstallations() {

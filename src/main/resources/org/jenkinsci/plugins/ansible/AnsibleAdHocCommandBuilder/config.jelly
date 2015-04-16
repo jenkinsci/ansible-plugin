@@ -46,7 +46,7 @@
   </f:optionalBlock>
 
   <f:advanced>
-    <f:entry title="${%Forks}" field="forks">
+    <f:entry title="${%Number of parallel processes}" field="forks">
       <f:number default="5"/>
     </f:entry>
 
@@ -60,6 +60,10 @@
 
     <f:entry title="${%Colorized stdout}" field="colorizedOutput">
       <f:checkbox default="false" />
+    </f:entry>
+
+    <f:entry title="Additional parameters" field="additionalParameters">
+      <f:textbox />
     </f:entry>
 
   </f:advanced>
