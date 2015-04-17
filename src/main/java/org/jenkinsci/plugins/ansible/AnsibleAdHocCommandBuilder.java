@@ -54,6 +54,8 @@ public class AnsibleAdHocCommandBuilder extends Builder {
 
     public final String ansibleName;
 
+    public final String user;
+
     // SSH settings
     /**
      * The id of the credentials to use.
@@ -88,7 +90,8 @@ public class AnsibleAdHocCommandBuilder extends Builder {
 
     @DataBoundConstructor
     public AnsibleAdHocCommandBuilder(String ansibleName, String hostPattern, Inventory inventory, String module, String command,
-                                      String credentialsId, boolean sudo, String sudoUser, int forks, boolean unbufferedOutput,
+                                      String user, String credentialsId, boolean sudo, String sudoUser, int forks,
+                                      boolean unbufferedOutput,
                                       boolean colorizedOutput, boolean hostKeyChecking, String additionalParameters)
     {
         this.ansibleName = ansibleName;
@@ -96,6 +99,7 @@ public class AnsibleAdHocCommandBuilder extends Builder {
         this.inventory = inventory;
         this.module = module;
         this.command = command;
+        this.user = user;
         this.credentialsId = credentialsId;
         this.sudo = sudo;
         this.sudoUser = sudoUser;
@@ -123,6 +127,7 @@ public class AnsibleAdHocCommandBuilder extends Builder {
         String hostPattern = envVars.expand(this.hostPattern);
         String module = envVars.expand(this.module);
         String command = envVars.expand(this.command);
+        String user = envVars.expand(this.user);
         String sudoUser = envVars.expand(this.sudoUser);
         String additionalParameters = envVars.expand(this.additionalParameters);
 
@@ -138,6 +143,10 @@ public class AnsibleAdHocCommandBuilder extends Builder {
 
         if (StringUtils.isNotBlank(command)) {
             args.add("-a").add(command);
+        }
+
+        if (StringUtils.isNotBlank(user)) {
+            args.add("-u").add(user);
         }
 
         if (sudo) {
