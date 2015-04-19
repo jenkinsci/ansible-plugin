@@ -19,20 +19,12 @@
       </f:entry>
     </j:if>
 
-  <f:entry title="${%Host pattern}" field="hostPattern">
+  <f:entry title="${%Playbook path}" field="playbook">
     <f:textbox />
   </f:entry>
 
   <f:entry title="${%Inventory}">
     <f:hetero-radio field="inventory" descriptors="${descriptor.inventories}"/>
-  </f:entry>
-
-  <f:entry title="${%Module}" field="module">
-    <f:textbox />
-  </f:entry>
-
-  <f:entry title="${%Module arguments or command to execute}" field="command">
-    <f:textarea />
   </f:entry>
 
   <f:entry title="${%Credentials}" field="credentialsId">
@@ -46,6 +38,18 @@
   </f:optionalBlock>
 
   <f:advanced>
+    <f:entry title="${%Tags to run}" field="tags">
+      <f:textbox/>
+    </f:entry>
+
+    <f:entry title="${%Tags to skip}" field="skippedTags">
+      <f:textbox/>
+    </f:entry>
+
+    <f:entry title="${%Task to start at}" field="startAtTask">
+      <f:textbox/>
+    </f:entry>
+
     <f:entry title="${%Number of parallel processes}" field="forks">
       <f:number default="5"/>
     </f:entry>
