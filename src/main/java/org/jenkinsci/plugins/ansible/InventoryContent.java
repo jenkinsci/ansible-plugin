@@ -28,6 +28,9 @@ import hudson.model.BuildListener;
 import hudson.util.ArgumentListBuilder;
 import org.kohsuke.stapler.DataBoundConstructor;
 
+/**
+ * Inline content for Ansible inventory. Inventory may be dynamic or not.
+ */
 public class InventoryContent extends Inventory
 {
     public final String content;

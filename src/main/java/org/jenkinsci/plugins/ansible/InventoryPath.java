@@ -21,6 +21,9 @@ import hudson.model.BuildListener;
 import hudson.util.ArgumentListBuilder;
 import org.kohsuke.stapler.DataBoundConstructor;
 
+/**
+ * Path to a file containing an Ansible inventory
+ */
 public class InventoryPath extends Inventory
 {
     public final String path;

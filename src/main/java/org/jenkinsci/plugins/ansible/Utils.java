@@ -26,6 +26,15 @@ import hudson.model.BuildListener;
 
 class Utils
 {
+    /**
+     * Copy the SSH private key into a temporary file.
+     *
+     * @param key the destination file
+     * @param credentials the SSH key
+     * @return the file
+     * @throws IOException
+     * @throws InterruptedException
+     */
     static File createSshKeyFile(File key, SSHUserPrivateKey credentials) throws IOException, InterruptedException {
         key = File.createTempFile("ssh", "key");
         PrintWriter w = new PrintWriter(key);
@@ -38,6 +47,12 @@ class Utils
         return key;
     }
 
+    /**
+     * Delete a temporary file. Print a warning in the log when deletion fails.
+     *
+     * @param tempFile the file to be removed
+     * @param listener the build listener
+     */
     static void deleteTempFile(File tempFile, BuildListener listener) {
         if (tempFile != null) {
             if (!tempFile.delete()) {

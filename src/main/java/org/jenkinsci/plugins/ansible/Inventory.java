@@ -27,7 +27,7 @@ import hudson.util.ArgumentListBuilder;
 import jenkins.model.Jenkins;
 
 /**
- *
+ * Common Ansible inventory.
  */
 public abstract class Inventory implements Describable<Inventory>
 {
@@ -42,9 +42,7 @@ public abstract class Inventory implements Describable<Inventory>
 
     public abstract InventoryHandler getHandler();
 
-    public static abstract class InventoryDescriptor extends Descriptor<Inventory> {
-
-    }
+    public static abstract class InventoryDescriptor extends Descriptor<Inventory> { }
 
     public static interface InventoryHandler {
 

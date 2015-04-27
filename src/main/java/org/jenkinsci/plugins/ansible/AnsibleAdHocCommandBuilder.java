@@ -48,7 +48,7 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * A builder which wraps an Ansible invocation.
+ * A builder which wraps an Ansible Ad-Hoc command invocation.
  */
 public class AnsibleAdHocCommandBuilder extends Builder {
 
