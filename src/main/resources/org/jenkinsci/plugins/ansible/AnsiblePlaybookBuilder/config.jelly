@@ -4,13 +4,13 @@
   <j:set var="installations" value="${descriptor.getInstallations()}"/>
     <j:if test="${empty(installations)}">
       <!-- no Ansible installation is configured, so warn the user now -->
-      <f:entry title="${%Ansible version}">
+      <f:entry title="${%Ansible}">
         <div class="error">Missing Ansible installation</div>
       </f:entry>
     </j:if>
     <j:if test="${installations.size() gt 1}">
       <!-- choice not necessary if there's no choice -->
-      <f:entry title="${%Ansible version}">
+      <f:entry title="${%Ansible}">
         <select class="setting-input" name="ansibleName">
           <j:forEach var="inst" items="${installations}">
             <f:option value="${inst.name}" selected="${inst.name==instance.ansibleName}">${inst.name}</f:option>
@@ -31,7 +31,7 @@
     <c:select/>
   </f:entry>
 
-  <f:optionalBlock name="sudo" title="${%sudo}" checked="${instance.sudo}" inline="true">
+  <f:optionalBlock name="sudo" title="${%sudo}" checked="${instance.sudo}" inline="true" help="${descriptor.getHelpFile('sudo')}">
     <f:entry title="${%sudo user}" field="sudoUser">
       <f:textbox />
     </f:entry>
