@@ -9,11 +9,12 @@ import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import hudson.model.AbstractProject;
 import hudson.model.Project;
-import hudson.tasks.BuildStep;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.ansible.Inventory.InventoryDescriptor;
 import org.kohsuke.stapler.AncestorInPath;
 
@@ -27,6 +28,14 @@ public abstract class AbstractAnsibleBuilderDescriptor extends BuildStepDescript
     protected AbstractAnsibleBuilderDescriptor(String displayName) {
         this.displayName = displayName;
         load();
+    }
+
+    protected FormValidation checkNotNullOrEmpty(String parameter, String errorMessage) {
+        if (StringUtils.isNotBlank(parameter)) {
+            return FormValidation.ok();
+        } else {
+            return FormValidation.error(errorMessage);
+        }
     }
 
     public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Project project) {

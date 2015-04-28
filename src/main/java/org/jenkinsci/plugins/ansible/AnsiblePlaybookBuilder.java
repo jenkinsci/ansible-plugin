@@ -30,9 +30,11 @@ import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
+import hudson.util.FormValidation;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.ansible.Inventory.InventoryHandler;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 
 /**
  * A builder which wraps an Ansible playbook invocation.
@@ -209,6 +211,10 @@ public class AnsiblePlaybookBuilder extends Builder
     {
         public DescriptorImpl() {
             super("Invoke Ansible Playbook");
+        }
+
+        public FormValidation doCheckPlaybook(@QueryParameter String playbook) {
+            return checkNotNullOrEmpty(playbook, "Path to playbook must not be empty");
         }
     }
 }

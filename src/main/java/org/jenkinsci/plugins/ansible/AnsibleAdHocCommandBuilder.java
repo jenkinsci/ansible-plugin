@@ -17,35 +17,24 @@ package org.jenkinsci.plugins.ansible;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
-import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
-import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import hudson.EnvVars;
 import hudson.Extension;
-import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
 import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
-import hudson.model.Project;
-import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
-import hudson.util.ListBoxModel;
-import jenkins.model.Jenkins;
+import hudson.util.FormValidation;
 import org.apache.commons.lang.StringUtils;
-import org.jenkinsci.plugins.ansible.Inventory.InventoryDescriptor;
 import org.jenkinsci.plugins.ansible.Inventory.InventoryHandler;
-import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 
 /**
  * A builder which wraps an Ansible Ad-Hoc command invocation.
@@ -208,6 +197,10 @@ public class AnsibleAdHocCommandBuilder extends Builder {
 
         public DescriptorImpl() {
             super("Invoke Ansible Ad-Hoc Command");
+        }
+
+        public FormValidation doCheckHostPattern(@QueryParameter String hostPattern) {
+            return checkNotNullOrEmpty(hostPattern, "Host pattern must not be empty");
         }
     }
 }
