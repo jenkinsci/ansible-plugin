@@ -44,6 +44,8 @@ public class AnsiblePlaybookBuilder extends Builder
 
     public final String ansibleName;
 
+    public final String limit;
+
     public final String tags;
 
     public final String skippedTags;
@@ -76,7 +78,7 @@ public class AnsiblePlaybookBuilder extends Builder
     public final String additionalParameters;
 
     @DataBoundConstructor
-    public AnsiblePlaybookBuilder(String ansibleName, String playbook, Inventory inventory, String tags,
+    public AnsiblePlaybookBuilder(String ansibleName, String playbook, Inventory inventory, String limit, String tags,
                                   String skippedTags, String startAtTask, String user,
                                   String credentialsId, boolean sudo, String sudoUser, int forks,
                                   boolean unbufferedOutput, boolean colorizedOutput, boolean hostKeyChecking,
@@ -85,6 +87,7 @@ public class AnsiblePlaybookBuilder extends Builder
         this.ansibleName = ansibleName;
         this.playbook = playbook;
         this.inventory = inventory;
+        this.limit = limit;
         this.tags = tags;
         this.skippedTags = skippedTags;
         this.startAtTask = startAtTask;
@@ -100,8 +103,9 @@ public class AnsiblePlaybookBuilder extends Builder
     }
 
     @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException
-        {
+    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
+            throws InterruptedException, IOException
+    {
         AnsibleInstallation installation = getInstallation();
         EnvVars envVars = build.getEnvironment(listener);
         File key = null;
@@ -115,6 +119,7 @@ public class AnsiblePlaybookBuilder extends Builder
         Map<String, String> env = buildEnvironment();
 
         String playbook = envVars.expand(this.playbook);
+        String limit = envVars.expand(this.limit);
         String tags = envVars.expand(this.tags);
         String skippedTags = envVars.expand(this.skippedTags);
         String startAtTask = envVars.expand(this.startAtTask);
@@ -127,6 +132,10 @@ public class AnsiblePlaybookBuilder extends Builder
         args.add(exe);
         args.add(playbook);
         inventoryHandler.addArgument(args, envVars, listener);
+
+        if (StringUtils.isNotBlank(limit)) {
+            args.add("-l").add(limit);
+        }
 
         if (StringUtils.isNotBlank(tags)) {
             args.add("-t").add(tags);

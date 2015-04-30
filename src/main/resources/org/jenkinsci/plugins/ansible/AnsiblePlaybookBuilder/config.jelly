@@ -27,6 +27,10 @@
     <f:hetero-radio field="inventory" descriptors="${descriptor.inventories}"/>
   </f:entry>
 
+  <f:entry title="${%Host subset}" field="limit">
+    <f:textbox />
+  </f:entry>
+
   <f:entry title="${%Credentials}" field="credentialsId">
     <c:select/>
   </f:entry>
