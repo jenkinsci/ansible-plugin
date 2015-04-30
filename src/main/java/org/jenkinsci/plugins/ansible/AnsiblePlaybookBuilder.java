@@ -154,9 +154,9 @@ public class AnsiblePlaybookBuilder extends Builder
         }
 
         if (sudo) {
-            args.add("-S");
+            args.add("-s");
             if (sudoUser != null && !sudoUser.isEmpty()) {
-                args.add("-R").add(sudoUser);
+                args.add("-U").add(sudoUser);
             }
         }
 

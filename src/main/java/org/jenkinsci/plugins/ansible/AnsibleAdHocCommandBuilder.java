@@ -131,9 +131,9 @@ public class AnsibleAdHocCommandBuilder extends Builder {
         }
 
         if (sudo) {
-            args.add("-S");
+            args.add("-s");
             if (StringUtils.isNotBlank(sudoUser)) {
-                args.add("-R").add(sudoUser);
+                args.add("-U").add(sudoUser);
             }
         }
 
