@@ -3,4 +3,4 @@ Jenkins Ansible Plugin
 
 This plugin gives the possibility to run [Ansible](http://www.ansible.com/) tasks as a build step.
 
-[![Build Status](https://buildhive.cloudbees.com/job/jenkinsci/job/ansible-plugin/badge/icon)](https://buildhive.cloudbees.com/job/jenkinsci/job/ansible-plugin/)
+[![Build Status](https://jenkins.ci.cloudbees.com/buildStatus/icon?job=plugins/ansible-plugin)](https://jenkins.ci.cloudbees.com/job/plugins/job/ansible-plugin/)
