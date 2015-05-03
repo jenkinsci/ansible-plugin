@@ -139,7 +139,7 @@ public class AnsibleAdHocCommandBuilder extends Builder {
 
         args.add("-f").add(forks);
 
-        if (credentialsId != null) {
+        if (StringUtils.isNotBlank(credentialsId)) {
             SSHUserPrivateKey credentials = CredentialsProvider.findCredentialById(credentialsId, SSHUserPrivateKey.class, build);
             key = Utils.createSshKeyFile(key, credentials);
             args.add("--private-key").add(key);
