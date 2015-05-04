@@ -15,24 +15,15 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
-import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
-import com.cloudbees.plugins.credentials.CredentialsProvider;
-import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.tasks.Builder;
-import hudson.util.ArgumentListBuilder;
 import hudson.util.FormValidation;
-import org.apache.commons.lang.StringUtils;
-import org.jenkinsci.plugins.ansible.Inventory.InventoryHandler;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
@@ -98,98 +89,29 @@ public class AnsibleAdHocCommandBuilder extends Builder {
 
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-        AnsibleInstallation installation = getInstallation();
-        EnvVars envVars = build.getEnvironment(listener);
-        File key = null;
-        String exe = installation.getExecutable(AnsibleCommand.ANSIBLE, launcher);
-        if (exe == null) {
-            listener.fatalError("Ansible executable not found, check your installation.");
-            return false;
-        }
-        ArgumentListBuilder args = new ArgumentListBuilder();
-
-        Map<String, String> env = buildEnvironment();
-
-        String hostPattern = envVars.expand(this.hostPattern);
-        String module = envVars.expand(this.module);
-        String command = envVars.expand(this.command);
-        String sudoUser = envVars.expand(this.sudoUser);
-        String additionalParameters = envVars.expand(this.additionalParameters);
-
-        InventoryHandler inventoryHandler = inventory.getHandler();
-
-        args.add(exe);
-        args.add(hostPattern);
-        inventoryHandler.addArgument(args, envVars, listener);
-
-        if (StringUtils.isNotBlank(module)) {
-            args.add("-m").add(module);
-        }
-
-        if (StringUtils.isNotBlank(command)) {
-            args.add("-a").add(command);
-        }
-
-        if (sudo) {
-            args.add("-s");
-            if (StringUtils.isNotBlank(sudoUser)) {
-                args.add("-U").add(sudoUser);
-            }
-        }
-
-        args.add("-f").add(forks);
-
-        if (StringUtils.isNotBlank(credentialsId)) {
-            SSHUserPrivateKey credentials = CredentialsProvider.findCredentialById(credentialsId, SSHUserPrivateKey.class, build);
-            key = Utils.createSshKeyFile(key, credentials);
-            args.add("--private-key").add(key);
-            args.add("-u").add(credentials.getUsername());
-        }
-        args.addTokenized(additionalParameters);
 
         try {
-            if (launcher.launch().pwd(build.getWorkspace()).envs(env).cmds(args).stdout(listener).join() != 0) {
-                return false;
-            }
+            AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation(ansibleName, build, launcher, listener);
+            invocation.setHostPattern(hostPattern);
+            invocation.setInventory(inventory);
+            invocation.setModule(module);
+            invocation.setModuleCommand(command);
+            invocation.setSudo(sudo, sudoUser);
+            invocation.setForks(forks);
+            invocation.setCredentials(credentialsId);
+            invocation.setAdditionalParameters(additionalParameters);
+            invocation.setHostKeyCheck(hostKeyChecking);
+            invocation.setUnbufferedOutput(unbufferedOutput);
+            invocation.setColorizedOutput(colorizedOutput);
+            return invocation.execute();
         } catch (IOException ioe) {
             Util.displayIOException(ioe, listener);
             ioe.printStackTrace(listener.fatalError(hudson.tasks.Messages.CommandInterpreter_CommandFailed()));
             return false;
-        } finally {
-            inventoryHandler.tearDown(listener);
-            Utils.deleteTempFile(key, listener);
+        } catch (AnsibleNotFoundException anfe) {
+            listener.fatalError("Ansible executable not found, check your installation.");
+            return false;
         }
-        return true;
-    }
-
-    private Map<String, String> buildEnvironment() {
-        Map<String, String> env = new HashMap<String, String>();
-        if (unbufferedOutput) {
-            env.put("PYTHONUNBUFFERED", "1");
-        }
-        if (colorizedOutput) {
-            env.put("ANSIBLE_FORCE_COLOR", "true");
-        }
-        if (! hostKeyChecking) {
-            env.put("ANSIBLE_HOST_KEY_CHECKING", "False");
-        }
-        return env;
-    }
-
-    public AnsibleInstallation getInstallation() throws IOException {
-        if (ansibleName == null) {
-            if (AnsibleInstallation.allInstallations().length == 0) {
-                throw new IOException("Ansible not found");
-            }
-            return AnsibleInstallation.allInstallations()[0];
-        } else {
-            for (AnsibleInstallation installation: AnsibleInstallation.allInstallations()) {
-                if (ansibleName.equals(installation.getName())) {
-                    return installation;
-                }
-            }
-        }
-        throw new IOException("Ansible not found");
     }
 
     @Extension
