@@ -52,8 +52,6 @@ public class AnsiblePlaybookBuilder extends Builder
 
     public final String startAtTask;
 
-    public final String user;
-
     /**
      * The id of the credentials to use.
      */
@@ -79,10 +77,9 @@ public class AnsiblePlaybookBuilder extends Builder
 
     @DataBoundConstructor
     public AnsiblePlaybookBuilder(String ansibleName, String playbook, Inventory inventory, String limit, String tags,
-                                  String skippedTags, String startAtTask, String user,
-                                  String credentialsId, boolean sudo, String sudoUser, int forks,
-                                  boolean unbufferedOutput, boolean colorizedOutput, boolean hostKeyChecking,
-                                  String additionalParameters)
+                                  String skippedTags, String startAtTask, String credentialsId, boolean sudo,
+                                  String sudoUser, int forks, boolean unbufferedOutput, boolean colorizedOutput,
+                                  boolean hostKeyChecking, String additionalParameters)
     {
         this.ansibleName = ansibleName;
         this.playbook = playbook;
@@ -91,7 +88,6 @@ public class AnsiblePlaybookBuilder extends Builder
         this.tags = tags;
         this.skippedTags = skippedTags;
         this.startAtTask = startAtTask;
-        this.user = user;
         this.credentialsId = credentialsId;
         this.sudo = sudo;
         this.sudoUser = sudoUser;
@@ -123,7 +119,6 @@ public class AnsiblePlaybookBuilder extends Builder
         String tags = envVars.expand(this.tags);
         String skippedTags = envVars.expand(this.skippedTags);
         String startAtTask = envVars.expand(this.startAtTask);
-        String user = envVars.expand(this.user);
         String sudoUser = envVars.expand(this.sudoUser);
         String additionalParameters = envVars.expand(this.additionalParameters);
 
@@ -142,15 +137,11 @@ public class AnsiblePlaybookBuilder extends Builder
         }
 
         if (StringUtils.isNotBlank(skippedTags)) {
-            args.addKeyValuePair("", "--skip-tags", tags, false);
+            args.addKeyValuePair("", "--skip-tags", skippedTags, false);
         }
 
         if (StringUtils.isNotBlank(startAtTask)) {
             args.addKeyValuePair("", "--start-at-task", startAtTask, false);
-        }
-
-        if (StringUtils.isNotBlank(user)) {
-            args.add("-u").add(user);
         }
 
         if (sudo) {
