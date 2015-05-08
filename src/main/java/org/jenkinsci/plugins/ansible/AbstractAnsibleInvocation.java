@@ -44,7 +44,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     private File key = null;
     private Inventory inventory;
 
-    protected AbstractAnsibleInvocation(String ansibleInstallation, AnsibleCommand cmd, AbstractBuild<?, ?> build,
+    protected AbstractAnsibleInvocation(String ansibleInstallation, AnsibleCommand command, AbstractBuild<?, ?> build,
                                         Launcher launcher, BuildListener listener)
             throws IOException, InterruptedException, AnsibleNotFoundException
     {
@@ -53,7 +53,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
         this.launcher = launcher;
         this.listener = listener;
 
-        String exe = getInstallation(ansibleInstallation).getExecutable(AnsibleCommand.ANSIBLE, launcher);
+        String exe = getInstallation(ansibleInstallation).getExecutable(command, launcher);
         if (exe == null) {
             throw new AnsibleNotFoundException();
         }
