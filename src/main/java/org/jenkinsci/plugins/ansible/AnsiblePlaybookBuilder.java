@@ -16,8 +16,6 @@
 package org.jenkinsci.plugins.ansible;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import hudson.Extension;
 import hudson.Launcher;

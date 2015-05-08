@@ -18,9 +18,7 @@ package org.jenkinsci.plugins.ansible;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 
-import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;

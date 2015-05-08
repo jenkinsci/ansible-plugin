@@ -18,8 +18,6 @@ package org.jenkinsci.plugins.ansible;
 import java.io.IOException;
 
 import hudson.EnvVars;
-import hudson.Launcher;
-import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
@@ -42,7 +40,7 @@ public abstract class Inventory implements Describable<Inventory>
 
     public abstract InventoryHandler getHandler();
 
-    public static abstract class InventoryDescriptor extends Descriptor<Inventory> { }
+    public abstract static class InventoryDescriptor extends Descriptor<Inventory> { }
 
     public static interface InventoryHandler {
 
