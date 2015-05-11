@@ -46,7 +46,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
 
     protected AbstractAnsibleInvocation(String ansibleInstallation, AnsibleCommand command, AbstractBuild<?, ?> build,
                                         Launcher launcher, BuildListener listener)
-            throws IOException, InterruptedException, AnsibleNotFoundException
+            throws IOException, InterruptedException, AnsibleInvocationException
     {
         this.build = build;
         this.envVars = build.getEnvironment(listener);
@@ -55,13 +55,17 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
 
         String exe = getInstallation(ansibleInstallation).getExecutable(command, launcher);
         if (exe == null) {
-            throw new AnsibleNotFoundException();
+            throw new AnsibleInvocationException("Ansible executable not found, check your installation.");
         }
         args.add(exe);
     }
 
-    public T setInventory(Inventory inventory) throws IOException, InterruptedException {
+    public T setInventory(Inventory inventory) throws IOException, InterruptedException, AnsibleInvocationException {
         this.inventory = inventory;
+        if (inventory == null) {
+            throw new AnsibleInvocationException(
+                    "The inventory of hosts and groups is not defined. Check the job configuration.");
+        }
         inventory.getHandler().addArgument(args, envVars, listener);
         return (T) this;
     }

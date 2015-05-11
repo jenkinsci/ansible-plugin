@@ -28,7 +28,7 @@ import org.apache.commons.lang.StringUtils;
 public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<AnsiblePlaybookInvocation> {
 
     protected AnsiblePlaybookInvocation(String ansibleInstallation, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
-            throws IOException, InterruptedException, AnsibleNotFoundException
+            throws IOException, InterruptedException, AnsibleInvocationException
     {
         super(ansibleInstallation, AnsibleCommand.ANSIBLE_PLAYBOOK, build, launcher, listener);
     }

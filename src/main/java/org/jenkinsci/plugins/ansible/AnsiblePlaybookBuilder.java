@@ -113,8 +113,8 @@ public class AnsiblePlaybookBuilder extends Builder
             Util.displayIOException(ioe, listener);
             ioe.printStackTrace(listener.fatalError(hudson.tasks.Messages.CommandInterpreter_CommandFailed()));
             return false;
-        } catch (AnsibleNotFoundException anfe) {
-            listener.fatalError("Ansible executable not found, check your installation.");
+        } catch (AnsibleInvocationException aie) {
+            listener.fatalError(aie.getMessage());
             return false;
         }
     }

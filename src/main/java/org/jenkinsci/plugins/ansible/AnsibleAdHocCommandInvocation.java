@@ -28,7 +28,7 @@ import org.apache.commons.lang.StringUtils;
 public class AnsibleAdHocCommandInvocation extends AbstractAnsibleInvocation<AnsibleAdHocCommandInvocation> {
 
     protected AnsibleAdHocCommandInvocation(String ansibleInstallation, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
-            throws IOException, InterruptedException, AnsibleNotFoundException
+            throws IOException, InterruptedException, AnsibleInvocationException
     {
         super(ansibleInstallation, AnsibleCommand.ANSIBLE, build, launcher, listener);
     }

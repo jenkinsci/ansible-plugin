@@ -7,6 +7,9 @@ package org.jenkinsci.plugins.ansible;
  * Time: 23:30
  * To change this template use File | Settings | File Templates.
  */
-public class AnsibleNotFoundException extends Exception {
+public class AnsibleInvocationException extends Exception {
 
+    public AnsibleInvocationException(String message) {
+        super(message);
+    }
 }
