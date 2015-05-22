@@ -1,5 +1,7 @@
 package org.jenkinsci.plugins.ansible;
 
+import static com.cloudbees.plugins.credentials.CredentialsMatchers.*;
+
 import java.util.List;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
@@ -7,6 +9,7 @@ import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
+import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import hudson.model.AbstractProject;
 import hudson.model.Project;
 import hudson.tasks.BuildStepDescriptor;
@@ -41,7 +44,9 @@ public abstract class AbstractAnsibleBuilderDescriptor extends BuildStepDescript
     public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Project project) {
         return new StandardListBoxModel()
                 .withEmptySelection()
-                .withMatching(CredentialsMatchers.instanceOf(SSHUserPrivateKey.class),
+                .withMatching(anyOf(
+                            instanceOf(SSHUserPrivateKey.class),
+                            instanceOf(UsernamePasswordCredentials.class)),
                         CredentialsProvider.lookupCredentials(StandardUsernameCredentials.class, project));
     }
 

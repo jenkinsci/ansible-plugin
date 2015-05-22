@@ -20,12 +20,17 @@ import java.io.IOException;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.util.ArgumentListBuilder;
 import org.apache.commons.lang.StringUtils;
 
 /**
  * Invoke the ansible command
  */
 public class AnsibleAdHocCommandInvocation extends AbstractAnsibleInvocation<AnsibleAdHocCommandInvocation> {
+
+    private String module;
+    private String hostPattern;
+    private String command;
 
     protected AnsibleAdHocCommandInvocation(String ansibleInstallation, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
             throws IOException, InterruptedException, AnsibleInvocationException
@@ -34,21 +39,55 @@ public class AnsibleAdHocCommandInvocation extends AbstractAnsibleInvocation<Ans
     }
 
     public AnsibleAdHocCommandInvocation setHostPattern(String hostPattern) {
-        args.add(envVars.expand(hostPattern));
+        this.hostPattern = hostPattern;
         return this;
+    }
+
+    private ArgumentListBuilder appendHostPattern(ArgumentListBuilder args) {
+        args.add(envVars.expand(hostPattern));
+        return args;
     }
 
     public AnsibleAdHocCommandInvocation setModule(String module) {
-        if (StringUtils.isNotBlank(module)) {
-            args.add("-m").add(module);
-        }
+        this.module = module;
         return this;
     }
 
+    private ArgumentListBuilder appendHModule(ArgumentListBuilder args) {
+        if (StringUtils.isNotBlank(module)) {
+            args.add("-m").add(module);
+        }
+        return args;
+    }
+
     public AnsibleAdHocCommandInvocation setModuleCommand(String command) {
+        this.command = command;
+        return this;
+    }
+
+    public ArgumentListBuilder appendModuleCommand(ArgumentListBuilder args) {
         if (StringUtils.isNotBlank(command)) {
             args.add("-a").add(command);
         }
-        return this;
+        return args;
     }
+
+    @Override
+    protected ArgumentListBuilder buildCommandLine()
+            throws InterruptedException, AnsibleInvocationException, IOException
+    {
+        ArgumentListBuilder args = new ArgumentListBuilder();
+        prependPasswordCredentials(args);
+        appendExecutable(args);
+        appendHostPattern(args);
+        appendInventory(args);
+        appendHModule(args);
+        appendModuleCommand(args);
+        appendSudo(args);
+        appendForks(args);
+        appendCredentials(args);
+        appendAdditionalParameters(args);
+        return args;
+    }
+
 }

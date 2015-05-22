@@ -95,7 +95,7 @@ public class AnsiblePlaybookBuilder extends Builder
     {
         try {
             AnsiblePlaybookInvocation invocation = new AnsiblePlaybookInvocation(ansibleName, build, launcher, listener);
-            invocation.setHostPattern(playbook);
+            invocation.setPlaybook(playbook);
             invocation.setInventory(inventory);
             invocation.setLimit(limit);
             invocation.setTags(tags);

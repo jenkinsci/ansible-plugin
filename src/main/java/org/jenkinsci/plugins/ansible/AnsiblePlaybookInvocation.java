@@ -20,6 +20,7 @@ import java.io.IOException;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.util.ArgumentListBuilder;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -27,42 +28,91 @@ import org.apache.commons.lang.StringUtils;
  */
 public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<AnsiblePlaybookInvocation> {
 
+    private String playbook;
+    private String limit;
+    private String tags;
+    private String skippedTags;
+    private String startAtTask;
+
     protected AnsiblePlaybookInvocation(String ansibleInstallation, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
             throws IOException, InterruptedException, AnsibleInvocationException
     {
         super(ansibleInstallation, AnsibleCommand.ANSIBLE_PLAYBOOK, build, launcher, listener);
     }
 
-    public AnsiblePlaybookInvocation setHostPattern(String playbook) {
-        args.add(envVars.expand(playbook));
+    public AnsiblePlaybookInvocation setPlaybook(String playbook) {
+        this.playbook = playbook;
         return this;
+    }
+
+    private ArgumentListBuilder appendPlaybook(ArgumentListBuilder args) {
+        args.add(envVars.expand(playbook));
+        return args;
     }
 
     public AnsiblePlaybookInvocation setLimit(String limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    private ArgumentListBuilder appendLimit(ArgumentListBuilder args) {
         if (StringUtils.isNotBlank(limit)) {
             args.add("-l").add(envVars.expand(limit));
         }
-        return this;
+        return args;
     }
 
     public AnsiblePlaybookInvocation setTags(String tags) {
+        this.tags = tags;
+        return this;
+    }
+
+    private ArgumentListBuilder appendTags(ArgumentListBuilder args) {
         if (StringUtils.isNotBlank(tags)) {
             args.add("-t").add(envVars.expand(tags));
         }
-        return this;
+        return args;
     }
 
     public AnsiblePlaybookInvocation setSkippedTags(String skippedTags) {
-        if (StringUtils.isNotBlank(skippedTags)) {
-            args.addKeyValuePair("", "--skip-tags", envVars.expand(skippedTags), false);
-        }
+        this.skippedTags = skippedTags;
         return this;
     }
 
+    private ArgumentListBuilder appendSkippedTags(ArgumentListBuilder args) {
+        if (StringUtils.isNotBlank(skippedTags)) {
+            args.addKeyValuePair("", "--skip-tags", envVars.expand(skippedTags), false);
+        }
+        return args;
+    }
+
     public AnsiblePlaybookInvocation setStartTask(String startAtTask) {
+        this.startAtTask = startAtTask;
+        return this;
+    }
+
+    private ArgumentListBuilder appendStartTask(ArgumentListBuilder args) {
         if (StringUtils.isNotBlank(startAtTask)) {
             args.addKeyValuePair("", "--start-at-task", envVars.expand(startAtTask), false);
         }
-        return this;
+        return args;
+    }
+
+    @Override
+    protected ArgumentListBuilder buildCommandLine() throws InterruptedException, AnsibleInvocationException, IOException {
+        ArgumentListBuilder args = new ArgumentListBuilder();
+        prependPasswordCredentials(args);
+        appendExecutable(args);
+        appendPlaybook(args);
+        appendInventory(args);
+        appendLimit(args);
+        appendTags(args);
+        appendSkippedTags(args);
+        appendStartTask(args);
+        appendSudo(args);
+        appendForks(args);
+        appendCredentials(args);
+        appendAdditionalParameters(args);
+        return args;
     }
 }
