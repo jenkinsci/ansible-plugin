@@ -94,7 +94,9 @@ public class AnsiblePlaybookBuilder extends Builder
             throws InterruptedException, IOException
     {
         try {
-            AnsiblePlaybookInvocation invocation = new AnsiblePlaybookInvocation(ansibleName, build, launcher, listener);
+            CLIRunner runner = new CLIRunner(build, launcher, listener);
+            String exe = AnsibleInstallation.getInstallation(ansibleName).getExecutable(AnsibleCommand.ANSIBLE_PLAYBOOK, launcher);
+            AnsiblePlaybookInvocation invocation = new AnsiblePlaybookInvocation(exe, build, listener);
             invocation.setPlaybook(playbook);
             invocation.setInventory(inventory);
             invocation.setLimit(limit);
@@ -108,7 +110,7 @@ public class AnsiblePlaybookBuilder extends Builder
             invocation.setHostKeyCheck(hostKeyChecking);
             invocation.setUnbufferedOutput(unbufferedOutput);
             invocation.setColorizedOutput(colorizedOutput);
-            return invocation.execute();
+            return invocation.execute(runner);
         } catch (IOException ioe) {
             Util.displayIOException(ioe, listener);
             ioe.printStackTrace(listener.fatalError(hudson.tasks.Messages.CommandInterpreter_CommandFailed()));

@@ -41,7 +41,7 @@ public class InventoryContent extends Inventory
     }
 
     @Override
-    public InventoryHandler getHandler()
+    protected InventoryHandler getHandler()
     {
         return new InventoryHandler() {
 

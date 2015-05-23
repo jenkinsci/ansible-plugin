@@ -41,7 +41,6 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     protected final BuildListener listener;
     protected final AbstractBuild<?, ?> build;
     protected final Map<String, String> environment = new HashMap<String, String>();
-    protected final Launcher launcher;
 
     protected String exe;
     protected int forks;
@@ -53,19 +52,16 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     private File key = null;
     private Inventory inventory;
 
-    protected AbstractAnsibleInvocation(String ansibleInstallation, AnsibleCommand command, AbstractBuild<?, ?> build,
-                                        Launcher launcher, BuildListener listener)
+    protected AbstractAnsibleInvocation(String exe, AbstractBuild<?, ?> build, BuildListener listener)
             throws IOException, InterruptedException, AnsibleInvocationException
     {
         this.build = build;
         this.envVars = build.getEnvironment(listener);
-        this.launcher = launcher;
         this.listener = listener;
-        this.exe = getInstallation(ansibleInstallation).getExecutable(command, launcher);
+        this.exe = exe;
         if (exe == null) {
             throw new AnsibleInvocationException("Ansible executable not found, check your installation.");
         }
-        //args.add(exe);
     }
 
     protected ArgumentListBuilder appendExecutable(ArgumentListBuilder args) {
@@ -85,7 +81,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
             throw new AnsibleInvocationException(
                     "The inventory of hosts and groups is not defined. Check the job configuration.");
         }
-        inventory.getHandler().addArgument(args, envVars, listener);
+        inventory.addArgument(args, envVars, listener);
         return args;
     }
 
@@ -183,39 +179,15 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
         return (T) this;
     }
 
-    private AnsibleInstallation getInstallation(String ansibleInstallation) throws IOException {
-        if (ansibleInstallation == null) {
-            if (AnsibleInstallation.allInstallations().length == 0) {
-                throw new IOException("Ansible not found");
-            }
-            return AnsibleInstallation.allInstallations()[0];
-        } else {
-            for (AnsibleInstallation installation: AnsibleInstallation.allInstallations()) {
-                if (ansibleInstallation.equals(installation.getName())) {
-                    return installation;
-                }
-            }
-        }
-        throw new IOException("Ansible not found");
-    }
-
     abstract protected ArgumentListBuilder buildCommandLine()
             throws InterruptedException, AnsibleInvocationException, IOException;
 
-    public boolean execute() throws IOException, InterruptedException, AnsibleInvocationException {
+    public boolean execute(CLIRunner runner) throws IOException, InterruptedException, AnsibleInvocationException {
         try {
-            if (launcher.launch()
-                    .pwd(build.getWorkspace())
-                    .envs(environment)
-                    .cmds(buildCommandLine())
-                    .stdout(listener).join() != 0)
-            {
-                return false;
-            }
+            return runner.execute(buildCommandLine(), environment);
         } finally {
-            inventory.getHandler().tearDown(listener);
+            inventory.tearDown(listener);
             Utils.deleteTempFile(key, listener);
         }
-        return true;
     }
 }

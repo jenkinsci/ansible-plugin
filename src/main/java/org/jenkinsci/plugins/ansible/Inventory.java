@@ -38,11 +38,21 @@ public abstract class Inventory implements Describable<Inventory>
         return Jenkins.getInstance().getDescriptorOrDie(getClass());
     }
 
-    public abstract InventoryHandler getHandler();
+    protected abstract InventoryHandler getHandler();
+
+    public void addArgument(ArgumentListBuilder args, EnvVars envVars, BuildListener listener)
+            throws InterruptedException, IOException
+    {
+        getHandler().addArgument(args, envVars, listener);
+    }
+
+    public void tearDown(BuildListener listener) throws InterruptedException, IOException {
+        getHandler().tearDown(listener);
+    }
 
     public abstract static class InventoryDescriptor extends Descriptor<Inventory> { }
 
-    public static interface InventoryHandler {
+    protected static interface InventoryHandler {
 
         void addArgument(ArgumentListBuilder args, EnvVars envVars, BuildListener listener)
                 throws InterruptedException, IOException;

@@ -91,7 +91,9 @@ public class AnsibleAdHocCommandBuilder extends Builder {
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
 
         try {
-            AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation(ansibleName, build, launcher, listener);
+            CLIRunner runner = new CLIRunner(build, launcher, listener);
+            String exe = AnsibleInstallation.getInstallation(ansibleName).getExecutable(AnsibleCommand.ANSIBLE, launcher);
+            AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation(exe , build, listener);
             invocation.setHostPattern(hostPattern);
             invocation.setInventory(inventory);
             invocation.setModule(module);
@@ -103,7 +105,7 @@ public class AnsibleAdHocCommandBuilder extends Builder {
             invocation.setHostKeyCheck(hostKeyChecking);
             invocation.setUnbufferedOutput(unbufferedOutput);
             invocation.setColorizedOutput(colorizedOutput);
-            return invocation.execute();
+            return invocation.execute(runner);
         } catch (IOException ioe) {
             Util.displayIOException(ioe, listener);
             ioe.printStackTrace(listener.fatalError(hudson.tasks.Messages.CommandInterpreter_CommandFailed()));

@@ -34,7 +34,7 @@ public class InventoryPath extends Inventory
     }
 
     @Override
-    public InventoryHandler getHandler()
+    protected InventoryHandler getHandler()
     {
         return new InventoryHandler()
         {

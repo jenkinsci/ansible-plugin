@@ -34,10 +34,10 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
     private String skippedTags;
     private String startAtTask;
 
-    protected AnsiblePlaybookInvocation(String ansibleInstallation, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
+    protected AnsiblePlaybookInvocation(String exe, AbstractBuild<?, ?> build, BuildListener listener)
             throws IOException, InterruptedException, AnsibleInvocationException
     {
-        super(ansibleInstallation, AnsibleCommand.ANSIBLE_PLAYBOOK, build, launcher, listener);
+        super(exe, build, listener);
     }
 
     public AnsiblePlaybookInvocation setPlaybook(String playbook) {

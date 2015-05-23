@@ -72,6 +72,23 @@ public class AnsibleInstallation extends ToolInstallation
         return ansibleDescriptor.getInstallations();
     }
 
+    public static AnsibleInstallation getInstallation(String ansibleInstallation) throws IOException {
+        AnsibleInstallation[] installations = allInstallations();
+        if (ansibleInstallation == null) {
+            if (installations.length == 0) {
+                throw new IOException("Ansible not found");
+            }
+            return installations[0];
+        } else {
+            for (AnsibleInstallation installation: installations) {
+                if (ansibleInstallation.equals(installation.getName())) {
+                    return installation;
+                }
+            }
+        }
+        throw new IOException("Ansible not found");
+    }
+
     @Extension
     public static class DescriptorImpl extends ToolDescriptor<AnsibleInstallation> {
 
