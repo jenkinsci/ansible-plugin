@@ -23,9 +23,10 @@ import java.util.Map;
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
+import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import hudson.EnvVars;
-import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.util.ArgumentListBuilder;
@@ -46,7 +47,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     protected int forks;
     protected boolean sudo;
     protected String sudoUser;
-    protected String credentialsId;
+    protected StandardUsernameCredentials credentials;
     protected String additionalParameters;
 
     private File key = null;
@@ -121,20 +122,12 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
         return args;
     }
 
-    public T setCredentials(String credentialsId) {
-        this.credentialsId = credentialsId;
+    public T setCredentials(StandardUsernameCredentials credentials) {
+        this.credentials = credentials;
         return (T) this;
     }
 
-
-    private StandardCredentials getCredentials() {
-        return StringUtils.isNotBlank(credentialsId) ?
-                CredentialsProvider.findCredentialById(credentialsId, StandardCredentials.class, build) :
-                null;
-    }
-
     protected ArgumentListBuilder prependPasswordCredentials(ArgumentListBuilder args) {
-        StandardCredentials credentials = getCredentials();
         if (credentials instanceof UsernamePasswordCredentials) {
             UsernamePasswordCredentials passwordCredentials = (UsernamePasswordCredentials)credentials;
             args.add("sshpass").addMasked("-p" + Secret.toString(passwordCredentials.getPassword()));
@@ -145,7 +138,6 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     protected ArgumentListBuilder appendCredentials(ArgumentListBuilder args)
             throws IOException, InterruptedException
     {
-        StandardCredentials credentials = getCredentials();
         if (credentials instanceof SSHUserPrivateKey) {
             SSHUserPrivateKey privateKeyCredentials = (SSHUserPrivateKey)credentials;
             key = Utils.createSshKeyFile(key, privateKeyCredentials);

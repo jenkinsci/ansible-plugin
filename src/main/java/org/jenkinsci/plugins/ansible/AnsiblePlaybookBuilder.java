@@ -17,6 +17,8 @@ package org.jenkinsci.plugins.ansible;
 
 import java.io.IOException;
 
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.Util;
@@ -24,6 +26,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
@@ -105,7 +108,9 @@ public class AnsiblePlaybookBuilder extends Builder
             invocation.setStartTask(startAtTask);
             invocation.setSudo(sudo, sudoUser);
             invocation.setForks(forks);
-            invocation.setCredentials(credentialsId);
+            invocation.setCredentials(StringUtils.isNotBlank(credentialsId) ?
+                CredentialsProvider.findCredentialById(credentialsId, StandardUsernameCredentials.class, build) :
+                null);
             invocation.setAdditionalParameters(additionalParameters);
             invocation.setHostKeyCheck(hostKeyChecking);
             invocation.setUnbufferedOutput(unbufferedOutput);

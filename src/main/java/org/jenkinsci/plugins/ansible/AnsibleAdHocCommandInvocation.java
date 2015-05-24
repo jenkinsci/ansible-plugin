@@ -55,7 +55,7 @@ public class AnsibleAdHocCommandInvocation extends AbstractAnsibleInvocation<Ans
 
     private ArgumentListBuilder appendHModule(ArgumentListBuilder args) {
         if (StringUtils.isNotBlank(module)) {
-            args.add("-m").add(module);
+            args.add("-m").add(envVars.expand(module));
         }
         return args;
     }
@@ -67,7 +67,7 @@ public class AnsibleAdHocCommandInvocation extends AbstractAnsibleInvocation<Ans
 
     public ArgumentListBuilder appendModuleCommand(ArgumentListBuilder args) {
         if (StringUtils.isNotBlank(command)) {
-            args.add("-a").add(command);
+            args.add("-a").add(envVars.expand(command));
         }
         return args;
     }
