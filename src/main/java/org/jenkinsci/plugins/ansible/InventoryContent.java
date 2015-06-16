@@ -50,7 +50,7 @@ public class InventoryContent extends Inventory
             public void addArgument(ArgumentListBuilder args, EnvVars envVars, BuildListener listener)
                     throws InterruptedException, IOException
             {
-                inventory = createInventoryFile(inventory, content);
+                inventory = createInventoryFile(inventory, envVars.expand(content));
                 args.add("-i").add(inventory);
             }
 
