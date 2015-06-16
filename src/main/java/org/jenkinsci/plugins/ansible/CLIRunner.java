@@ -34,6 +34,6 @@ class CLIRunner
                 .pwd(build.getWorkspace())
                 .envs(environment)
                 .cmds(args)
-                .stdout(listener).join() != 0;
+                .stdout(listener).join() == 0;
     }
 }
