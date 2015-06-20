@@ -144,7 +144,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
             args.add("--private-key").add(key);
             args.add("-u").add(privateKeyCredentials.getUsername());
         } else if (credentials instanceof UsernamePasswordCredentials) {
-            args.add("-u").add(((UsernamePasswordCredentials) credentials).getUsername());
+            args.add("-u").add(credentials.getUsername());
             args.add("-k");
         }
         return args;
