@@ -5,7 +5,7 @@
     <j:if test="${empty(installations)}">
       <!-- no Ansible installation is configured, so warn the user now -->
       <f:entry title="${%Ansible}">
-        <div class="error">Missing Ansible installation</div>
+        <div class="error">${%AnsibleInstallation.error(rootURL)}</div>
       </f:entry>
     </j:if>
     <j:if test="${installations.size() gt 1}">
