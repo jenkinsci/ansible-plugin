@@ -15,9 +15,7 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
@@ -35,15 +33,14 @@ class Utils
      * @throws IOException
      * @throws InterruptedException
      */
-    static File createSshKeyFile(File key, SSHUserPrivateKey credentials) throws IOException, InterruptedException {
-        key = File.createTempFile("ssh", "key");
-        PrintWriter w = new PrintWriter(key);
+    static FilePath createSshKeyFile(FilePath key, FilePath workspace, SSHUserPrivateKey credentials) throws IOException, InterruptedException {
+        StringBuilder sb = new StringBuilder();
         List<String> privateKeys = credentials.getPrivateKeys();
         for (String s : privateKeys) {
-            w.println(s);
+            sb.append(s);
         }
-        w.close();
-        new FilePath(key).chmod(0400);
+        key = workspace.createTextTempFile("ssh", "key", sb.toString(), false);
+        key.chmod(0400);
         return key;
     }
 
@@ -53,9 +50,11 @@ class Utils
      * @param tempFile the file to be removed
      * @param listener the build listener
      */
-    static void deleteTempFile(File tempFile, BuildListener listener) {
+    static void deleteTempFile(FilePath tempFile, BuildListener listener) throws IOException, InterruptedException {
         if (tempFile != null) {
-            if (!tempFile.delete()) {
+            try {
+                tempFile.delete();
+            } catch (IOException ioe) {
                 if (tempFile.exists()) {
                     listener.getLogger().println("[WARNING] temp file " + tempFile + " not deleted");
                 }

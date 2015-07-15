@@ -17,6 +17,7 @@ package org.jenkinsci.plugins.ansible;
 
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.model.BuildListener;
 import hudson.util.ArgumentListBuilder;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -38,7 +39,7 @@ public class InventoryPath extends Inventory
     {
         return new InventoryHandler()
         {
-            public void addArgument(ArgumentListBuilder args, EnvVars envVars, BuildListener listener)
+            public void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, BuildListener listener)
             {
                 String expandedPath = envVars.expand(InventoryPath.this.path);
                 args.add("-i").add(expandedPath);

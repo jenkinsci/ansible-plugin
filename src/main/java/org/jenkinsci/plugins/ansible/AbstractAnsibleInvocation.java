@@ -15,18 +15,15 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
-import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
-import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import hudson.EnvVars;
+import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.util.ArgumentListBuilder;
@@ -50,7 +47,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     protected StandardUsernameCredentials credentials;
     protected String additionalParameters;
 
-    private File key = null;
+    private FilePath key = null;
     private Inventory inventory;
 
     protected AbstractAnsibleInvocation(String exe, AbstractBuild<?, ?> build, BuildListener listener)
@@ -82,7 +79,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
             throw new AnsibleInvocationException(
                     "The inventory of hosts and groups is not defined. Check the job configuration.");
         }
-        inventory.addArgument(args, envVars, listener);
+        inventory.addArgument(args, build.getWorkspace(), envVars, listener);
         return args;
     }
 
@@ -140,7 +137,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     {
         if (credentials instanceof SSHUserPrivateKey) {
             SSHUserPrivateKey privateKeyCredentials = (SSHUserPrivateKey)credentials;
-            key = Utils.createSshKeyFile(key, privateKeyCredentials);
+            key = Utils.createSshKeyFile(key, build.getWorkspace(), privateKeyCredentials);
             args.add("--private-key").add(key);
             args.add("-u").add(privateKeyCredentials.getUsername());
         } else if (credentials instanceof UsernamePasswordCredentials) {

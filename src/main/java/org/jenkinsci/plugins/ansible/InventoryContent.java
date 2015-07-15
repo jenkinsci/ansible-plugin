@@ -15,9 +15,7 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import hudson.EnvVars;
 import hudson.Extension;
@@ -34,6 +32,8 @@ public class InventoryContent extends Inventory
     public final String content;
     public final boolean dynamic;
 
+    private transient FilePath inventory = null;
+
     @DataBoundConstructor
     public InventoryContent(String content, boolean dynamic) {
         this.content = content;
@@ -44,13 +44,10 @@ public class InventoryContent extends Inventory
     protected InventoryHandler getHandler()
     {
         return new InventoryHandler() {
-
-            private File inventory = null;
-
-            public void addArgument(ArgumentListBuilder args, EnvVars envVars, BuildListener listener)
+            public void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, BuildListener listener)
                     throws InterruptedException, IOException
             {
-                inventory = createInventoryFile(inventory, envVars.expand(content));
+                inventory = createInventoryFile(inventory, workspace, envVars.expand(content));
                 args.add("-i").add(inventory);
             }
 
@@ -58,12 +55,9 @@ public class InventoryContent extends Inventory
                 Utils.deleteTempFile(inventory, listener);
             }
 
-            private File createInventoryFile(File inventory, String content) throws IOException, InterruptedException {
-                inventory = File.createTempFile("inventory", ".ini");
-                PrintWriter w = new PrintWriter(inventory);
-                w.println(content);
-                w.close();
-                new FilePath(inventory).chmod(dynamic ? 0500 :  0400);
+            private FilePath createInventoryFile(FilePath inventory, FilePath workspace, String content) throws IOException, InterruptedException {
+                inventory = workspace.createTextTempFile("inventory", ".ini", content, false);
+                inventory.chmod(dynamic ? 0500 :  0400);
                 return inventory;
             }
         };

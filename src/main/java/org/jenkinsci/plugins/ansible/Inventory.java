@@ -18,6 +18,7 @@ package org.jenkinsci.plugins.ansible;
 import java.io.IOException;
 
 import hudson.EnvVars;
+import hudson.FilePath;
 import hudson.model.BuildListener;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
@@ -40,10 +41,10 @@ public abstract class Inventory implements Describable<Inventory>
 
     protected abstract InventoryHandler getHandler();
 
-    public void addArgument(ArgumentListBuilder args, EnvVars envVars, BuildListener listener)
+    public void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, BuildListener listener)
             throws InterruptedException, IOException
     {
-        getHandler().addArgument(args, envVars, listener);
+        getHandler().addArgument(args, workspace, envVars, listener);
     }
 
     public void tearDown(BuildListener listener) throws InterruptedException, IOException {
@@ -54,7 +55,7 @@ public abstract class Inventory implements Describable<Inventory>
 
     protected static interface InventoryHandler {
 
-        void addArgument(ArgumentListBuilder args, EnvVars envVars, BuildListener listener)
+        void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, BuildListener listener)
                 throws InterruptedException, IOException;
 
         void tearDown(BuildListener listener) throws InterruptedException, IOException;
