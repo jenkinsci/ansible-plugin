@@ -15,61 +15,74 @@
  */
 package org.jenkinsci.plugins.ansible;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
+import hudson.AbortException;
+import hudson.EnvVars;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Computer;
+import hudson.model.Node;
+import hudson.model.Run;
+import hudson.model.TaskListener;
+import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
+import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 /**
  * A builder which wraps an Ansible playbook invocation.
  */
-public class AnsiblePlaybookBuilder extends Builder
+public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
 {
-
-    public final String ansibleName;
-
-    public final String limit;
-
-    public final String tags;
-
-    public final String skippedTags;
-
-    public final String startAtTask;
-
-    /**
-     * The id of the credentials to use.
-     */
-    public final String credentialsId;
 
     public final String playbook;
 
     public final Inventory inventory;
 
-    public final boolean sudo;
+    public String ansibleName = null;
 
-    public final String sudoUser;
+    public String limit = null;
 
-    public final int forks;
+    public String tags = null;
 
-    public final boolean unbufferedOutput;
+    public String skippedTags = null;
 
-    public final boolean colorizedOutput;
+    public String startAtTask = null;
 
-    public final boolean hostKeyChecking;
+    /**
+     * The id of the credentials to use.
+     */
+    public String credentialsId = null;
 
-    public final String additionalParameters;
+    public boolean sudo = false;
 
-    @DataBoundConstructor
+    public String sudoUser = "root";
+
+    public int forks = 5;
+
+    public boolean unbufferedOutput = true;
+
+    public boolean colorizedOutput = false;
+
+    public boolean hostKeyChecking = false;
+
+    public String additionalParameters = null;
+
+    public boolean copyCredentialsInWorkspace = false;
+
+    @Deprecated
     public AnsiblePlaybookBuilder(String ansibleName, String playbook, Inventory inventory, String limit, String tags,
                                   String skippedTags, String startAtTask, String credentialsId, boolean sudo,
                                   String sudoUser, int forks, boolean unbufferedOutput, boolean colorizedOutput,
@@ -92,14 +105,100 @@ public class AnsiblePlaybookBuilder extends Builder
         this.additionalParameters = additionalParameters;
     }
 
+    @DataBoundConstructor
+    public AnsiblePlaybookBuilder(String playbook, Inventory inventory) {
+        this.playbook = playbook;
+        this.inventory = inventory;
+    }
+
+    @DataBoundSetter
+    public void setAnsibleName(String ansibleName) {
+        this.ansibleName = ansibleName;
+    }
+
+    @DataBoundSetter
+    public void setLimit(String limit) {
+        this.limit = limit;
+    }
+
+    @DataBoundSetter
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    @DataBoundSetter
+    public void setSkippedTags(String skippedTags) {
+        this.skippedTags = skippedTags;
+    }
+
+    @DataBoundSetter
+    public void setStartAtTask(String startAtTask) {
+        this.startAtTask = startAtTask;
+    }
+
+    @DataBoundSetter
+    public void setCredentialsId(String credentialsId) {
+        setCredentialsId(credentialsId, false);
+    }
+
+    public void setCredentialsId(String credentialsId, boolean copyCredentialsInWorkspace) {
+        this.credentialsId = credentialsId;
+        this.copyCredentialsInWorkspace = copyCredentialsInWorkspace;
+    }
+
+    @DataBoundSetter
+    public void setSudo(boolean sudo) {
+        this.sudo = sudo;
+    }
+
+    @DataBoundSetter
+    public void setSudoUser(String sudoUser) {
+        this.sudoUser = sudoUser;
+    }
+
+    @DataBoundSetter
+    public void setForks(int forks) {
+        this.forks = forks;
+    }
+
+    @DataBoundSetter
+    public void setUnbufferedOutput(boolean unbufferedOutput) {
+        this.unbufferedOutput = unbufferedOutput;
+    }
+
+    @DataBoundSetter
+    public void setColorizedOutput(boolean colorizedOutput) {
+        this.colorizedOutput = colorizedOutput;
+    }
+
+    @DataBoundSetter
+    public void setHostKeyChecking(boolean hostKeyChecking) {
+        this.hostKeyChecking = hostKeyChecking;
+    }
+
+    @DataBoundSetter
+    public void setAdditionalParameters(String additionalParameters) {
+        this.additionalParameters = additionalParameters;
+    }
+
     @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
+    public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener)
+            throws InterruptedException, IOException
+    {
+        Computer computer = Computer.currentComputer();
+        if (computer == null) {
+            throw new AbortException("The ansible playbook build step requires to be launched on a node");
+        }
+        perform(run, computer.getNode(), ws, launcher, listener, run.getEnvironment(listener));
+    }
+
+    public void perform(@Nonnull Run<?, ?> run, @Nonnull Node node, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener, EnvVars envVars)
             throws InterruptedException, IOException
     {
         try {
-            CLIRunner runner = new CLIRunner(build, launcher, listener);
-            String exe = AnsibleInstallation.getInstallation(ansibleName).getExecutable(AnsibleCommand.ANSIBLE_PLAYBOOK, launcher);
-            AnsiblePlaybookInvocation invocation = new AnsiblePlaybookInvocation(exe, build, listener);
+            CLIRunner runner = new CLIRunner(run, ws, launcher, listener);
+            String exe = AnsibleInstallation.getExecutable(ansibleName, AnsibleCommand.ANSIBLE_PLAYBOOK, node, listener, envVars);
+            AnsiblePlaybookInvocation invocation = new AnsiblePlaybookInvocation(exe, run, ws, listener);
             invocation.setPlaybook(playbook);
             invocation.setInventory(inventory);
             invocation.setLimit(limit);
@@ -109,21 +208,28 @@ public class AnsiblePlaybookBuilder extends Builder
             invocation.setSudo(sudo, sudoUser);
             invocation.setForks(forks);
             invocation.setCredentials(StringUtils.isNotBlank(credentialsId) ?
-                CredentialsProvider.findCredentialById(credentialsId, StandardUsernameCredentials.class, build) :
-                null);
+                CredentialsProvider.findCredentialById(credentialsId, StandardUsernameCredentials.class, run) : null,
+                copyCredentialsInWorkspace);
             invocation.setAdditionalParameters(additionalParameters);
             invocation.setHostKeyCheck(hostKeyChecking);
             invocation.setUnbufferedOutput(unbufferedOutput);
             invocation.setColorizedOutput(colorizedOutput);
-            return invocation.execute(runner);
+            if (!invocation.execute(runner)) {
+                throw new AbortException("Ansible playbook execution failed");
+            }
         } catch (IOException ioe) {
             Util.displayIOException(ioe, listener);
             ioe.printStackTrace(listener.fatalError(hudson.tasks.Messages.CommandInterpreter_CommandFailed()));
-            return false;
+            throw ioe;
         } catch (AnsibleInvocationException aie) {
             listener.fatalError(aie.getMessage());
-            return false;
+            throw new AbortException(aie.getMessage());
         }
+    }
+
+    @Override
+    public BuildStepMonitor getRequiredMonitorService() {
+        return BuildStepMonitor.NONE;
     }
 
     @Extension

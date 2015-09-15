@@ -22,7 +22,9 @@ import java.util.List;
 
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
+import hudson.Util;
 import hudson.model.EnvironmentSpecific;
 import hudson.model.Node;
 import hudson.model.TaskListener;
@@ -33,6 +35,7 @@ import hudson.tools.ToolInstallation;
 import hudson.tools.ToolProperty;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.jenkinsci.remoting.RoleChecker;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -55,16 +58,33 @@ public class AnsibleInstallation extends ToolInstallation
         return new AnsibleInstallation(getName(), translateFor(node, log), getProperties().toList());
     }
 
-    public String getExecutable(final AnsibleCommand command, Launcher launcher) throws IOException, InterruptedException {
-        return launcher.getChannel().call(new Callable<String, IOException>() {
-            public String call() throws IOException {
-                File exe = new File(getHome(), command.getName());
-                if (exe.exists()) {
-                    return exe.getPath();
+    public static String getExecutable(String name, AnsibleCommand command, Node node, TaskListener listener, EnvVars env) throws IOException, InterruptedException {
+        if (name != null) {
+            Jenkins j = Jenkins.getInstance();
+            if (j != null) {
+                for (AnsibleInstallation tool : j.getDescriptorByType(DescriptorImpl.class).getInstallations()) {
+                    if (tool.getName().equals(name)) {
+                        if (node != null) {
+                            tool = tool.forNode(node, listener);
+                        }
+                        if (env != null) {
+                            tool = tool.forEnvironment(env);
+                        }
+                        String home = Util.fixEmpty(tool.getHome());
+                        if (home != null) {
+                            if (node != null) {
+                                FilePath homePath = node.createPath(home);
+                                if (homePath != null) {
+                                    return homePath.child(command.getName()).getRemote();
+                                }
+                            }
+                            return home + "/" + command.getName();
+                        }
+                    }
                 }
-                return null;
             }
-        });
+        }
+        return command.getName();
     }
 
     public static AnsibleInstallation[] allInstallations() {
@@ -87,6 +107,14 @@ public class AnsibleInstallation extends ToolInstallation
             }
         }
         throw new IOException("Ansible not found");
+    }
+
+    @Override
+    public void buildEnvVars(EnvVars env) {
+        String home = Util.fixEmpty(getHome());
+        if (home != null) {
+            env.put("PATH+ANSIBLE", home);
+        }
     }
 
     @Extension

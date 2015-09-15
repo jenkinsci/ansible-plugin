@@ -3,9 +3,12 @@ package org.jenkinsci.plugins.ansible;
 import java.io.IOException;
 import java.util.Map;
 
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 
 /**
@@ -15,23 +18,32 @@ import hudson.util.ArgumentListBuilder;
  * Time: 22:56
  * To change this template use File | Settings | File Templates.
  */
-class CLIRunner
+public class CLIRunner
 {
     private final Launcher launcher;
-    private final AbstractBuild<?, ?> build;
-    private final BuildListener listener;
+    private final Run<?, ?> build;
+    private final TaskListener listener;
+    private final FilePath ws;
 
     public CLIRunner(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) {
         this.launcher = launcher;
         this.build = build;
         this.listener = listener;
+        this.ws = build.getWorkspace();
+    }
+
+    public CLIRunner(Run<?, ?> build, FilePath ws, Launcher launcher, TaskListener listener) {
+        this.launcher = launcher;
+        this.build = build;
+        this.listener = listener;
+        this.ws = ws;
     }
 
     public boolean execute(ArgumentListBuilder args, Map<String, String> environment)
             throws IOException, InterruptedException
     {
         return launcher.launch()
-                .pwd(build.getWorkspace())
+                .pwd(ws)
                 .envs(environment)
                 .cmds(args)
                 .stdout(listener).join() == 0;
