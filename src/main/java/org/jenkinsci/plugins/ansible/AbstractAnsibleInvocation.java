@@ -26,6 +26,8 @@ import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 import hudson.util.Secret;
 import org.apache.commons.lang.StringUtils;
@@ -36,8 +38,8 @@ import org.apache.commons.lang.StringUtils;
 abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>> {
 
     protected final EnvVars envVars;
-    protected final BuildListener listener;
-    protected final AbstractBuild<?, ?> build;
+    protected final TaskListener listener;
+    protected final Run<?, ?> build;
     protected final Map<String, String> environment = new HashMap<String, String>();
 
     protected String exe;
@@ -49,11 +51,13 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
 
     private FilePath key = null;
     private Inventory inventory;
+    private final FilePath ws;
 
-    protected AbstractAnsibleInvocation(String exe, AbstractBuild<?, ?> build, BuildListener listener)
+    protected AbstractAnsibleInvocation(String exe, Run<?, ?> build, FilePath ws, TaskListener listener)
             throws IOException, InterruptedException, AnsibleInvocationException
     {
         this.build = build;
+        this.ws = ws;
         this.envVars = build.getEnvironment(listener);
         this.listener = listener;
         this.exe = exe;
@@ -76,10 +80,11 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
             throws IOException, InterruptedException, AnsibleInvocationException
     {
         if (inventory == null) {
-            throw new AnsibleInvocationException(
-                    "The inventory of hosts and groups is not defined. Check the job configuration.");
+//            throw new AnsibleInvocationException(
+//                    "The inventory of hosts and groups is not defined. Check the job configuration.");
+            return args;
         }
-        inventory.addArgument(args, build.getWorkspace(), envVars, listener);
+        inventory.addArgument(args, ws, envVars, listener);
         return args;
     }
 
@@ -137,7 +142,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     {
         if (credentials instanceof SSHUserPrivateKey) {
             SSHUserPrivateKey privateKeyCredentials = (SSHUserPrivateKey)credentials;
-            key = Utils.createSshKeyFile(key, build.getWorkspace(), privateKeyCredentials);
+            key = Utils.createSshKeyFile(key, ws, privateKeyCredentials);
             args.add("--private-key").add(key);
             args.add("-u").add(privateKeyCredentials.getUsername());
         } else if (credentials instanceof UsernamePasswordCredentials) {
@@ -175,7 +180,9 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
         try {
             return runner.execute(buildCommandLine(), environment);
         } finally {
-            inventory.tearDown(listener);
+            if (inventory != null) {
+                inventory.tearDown(listener);
+            }
             Utils.deleteTempFile(key, listener);
         }
     }

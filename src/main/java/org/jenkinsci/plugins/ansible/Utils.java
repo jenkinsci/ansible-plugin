@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import hudson.FilePath;
-import hudson.model.BuildListener;
+import hudson.model.TaskListener;
 
 class Utils
 {
@@ -39,7 +39,7 @@ class Utils
         for (String s : privateKeys) {
             sb.append(s);
         }
-        key = workspace.createTextTempFile("ssh", "key", sb.toString(), false);
+        key = workspace.createTextTempFile("ssh", ".key", sb.toString(), false);
         key.chmod(0400);
         return key;
     }
@@ -50,7 +50,7 @@ class Utils
      * @param tempFile the file to be removed
      * @param listener the build listener
      */
-    static void deleteTempFile(FilePath tempFile, BuildListener listener) throws IOException, InterruptedException {
+    static void deleteTempFile(FilePath tempFile, TaskListener listener) throws IOException, InterruptedException {
         if (tempFile != null) {
             try {
                 tempFile.delete();

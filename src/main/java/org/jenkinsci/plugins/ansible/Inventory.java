@@ -22,6 +22,7 @@ import hudson.FilePath;
 import hudson.model.BuildListener;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
+import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 import jenkins.model.Jenkins;
 
@@ -41,13 +42,13 @@ public abstract class Inventory implements Describable<Inventory>
 
     protected abstract InventoryHandler getHandler();
 
-    public void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, BuildListener listener)
+    public void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, TaskListener listener)
             throws InterruptedException, IOException
     {
         getHandler().addArgument(args, workspace, envVars, listener);
     }
 
-    public void tearDown(BuildListener listener) throws InterruptedException, IOException {
+    public void tearDown(TaskListener listener) throws InterruptedException, IOException {
         getHandler().tearDown(listener);
     }
 
@@ -55,10 +56,10 @@ public abstract class Inventory implements Describable<Inventory>
 
     protected static interface InventoryHandler {
 
-        void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, BuildListener listener)
+        void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, TaskListener listener)
                 throws InterruptedException, IOException;
 
-        void tearDown(BuildListener listener) throws InterruptedException, IOException;
+        void tearDown(TaskListener listener) throws InterruptedException, IOException;
     }
 
 }

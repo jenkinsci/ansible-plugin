@@ -35,7 +35,7 @@ public class AnsibleAdHocCommandInvocation extends AbstractAnsibleInvocation<Ans
     protected AnsibleAdHocCommandInvocation(String exe, AbstractBuild<?, ?> build, BuildListener listener)
             throws IOException, InterruptedException, AnsibleInvocationException
     {
-        super(exe, build, listener);
+        super(exe, build, build.getWorkspace(), listener);
     }
 
     public AnsibleAdHocCommandInvocation setHostPattern(String hostPattern) {

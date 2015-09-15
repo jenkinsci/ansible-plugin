@@ -21,6 +21,7 @@ import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.model.BuildListener;
+import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -44,14 +45,14 @@ public class InventoryContent extends Inventory
     protected InventoryHandler getHandler()
     {
         return new InventoryHandler() {
-            public void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, BuildListener listener)
+            public void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, TaskListener listener)
                     throws InterruptedException, IOException
             {
                 inventory = createInventoryFile(inventory, workspace, envVars.expand(content));
                 args.add("-i").add(inventory);
             }
 
-            public void tearDown(BuildListener listener) throws InterruptedException, IOException {
+            public void tearDown(TaskListener listener) throws InterruptedException, IOException {
                 Utils.deleteTempFile(inventory, listener);
             }
 

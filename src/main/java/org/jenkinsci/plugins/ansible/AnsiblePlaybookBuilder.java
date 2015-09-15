@@ -98,7 +98,7 @@ public class AnsiblePlaybookBuilder extends Builder
     {
         try {
             CLIRunner runner = new CLIRunner(build, launcher, listener);
-            String exe = AnsibleInstallation.getInstallation(ansibleName).getExecutable(AnsibleCommand.ANSIBLE_PLAYBOOK, launcher);
+            String exe = AnsibleInstallation.getExecutable(ansibleName, AnsibleCommand.ANSIBLE_PLAYBOOK, build.getBuiltOn(), listener, build.getEnvironment(listener));
             AnsiblePlaybookInvocation invocation = new AnsiblePlaybookInvocation(exe, build, listener);
             invocation.setPlaybook(playbook);
             invocation.setInventory(inventory);

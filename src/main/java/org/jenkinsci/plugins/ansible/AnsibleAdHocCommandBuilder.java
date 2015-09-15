@@ -96,7 +96,7 @@ public class AnsibleAdHocCommandBuilder extends Builder {
 
         try {
             CLIRunner runner = new CLIRunner(build, launcher, listener);
-            String exe = AnsibleInstallation.getInstallation(ansibleName).getExecutable(AnsibleCommand.ANSIBLE, launcher);
+            String exe = AnsibleInstallation.getExecutable(ansibleName, AnsibleCommand.ANSIBLE, build.getBuiltOn(), listener, build.getEnvironment(listener));
             AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation(exe , build, listener);
             invocation.setHostPattern(hostPattern);
             invocation.setInventory(inventory);

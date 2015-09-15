@@ -17,9 +17,12 @@ package org.jenkinsci.plugins.ansible;
 
 import java.io.IOException;
 
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 import org.apache.commons.lang.StringUtils;
 
@@ -37,7 +40,13 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
     protected AnsiblePlaybookInvocation(String exe, AbstractBuild<?, ?> build, BuildListener listener)
             throws IOException, InterruptedException, AnsibleInvocationException
     {
-        super(exe, build, listener);
+        this(exe, build, build.getWorkspace(), listener);
+    }
+
+    public AnsiblePlaybookInvocation(String exe, Run<?, ?> build, FilePath ws, TaskListener listener)
+            throws IOException, InterruptedException, AnsibleInvocationException
+    {
+        super(exe, build, ws, listener);
     }
 
     public AnsiblePlaybookInvocation setPlaybook(String playbook) {
