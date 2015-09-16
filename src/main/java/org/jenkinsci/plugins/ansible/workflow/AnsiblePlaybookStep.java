@@ -1,31 +1,18 @@
 package org.jenkinsci.plugins.ansible.workflow;
 
-import javax.annotation.Nonnull;
-
-import java.io.IOException;
-
-import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.google.inject.Inject;
-import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.Util;
 import hudson.model.Computer;
-import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import org.apache.commons.lang.StringUtils;
-import org.jenkinsci.plugins.ansible.AnsibleCommand;
-import org.jenkinsci.plugins.ansible.AnsibleInstallation;
-import org.jenkinsci.plugins.ansible.AnsibleInvocationException;
-import org.jenkinsci.plugins.ansible.AnsiblePlaybookInvocation;
-import org.jenkinsci.plugins.ansible.CLIRunner;
+import org.jenkinsci.plugins.ansible.AnsiblePlaybookBuilder;
+import org.jenkinsci.plugins.ansible.Inventory;
 import org.jenkinsci.plugins.ansible.InventoryPath;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
-import org.jenkinsci.plugins.workflow.steps.AbstractStepExecutionImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousStepExecution;
 import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
@@ -43,12 +30,16 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
 
     private final String playbook;
     private String inventory;
-    private String credentialId;
+    private String installation;
+    private String credentialsId;
     private boolean sudo = false;
     private String sudoUser = "root";
+    private String limit = null;
+    private String tags = null;
+    private String skippedTags = null;
+    private String startAtTask = null;
 
     @DataBoundConstructor
-
     public AnsiblePlaybookStep(String playbook) {
         this.playbook = playbook;
     }
@@ -59,8 +50,8 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     }
 
     @DataBoundSetter
-    public void setCredentialId(String credentialId) {
-        this.credentialId = credentialId;
+    public void setCredentialsId(String credentialsId) {
+        this.credentialsId = credentialsId;
     }
 
     @DataBoundSetter
@@ -73,6 +64,35 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         this.sudoUser = sudoUser;
     }
 
+    @DataBoundSetter
+    public void setInstallation(String installation) {
+        this.installation = installation;
+    }
+
+    @DataBoundSetter
+    public void setLimit(String limit) {
+        this.limit = limit;
+    }
+
+    @DataBoundSetter
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    @DataBoundSetter
+    public void setSkippedTags(String skippedTags) {
+        this.skippedTags = skippedTags;
+    }
+
+    @DataBoundSetter
+    public void setStartAtTask(String startAtTask) {
+        this.startAtTask = startAtTask;
+    }
+
+    public String getInstallation() {
+        return installation;
+    }
+
     public String getPlaybook() {
         return playbook;
     }
@@ -81,8 +101,8 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         return inventory;
     }
 
-    public String getCredentialId() {
-        return credentialId;
+    public String getCredentialsId() {
+        return credentialsId;
     }
 
     public boolean isSudo() {
@@ -91,6 +111,22 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
 
     public String getSudoUser() {
         return sudoUser;
+    }
+
+    public String getLimit() {
+        return limit;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public String getSkippedTags() {
+        return skippedTags;
+    }
+
+    public String getStartAtTask() {
+        return startAtTask;
     }
 
     @Extension
@@ -109,7 +145,6 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         public String getDisplayName() {
             return "Invoke an ansible playbook";
         }
-
     }
 
     public static final class AnsiblePlaybookExecution extends AbstractSynchronousStepExecution<Void> {
@@ -139,31 +174,21 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
 
         @Override
         protected Void run() throws Exception {
-            try {
-                CLIRunner runner = new CLIRunner(run, ws, launcher, listener);
-                String exe = AnsibleInstallation.getExecutable(null, AnsibleCommand.ANSIBLE_PLAYBOOK, computer.getNode(), listener, envVars);
-                AnsiblePlaybookInvocation invocation = new AnsiblePlaybookInvocation(exe, run, ws, listener);
-                invocation.setPlaybook(step.getPlaybook());
-                if (StringUtils.isNotBlank(step.getInventory())) {
-                    invocation.setInventory(new InventoryPath(step.getInventory()));
-                }
-                invocation.setSudo(step.isSudo(), step.getSudoUser());
-                invocation.setCredentials(StringUtils.isNotBlank(step.getCredentialId()) ?
-                        CredentialsProvider.findCredentialById(step.getCredentialId(), StandardUsernameCredentials.class, run) :
-                        null);
-                invocation.setForks(5);
-                invocation.setHostKeyCheck(false);
-                invocation.setUnbufferedOutput(true);
-                invocation.setColorizedOutput(false);
-                if (!invocation.execute(runner)) {
-                    throw new AbortException("Ansible playbook execution failure");
-                }
-            } catch (IOException ioe) {
-                Util.displayIOException(ioe, listener);
-                throw new AbortException(ioe.getMessage());
-            } catch (AnsibleInvocationException aie) {
-                throw new AbortException(aie.getMessage());
-            }
+            Inventory inventory = StringUtils.isNotBlank(step.getInventory()) ? new InventoryPath(step.getInventory()) : null;
+            AnsiblePlaybookBuilder builder = new AnsiblePlaybookBuilder(step.getPlaybook(), inventory);
+            builder.setAnsibleName(step.getInstallation());
+            builder.setSudo(step.isSudo());
+            builder.setSudoUser(step.getSudoUser());
+            builder.setCredentialsId(step.getCredentialsId());
+            builder.setForks(5);
+            builder.setLimit(step.getLimit());
+            builder.setTags(step.getTags());
+            builder.setStartAtTask(step.getStartAtTask());
+            builder.setSkippedTags(step.getSkippedTags());
+            builder.setHostKeyChecking(false);
+            builder.setUnbufferedOutput(true);
+            builder.setColorizedOutput(false);
+            builder.perform(run, computer.getNode(), ws, launcher, listener, envVars);
             return null;
         }
     }

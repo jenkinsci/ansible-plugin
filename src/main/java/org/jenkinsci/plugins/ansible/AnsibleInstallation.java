@@ -58,23 +58,6 @@ public class AnsibleInstallation extends ToolInstallation
         return new AnsibleInstallation(getName(), translateFor(node, log), getProperties().toList());
     }
 
-//    public String getExecutable(final AnsibleCommand command, Launcher launcher) throws IOException, InterruptedException {
-//        return launcher.getChannel().call(new Callable<String, IOException>() {
-//            public String call() throws IOException {
-//                File exe = new File(getHome(), command.getName());
-//                if (exe.exists()) {
-//                    return exe.getPath();
-//                }
-//                return null;
-//            }
-//
-//            @Override
-//            public void checkRoles(RoleChecker checker) throws SecurityException {
-//                //To change body of implemented methods use File | Settings | File Templates.
-//            }
-//        });
-//    }
-
     public static String getExecutable(String name, AnsibleCommand command, Node node, TaskListener listener, EnvVars env) throws IOException, InterruptedException {
         if (name != null) {
             Jenkins j = Jenkins.getInstance();

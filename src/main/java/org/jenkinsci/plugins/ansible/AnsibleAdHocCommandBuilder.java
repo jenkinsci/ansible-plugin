@@ -15,34 +15,42 @@
  */
 package org.jenkinsci.plugins.ansible;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
+import hudson.AbortException;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Computer;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
+import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 /**
  * A builder which wraps an Ansible Ad-Hoc command invocation.
  */
-public class AnsibleAdHocCommandBuilder extends Builder {
+public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildStep {
 
-    public final String ansibleName;
+    public String ansibleName;
 
     // SSH settings
     /**
      * The id of the credentials to use.
      */
-    public final String credentialsId;
+    public String credentialsId = null;
 
     public final String hostPattern;
 
@@ -55,22 +63,22 @@ public class AnsibleAdHocCommandBuilder extends Builder {
 
     public final String command;
 
-    public final boolean sudo;
+    public boolean sudo = false;
 
-    public final String sudoUser;
+    public String sudoUser = "root";
 
-    public final int forks;
+    public int forks = 5;
 
-    public final boolean unbufferedOutput;
+    public boolean unbufferedOutput = true;
 
-    public final boolean colorizedOutput;
+    public boolean colorizedOutput = false;
 
-    public final boolean hostKeyChecking;
+    public boolean hostKeyChecking = false;
 
-    public final String additionalParameters;
+    public String additionalParameters = null;
 
 
-    @DataBoundConstructor
+    @Deprecated
     public AnsibleAdHocCommandBuilder(String ansibleName, String hostPattern, Inventory inventory, String module,
                                       String command, String credentialsId, boolean sudo, String sudoUser, int forks,
                                       boolean unbufferedOutput, boolean colorizedOutput, boolean hostKeyChecking,
@@ -91,13 +99,69 @@ public class AnsibleAdHocCommandBuilder extends Builder {
         this.additionalParameters = additionalParameters;
     }
 
-    @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+    @Deprecated
+    public AnsibleAdHocCommandBuilder(String hostPattern, Inventory inventory, String module, String command) {
+        this.hostPattern = hostPattern;
+        this.inventory = inventory;
+        this.module = module;
+        this.command = command;
+    }
 
+    @DataBoundSetter
+    public void setAnsibleName(String ansibleName) {
+        this.ansibleName = ansibleName;
+    }
+
+    @DataBoundSetter
+    public void setCredentialsId(String credentialsId) {
+        this.credentialsId = credentialsId;
+    }
+
+    @DataBoundSetter
+    public void setSudo(boolean sudo) {
+        this.sudo = sudo;
+    }
+
+    @DataBoundSetter
+    public void setSudoUser(String sudoUser) {
+        this.sudoUser = sudoUser;
+    }
+
+    @DataBoundSetter
+    public void setForks(int forks) {
+        this.forks = forks;
+    }
+
+    @DataBoundSetter
+    public void setUnbufferedOutput(boolean unbufferedOutput) {
+        this.unbufferedOutput = unbufferedOutput;
+    }
+
+    @DataBoundSetter
+    public void setColorizedOutput(boolean colorizedOutput) {
+        this.colorizedOutput = colorizedOutput;
+    }
+
+    @DataBoundSetter
+    public void setHostKeyChecking(boolean hostKeyChecking) {
+        this.hostKeyChecking = hostKeyChecking;
+    }
+
+    @DataBoundSetter
+    public void setAdditionalParameters(String additionalParameters) {
+        this.additionalParameters = additionalParameters;
+    }
+
+    @Override
+    public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener) throws InterruptedException, IOException {
         try {
-            CLIRunner runner = new CLIRunner(build, launcher, listener);
-            String exe = AnsibleInstallation.getExecutable(ansibleName, AnsibleCommand.ANSIBLE, build.getBuiltOn(), listener, build.getEnvironment(listener));
-            AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation(exe , build, listener);
+            CLIRunner runner = new CLIRunner(run, ws, launcher, listener);
+            Computer computer = Computer.currentComputer();
+            if (computer == null) {
+                throw new AbortException("The ansible playbook build step requires to be launched on a node");
+            }
+            String exe = AnsibleInstallation.getExecutable(ansibleName, AnsibleCommand.ANSIBLE, computer.getNode(), listener, run.getEnvironment(listener));
+            AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation(exe, run, ws, listener);
             invocation.setHostPattern(hostPattern);
             invocation.setInventory(inventory);
             invocation.setModule(module);
@@ -105,20 +169,22 @@ public class AnsibleAdHocCommandBuilder extends Builder {
             invocation.setSudo(sudo, sudoUser);
             invocation.setForks(forks);
             invocation.setCredentials(StringUtils.isNotBlank(credentialsId) ?
-                CredentialsProvider.findCredentialById(credentialsId, StandardUsernameCredentials.class, build) :
-                null);
+                    CredentialsProvider.findCredentialById(credentialsId, StandardUsernameCredentials.class, run) :
+                    null);
             invocation.setAdditionalParameters(additionalParameters);
             invocation.setHostKeyCheck(hostKeyChecking);
             invocation.setUnbufferedOutput(unbufferedOutput);
             invocation.setColorizedOutput(colorizedOutput);
-            return invocation.execute(runner);
+            if (!invocation.execute(runner)) {
+                throw new AbortException("Ansible Ad-Hoc command execution failed");
+            }
         } catch (IOException ioe) {
             Util.displayIOException(ioe, listener);
             ioe.printStackTrace(listener.fatalError(hudson.tasks.Messages.CommandInterpreter_CommandFailed()));
-            return false;
+            throw ioe;
         } catch (AnsibleInvocationException aie) {
             listener.fatalError(aie.getMessage());
-            return false;
+            throw new AbortException(aie.getMessage());
         }
     }
 
