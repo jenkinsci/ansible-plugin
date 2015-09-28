@@ -21,6 +21,7 @@ import java.util.List;
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import hudson.FilePath;
 import hudson.model.BuildListener;
+import hudson.util.Secret;
 
 class Utils
 {
@@ -39,9 +40,17 @@ class Utils
         for (String s : privateKeys) {
             sb.append(s);
         }
-        key = workspace.createTextTempFile("ssh", "key", sb.toString(), false);
+        key = workspace.createTextTempFile("ssh", ".key", sb.toString(), false);
         key.chmod(0400);
         return key;
+    }
+
+    static FilePath createSshAskPassFile(FilePath script, FilePath workspace, SSHUserPrivateKey credentials) throws IOException, InterruptedException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("#! /bin/sh\n").append("/bin/echo \"" + Secret.toString(credentials.getPassphrase()) + "\"");
+        script = workspace.createTextTempFile("ssh", ".sh", sb.toString(), false);
+        script.chmod(0700);
+        return script;
     }
 
     /**
