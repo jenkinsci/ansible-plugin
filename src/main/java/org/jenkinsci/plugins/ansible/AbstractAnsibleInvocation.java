@@ -50,6 +50,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     protected String additionalParameters;
 
     private FilePath key = null;
+    private FilePath script = null;
     private Inventory inventory;
     private boolean copyCredentialsInWorkspace = false;
     private final FilePath ws;
@@ -151,6 +152,11 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
             key = Utils.createSshKeyFile(key, ws, privateKeyCredentials, copyCredentialsInWorkspace);
             args.add("--private-key").add(key);
             args.add("-u").add(privateKeyCredentials.getUsername());
+            if (privateKeyCredentials.getPassphrase() != null) {
+                script = Utils.createSshAskPassFile(script, ws, privateKeyCredentials, copyCredentialsInWorkspace);
+                environment.put("SSH_ASKPASS", script.getRemote());
+                environment.put("DISPLAY", "nodisplay");
+            }
         } else if (credentials instanceof UsernamePasswordCredentials) {
             args.add("-u").add(credentials.getUsername());
             args.add("-k");
@@ -190,6 +196,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
                 inventory.tearDown(listener);
             }
             Utils.deleteTempFile(key, listener);
+            Utils.deleteTempFile(script, listener);
         }
     }
 }
