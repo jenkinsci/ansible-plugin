@@ -80,6 +80,8 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
 
     public String additionalParameters = null;
 
+    public boolean copyCredentialsInWorkspace = false;
+
     @Deprecated
     public AnsiblePlaybookBuilder(String ansibleName, String playbook, Inventory inventory, String limit, String tags,
                                   String skippedTags, String startAtTask, String credentialsId, boolean sudo,
@@ -136,7 +138,12 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
 
     @DataBoundSetter
     public void setCredentialsId(String credentialsId) {
+        setCredentialsId(credentialsId, false);
+    }
+
+    public void setCredentialsId(String credentialsId, boolean copyCredentialsInWorkspace) {
         this.credentialsId = credentialsId;
+        this.copyCredentialsInWorkspace = copyCredentialsInWorkspace;
     }
 
     @DataBoundSetter
@@ -201,8 +208,8 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
             invocation.setSudo(sudo, sudoUser);
             invocation.setForks(forks);
             invocation.setCredentials(StringUtils.isNotBlank(credentialsId) ?
-                CredentialsProvider.findCredentialById(credentialsId, StandardUsernameCredentials.class, run) :
-                null);
+                CredentialsProvider.findCredentialById(credentialsId, StandardUsernameCredentials.class, run) : null,
+                copyCredentialsInWorkspace);
             invocation.setAdditionalParameters(additionalParameters);
             invocation.setHostKeyCheck(hostKeyChecking);
             invocation.setUnbufferedOutput(unbufferedOutput);

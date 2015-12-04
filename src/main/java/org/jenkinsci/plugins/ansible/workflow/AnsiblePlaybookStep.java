@@ -179,7 +179,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             builder.setAnsibleName(step.getInstallation());
             builder.setSudo(step.isSudo());
             builder.setSudoUser(step.getSudoUser());
-            builder.setCredentialsId(step.getCredentialsId());
+            builder.setCredentialsId(step.getCredentialsId(), true);
             builder.setForks(5);
             builder.setLimit(step.getLimit());
             builder.setTags(step.getTags());

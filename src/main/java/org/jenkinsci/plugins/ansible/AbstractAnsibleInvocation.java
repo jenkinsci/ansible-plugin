@@ -51,6 +51,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
 
     private FilePath key = null;
     private Inventory inventory;
+    private boolean copyCredentialsInWorkspace = false;
     private final FilePath ws;
 
     protected AbstractAnsibleInvocation(String exe, Run<?, ?> build, FilePath ws, TaskListener listener)
@@ -129,6 +130,11 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
         return (T) this;
     }
 
+    public T setCredentials(StandardUsernameCredentials credentials, boolean copyCredentialsInWorkspace) {
+        this.copyCredentialsInWorkspace = copyCredentialsInWorkspace;
+        return setCredentials(credentials);
+    }
+
     protected ArgumentListBuilder prependPasswordCredentials(ArgumentListBuilder args) {
         if (credentials instanceof UsernamePasswordCredentials) {
             UsernamePasswordCredentials passwordCredentials = (UsernamePasswordCredentials)credentials;
@@ -142,7 +148,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     {
         if (credentials instanceof SSHUserPrivateKey) {
             SSHUserPrivateKey privateKeyCredentials = (SSHUserPrivateKey)credentials;
-            key = Utils.createSshKeyFile(key, ws, privateKeyCredentials);
+            key = Utils.createSshKeyFile(key, ws, privateKeyCredentials, copyCredentialsInWorkspace);
             args.add("--private-key").add(key);
             args.add("-u").add(privateKeyCredentials.getUsername());
         } else if (credentials instanceof UsernamePasswordCredentials) {

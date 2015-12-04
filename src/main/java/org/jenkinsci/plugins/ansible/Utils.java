@@ -33,13 +33,13 @@ class Utils
      * @throws IOException
      * @throws InterruptedException
      */
-    static FilePath createSshKeyFile(FilePath key, FilePath workspace, SSHUserPrivateKey credentials) throws IOException, InterruptedException {
+    static FilePath createSshKeyFile(FilePath key, FilePath workspace, SSHUserPrivateKey credentials, boolean inWorkspace) throws IOException, InterruptedException {
         StringBuilder sb = new StringBuilder();
         List<String> privateKeys = credentials.getPrivateKeys();
         for (String s : privateKeys) {
             sb.append(s);
         }
-        key = workspace.createTextTempFile("ssh", ".key", sb.toString(), false);
+        key = workspace.createTextTempFile("ssh", ".key", sb.toString(), inWorkspace);
         key.chmod(0400);
         return key;
     }
