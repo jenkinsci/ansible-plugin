@@ -38,6 +38,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     private String tags = null;
     private String skippedTags = null;
     private String startAtTask = null;
+    private String extras = null;
 
     @DataBoundConstructor
     public AnsiblePlaybookStep(String playbook) {
@@ -89,6 +90,11 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         this.startAtTask = startAtTask;
     }
 
+    @DataBoundSetter
+    public void setExtras(String extras) {
+        this.extras = extras;
+    }
+
     public String getInstallation() {
         return installation;
     }
@@ -127,6 +133,10 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
 
     public String getStartAtTask() {
         return startAtTask;
+    }
+
+    public String getExtras() {
+        return extras;
     }
 
     @Extension
@@ -185,6 +195,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             builder.setTags(step.getTags());
             builder.setStartAtTask(step.getStartAtTask());
             builder.setSkippedTags(step.getSkippedTags());
+            builder.setAdditionalParameters(step.getExtras());
             builder.setHostKeyChecking(false);
             builder.setUnbufferedOutput(true);
             builder.setColorizedOutput(false);
