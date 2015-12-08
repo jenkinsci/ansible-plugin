@@ -20,11 +20,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 /**
- * Created with IntelliJ IDEA.
- * User: jcsirot
- * Date: 14/09/15
- * Time: 16:22
- * To change this template use File | Settings | File Templates.
+ * The Ansible playbook invocation step for the Jenkins workflow plugin.
  */
 public class AnsiblePlaybookStep extends AbstractStepImpl {
 
