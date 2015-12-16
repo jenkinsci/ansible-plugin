@@ -155,7 +155,11 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
             if (privateKeyCredentials.getPassphrase() != null) {
                 script = Utils.createSshAskPassFile(script, ws, privateKeyCredentials, copyCredentialsInWorkspace);
                 environment.put("SSH_ASKPASS", script.getRemote());
-                environment.put("DISPLAY", "nodisplay");
+                // inspired from https://github.com/jenkinsci/git-client-plugin/pull/168
+                // but does not work with MacOSX
+                if (! environment.containsKey("DISPLAY")) {
+                    environment.put("DISPLAY", ":123.456");
+                }
             }
         } else if (credentials instanceof UsernamePasswordCredentials) {
             args.add("-u").add(credentials.getUsername());
