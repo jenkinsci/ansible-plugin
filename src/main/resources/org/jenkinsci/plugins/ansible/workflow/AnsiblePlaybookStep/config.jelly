@@ -1,0 +1,36 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
+    <f:entry field="installation" title="Ansible tool">
+        <f:select/>
+    </f:entry>
+    <f:entry field="playbook" title="Playbook file path in workspace">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="inventory" title="Inventory file path in workspace">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="credentialsId" title="SSH connection credentials">
+        <c:select/>
+    </f:entry>
+    <f:entry field="sudo" title="Use sudo">
+        <f:checkbox/>
+    </f:entry>
+    <f:entry field="sudoUser" title="Sudo username">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="limit" title="Host subset">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="tags" title="Tags">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="skippedTags" title="Tags to skip">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="startAtTask" title="Task to start at">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="extras" title="Extra parameters">
+        <f:textbox/>
+    </f:entry>
+</j:jelly>

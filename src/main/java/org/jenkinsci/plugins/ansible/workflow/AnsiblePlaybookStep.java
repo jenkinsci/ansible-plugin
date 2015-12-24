@@ -1,14 +1,23 @@
 package org.jenkinsci.plugins.ansible.workflow;
 
+import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
+import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import com.google.inject.Inject;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.Util;
 import hudson.model.Computer;
+import hudson.model.Project;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.util.ListBoxModel;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugins.ansible.AnsibleInstallation;
 import org.jenkinsci.plugins.ansible.AnsiblePlaybookBuilder;
 import org.jenkinsci.plugins.ansible.Inventory;
 import org.jenkinsci.plugins.ansible.InventoryPath;
@@ -16,8 +25,12 @@ import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousStepExecution;
 import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
+
+import static com.cloudbees.plugins.credentials.CredentialsMatchers.anyOf;
+import static com.cloudbees.plugins.credentials.CredentialsMatchers.instanceOf;
 
 /**
  * The Ansible playbook invocation step for the Jenkins workflow plugin.
@@ -43,12 +56,12 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
 
     @DataBoundSetter
     public void setInventory(String inventory) {
-        this.inventory = inventory;
+        this.inventory = Util.fixEmptyAndTrim(inventory);
     }
 
     @DataBoundSetter
     public void setCredentialsId(String credentialsId) {
-        this.credentialsId = credentialsId;
+        this.credentialsId = Util.fixEmptyAndTrim(credentialsId);
     }
 
     @DataBoundSetter
@@ -58,37 +71,37 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
 
     @DataBoundSetter
     public void setSudoUser(String sudoUser) {
-        this.sudoUser = sudoUser;
+        this.sudoUser = Util.fixEmptyAndTrim(sudoUser);
     }
 
     @DataBoundSetter
     public void setInstallation(String installation) {
-        this.installation = installation;
+        this.installation = Util.fixEmptyAndTrim(installation);
     }
 
     @DataBoundSetter
     public void setLimit(String limit) {
-        this.limit = limit;
+        this.limit = Util.fixEmptyAndTrim(limit);
     }
 
     @DataBoundSetter
     public void setTags(String tags) {
-        this.tags = tags;
+        this.tags = Util.fixEmptyAndTrim(tags);
     }
 
     @DataBoundSetter
     public void setSkippedTags(String skippedTags) {
-        this.skippedTags = skippedTags;
+        this.skippedTags = Util.fixEmptyAndTrim(skippedTags);
     }
 
     @DataBoundSetter
     public void setStartAtTask(String startAtTask) {
-        this.startAtTask = startAtTask;
+        this.startAtTask = Util.fixEmptyAndTrim(startAtTask);
     }
 
     @DataBoundSetter
     public void setExtras(String extras) {
-        this.extras = extras;
+        this.extras = Util.fixEmptyAndTrim(extras);
     }
 
     public String getInstallation() {
@@ -150,6 +163,23 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         @Override
         public String getDisplayName() {
             return "Invoke an ansible playbook";
+        }
+
+        public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Project project) {
+            return new StandardListBoxModel()
+                .withEmptySelection()
+                .withMatching(anyOf(
+                    instanceOf(SSHUserPrivateKey.class),
+                    instanceOf(UsernamePasswordCredentials.class)),
+                    CredentialsProvider.lookupCredentials(StandardUsernameCredentials.class, project));
+        }
+
+        public ListBoxModel doFillInstallationItems() {
+            ListBoxModel model = new ListBoxModel();
+            for (AnsibleInstallation tool : AnsibleInstallation.allInstallations()) {
+                model.add(tool.getName());
+            }
+            return model;
         }
     }
 
