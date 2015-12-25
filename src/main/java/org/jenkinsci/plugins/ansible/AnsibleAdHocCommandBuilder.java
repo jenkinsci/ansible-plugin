@@ -19,15 +19,12 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
 import hudson.model.Computer;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -99,7 +96,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
         this.additionalParameters = additionalParameters;
     }
 
-    @Deprecated
+    @DataBoundConstructor
     public AnsibleAdHocCommandBuilder(String hostPattern, Inventory inventory, String module, String command) {
         this.hostPattern = hostPattern;
         this.inventory = inventory;
