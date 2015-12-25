@@ -60,3 +60,19 @@ steps {
     }
 }
 ```
+
+## Workflow support
+
+Ansible playbooks can be executed from workflow scripts. Only the `playbook` parameter is mandatory.
+
+### Example 
+
+```groovy  
+node {
+    ansiblePlaybook( 
+        playbook: 'path/to/playbook.yml',
+        inventory: 'path/to/inventory.ini', 
+        credentialsId: 'sample-ssh-key', 
+        extras: '-e parameter="some value"')
+}
+```
