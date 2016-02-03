@@ -1,3 +1,18 @@
+/*
+ *     Copyright 2015-2016 Jean-Christophe Sirot <sirot@chelonix.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.jenkinsci.plugins.ansible.workflow;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
@@ -19,15 +34,21 @@ import hudson.util.ListBoxModel;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.ansible.AnsibleInstallation;
 import org.jenkinsci.plugins.ansible.AnsiblePlaybookBuilder;
+import org.jenkinsci.plugins.ansible.ExtraVar;
 import org.jenkinsci.plugins.ansible.Inventory;
 import org.jenkinsci.plugins.ansible.InventoryPath;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
-import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousStepExecution;
+import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
 import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.cloudbees.plugins.credentials.CredentialsMatchers.anyOf;
 import static com.cloudbees.plugins.credentials.CredentialsMatchers.instanceOf;
@@ -47,7 +68,9 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     private String tags = null;
     private String skippedTags = null;
     private String startAtTask = null;
+    private Map extraVars = null;
     private String extras = null;
+    private boolean colorized = false;
 
     @DataBoundConstructor
     public AnsiblePlaybookStep(String playbook) {
@@ -100,8 +123,18 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     }
 
     @DataBoundSetter
+    public void setExtraVars(Map extraVars) {
+        this.extraVars = extraVars;
+    }
+
+    @DataBoundSetter
     public void setExtras(String extras) {
         this.extras = Util.fixEmptyAndTrim(extras);
+    }
+
+    @DataBoundSetter
+    public void setColorized(boolean colorized) {
+        this.colorized = colorized;
     }
 
     public String getInstallation() {
@@ -144,8 +177,16 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         return startAtTask;
     }
 
+    public Map<String, Object> getExtraVars() {
+        return extraVars;
+    }
+
     public String getExtras() {
         return extras;
+    }
+
+    public boolean isColorized() {
+        return colorized;
     }
 
     @Extension
@@ -183,7 +224,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         }
     }
 
-    public static final class AnsiblePlaybookExecution extends AbstractSynchronousStepExecution<Void> {
+    public static final class AnsiblePlaybookExecution extends AbstractSynchronousNonBlockingStepExecution<Void> {
 
         private static final long serialVersionUID = 1;
 
@@ -208,6 +249,27 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         @StepContextParameter
         private transient Computer computer;
 
+        private List<ExtraVar> convertExtraVars(Map<String, Object> extraVars) {
+            if (extraVars == null) {
+                return null;
+            }
+            List<ExtraVar> extraVarList = new ArrayList<ExtraVar>();
+            for (String key: extraVars.keySet()) {
+                ExtraVar var = new ExtraVar();
+                var.setKey(key);
+                Object o = extraVars.get(key);
+                if (o instanceof Map) {
+                    var.setValue(((Map)o).get("value").toString());
+                    var.setHidden((Boolean)((Map)o).get("hidden"));
+                } else {
+                    var.setValue(o.toString());
+                    var.setHidden(false);
+                }
+                extraVarList.add(var);
+            }
+            return extraVarList;
+        }
+
         @Override
         protected Void run() throws Exception {
             Inventory inventory = StringUtils.isNotBlank(step.getInventory()) ? new InventoryPath(step.getInventory()) : null;
@@ -221,10 +283,11 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             builder.setTags(step.getTags());
             builder.setStartAtTask(step.getStartAtTask());
             builder.setSkippedTags(step.getSkippedTags());
+            builder.setExtraVars(convertExtraVars(step.extraVars));
             builder.setAdditionalParameters(step.getExtras());
             builder.setHostKeyChecking(false);
             builder.setUnbufferedOutput(true);
-            builder.setColorizedOutput(false);
+            builder.setColorizedOutput(step.isColorized());
             builder.perform(run, computer.getNode(), ws, launcher, listener, envVars);
             return null;
         }

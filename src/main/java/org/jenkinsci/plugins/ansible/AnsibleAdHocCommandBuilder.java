@@ -17,6 +17,7 @@ package org.jenkinsci.plugins.ansible;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.List;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
@@ -74,6 +75,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
 
     public String additionalParameters = null;
 
+    public List<ExtraVar> extraVars;
 
     @Deprecated
     public AnsibleAdHocCommandBuilder(String ansibleName, String hostPattern, Inventory inventory, String module,
@@ -149,6 +151,11 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
         this.additionalParameters = additionalParameters;
     }
 
+    @DataBoundSetter
+    public void setExtraVars(List<ExtraVar> extraVars) {
+        this.extraVars = extraVars;
+    }
+
     @Override
     public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener) throws InterruptedException, IOException {
         try {
@@ -168,6 +175,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
             invocation.setCredentials(StringUtils.isNotBlank(credentialsId) ?
                     CredentialsProvider.findCredentialById(credentialsId, StandardUsernameCredentials.class, run) :
                     null);
+            invocation.setExtraVars(extraVars);
             invocation.setAdditionalParameters(additionalParameters);
             invocation.setHostKeyCheck(hostKeyChecking);
             invocation.setUnbufferedOutput(unbufferedOutput);

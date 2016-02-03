@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015 Jean-Christophe Sirot <sirot@chelonix.com>
+ *     Copyright 2015-2016 Jean-Christophe Sirot <sirot@chelonix.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,16 @@ package org.jenkinsci.plugins.ansible;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import hudson.EnvVars;
 import hudson.FilePath;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
+import hudson.Util;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
@@ -47,6 +48,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     protected boolean sudo;
     protected String sudoUser;
     protected StandardUsernameCredentials credentials;
+    protected List<ExtraVar> extraVars;
     protected String additionalParameters;
 
     private FilePath key = null;
@@ -97,6 +99,31 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
 
     public ArgumentListBuilder appendForks(ArgumentListBuilder args) {
         args.add("-f").add(forks);
+        return args;
+    }
+
+    public T setExtraVars(List<ExtraVar> extraVars) {
+        this.extraVars = extraVars;
+        return (T) this;
+    }
+
+    public ArgumentListBuilder appendExtraVars(ArgumentListBuilder args) {
+        if (extraVars != null && ! extraVars.isEmpty()) {
+            for (ExtraVar var : extraVars) {
+                args.add("-e");
+                String value = envVars.expand(var.getValue());
+                if (Pattern.compile("\\s").matcher(value).find()) {
+                    value = Util.singleQuote(value);
+                }
+                StringBuilder sb = new StringBuilder();
+                sb.append(envVars.expand(var.getKey())).append("=").append(value);
+                if (var.isHidden()) {
+                    args.addMasked(sb.toString());
+                } else {
+                    args.add(sb.toString());
+                }
+            }
+        }
         return args;
     }
 

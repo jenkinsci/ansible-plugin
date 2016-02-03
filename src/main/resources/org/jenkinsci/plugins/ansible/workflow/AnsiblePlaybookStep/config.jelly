@@ -30,6 +30,9 @@
     <f:entry field="startAtTask" title="Task to start at">
         <f:textbox/>
     </f:entry>
+    <f:entry field="colorized" title="Colorized output">
+      <f:checkbox/>
+    </f:entry>
     <f:entry field="extras" title="Extra parameters">
         <f:textbox/>
     </f:entry>

@@ -95,6 +95,7 @@ public class AnsibleAdHocCommandInvocation extends AbstractAnsibleInvocation<Ans
         appendSudo(args);
         appendForks(args);
         appendCredentials(args);
+        appendExtraVars(args);
         appendAdditionalParameters(args);
         return args;
     }

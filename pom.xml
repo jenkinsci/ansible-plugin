@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.580.1</version>
+    <version>1.596.1</version>
   </parent>
 
   <groupId>org.jenkins-ci.plugins</groupId>
@@ -133,7 +133,7 @@
     <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
     <ssh-credentials.version>1.10</ssh-credentials.version>
     <credentials.version>1.16.1</credentials.version>
-    <workflow-step-api.version>1.4.2</workflow-step-api.version>
+    <workflow-step-api.version>1.10</workflow-step-api.version>
     <junit.version>4.12</junit.version>
     <mockito.version>1.10.19</mockito.version>
     <assertj.version>1.7.1</assertj.version>

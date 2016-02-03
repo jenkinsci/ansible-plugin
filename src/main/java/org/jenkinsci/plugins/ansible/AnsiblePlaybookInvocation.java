@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015 Jean-Christophe Sirot <sirot@chelonix.com>
+ *     Copyright 2015-2016 Jean-Christophe Sirot <sirot@chelonix.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,6 +121,7 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
         appendSudo(args);
         appendForks(args);
         appendCredentials(args);
+        appendExtraVars(args);
         appendAdditionalParameters(args);
         return args;
     }
