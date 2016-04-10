@@ -43,7 +43,9 @@ public class InventoryPath extends Inventory
             public void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, TaskListener listener)
             {
                 String expandedPath = envVars.expand(InventoryPath.this.path);
-                args.add("-i").add(expandedPath);
+                if (expandedPath != null && !expandedPath.equals("")) {
+                    args.add("-i").add(expandedPath);
+                }
             }
 
             public void tearDown(TaskListener listener)
