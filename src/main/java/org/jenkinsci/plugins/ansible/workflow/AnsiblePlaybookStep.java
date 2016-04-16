@@ -48,6 +48,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     private String skippedTags = null;
     private String startAtTask = null;
     private String extras = null;
+    public boolean colorizedOutput = false;
 
     @DataBoundConstructor
     public AnsiblePlaybookStep(String playbook) {
@@ -104,6 +105,11 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         this.extras = Util.fixEmptyAndTrim(extras);
     }
 
+    @DataBoundSetter
+    public void setColorizedOutput(boolean colorizedOutput) {
+        this.colorizedOutput = colorizedOutput;
+    }
+
     public String getInstallation() {
         return installation;
     }
@@ -146,6 +152,10 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
 
     public String getExtras() {
         return extras;
+    }
+
+    public boolean isColorizedOutput() {
+        return colorizedOutput;
     }
 
     @Extension
@@ -224,7 +234,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             builder.setAdditionalParameters(step.getExtras());
             builder.setHostKeyChecking(false);
             builder.setUnbufferedOutput(true);
-            builder.setColorizedOutput(false);
+            builder.setColorizedOutput(step.isColorizedOutput());
             builder.perform(run, computer.getNode(), ws, launcher, listener, envVars);
             return null;
         }
