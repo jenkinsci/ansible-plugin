@@ -21,6 +21,7 @@ import hudson.FilePath;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -43,7 +44,9 @@ public class InventoryPath extends Inventory
             public void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, TaskListener listener)
             {
                 String expandedPath = envVars.expand(InventoryPath.this.path);
-                args.add("-i").add(expandedPath);
+                if (StringUtils.isNotEmpty(expandedPath)) {
+                    args.add("-i").add(expandedPath);
+                }
             }
 
             public void tearDown(TaskListener listener)
