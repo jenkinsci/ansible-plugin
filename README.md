@@ -61,7 +61,7 @@ steps {
 }
 ```
 
-## Workflow support
+## Pipeline support
 
 Ansible playbooks can be executed from workflow scripts. Only the `playbook` parameter is mandatory.
 
@@ -74,5 +74,39 @@ node {
         inventory: 'path/to/inventory.ini', 
         credentialsId: 'sample-ssh-key', 
         extras: '-e parameter="some value"')
+}
+```
+
+### Extra Variables
+
+Extra variables can be passed to ansible by using a map in the pipeline script. Use the `hidden` parameter 
+to keep the variable secret in the build log.
+
+```groovy  
+node {
+    ansiblePlaybook(
+        inventory: 'local_inventory/hosts.cfg',
+        playbook: 'cloud_playbooks/create-aws.yml',
+        extraVars: [
+            login: 'mylogin',
+            secret_key: [value: 'g4dfKWENpeF6pY05', hidden: true]
+        ])
+}
+```
+
+### Colorized Console Log
+
+You need to install the [AnsiColor plugin](https://wiki.jenkins-ci.org/display/JENKINS/AnsiColor+Plugin) to output a 
+colorized Ansible log.
+
+```groovy
+node {
+    wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+        ansiblePlaybook( 
+            playbook: 'path/to/playbook.yml',
+            inventory: 'path/to/inventory.ini', 
+            credentialsId: 'sample-ssh-key',
+            colorized: true) 
+    }
 }
 ```
