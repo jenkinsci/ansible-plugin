@@ -41,7 +41,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     protected final EnvVars envVars;
     protected final TaskListener listener;
     protected final Run<?, ?> build;
-    protected final Map<String, String> environment = new HashMap<String, String>();
+    protected final Map<String, String> environment;
 
     protected String exe;
     protected int forks;
@@ -63,6 +63,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
         this.build = build;
         this.ws = ws;
         this.envVars = build.getEnvironment(listener);
+        this.environment = new HashMap<String, String>(this.envVars);
         this.listener = listener;
         this.exe = exe;
         if (exe == null) {
