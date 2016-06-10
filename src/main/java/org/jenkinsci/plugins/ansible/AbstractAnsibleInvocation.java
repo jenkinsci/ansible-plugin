@@ -57,12 +57,12 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     private boolean copyCredentialsInWorkspace = false;
     private final FilePath ws;
 
-    protected AbstractAnsibleInvocation(String exe, Run<?, ?> build, FilePath ws, TaskListener listener)
+    protected AbstractAnsibleInvocation(String exe, Run<?, ?> build, FilePath ws, TaskListener listener, EnvVars envVars)
             throws IOException, InterruptedException, AnsibleInvocationException
     {
         this.build = build;
         this.ws = ws;
-        this.envVars = build.getEnvironment(listener);
+        this.envVars = envVars;
         this.environment = new HashMap<String, String>(this.envVars);
         this.listener = listener;
         this.exe = exe;

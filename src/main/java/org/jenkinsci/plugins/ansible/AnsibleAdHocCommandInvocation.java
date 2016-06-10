@@ -17,6 +17,7 @@ package org.jenkinsci.plugins.ansible;
 
 import java.io.IOException;
 
+import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -38,13 +39,13 @@ public class AnsibleAdHocCommandInvocation extends AbstractAnsibleInvocation<Ans
     protected AnsibleAdHocCommandInvocation(String exe, AbstractBuild<?, ?> build, BuildListener listener)
             throws IOException, InterruptedException, AnsibleInvocationException
     {
-        super(exe, build, build.getWorkspace(), listener);
+        super(exe, build, build.getWorkspace(), listener, build.getEnvironment(listener));
     }
 
-    public AnsibleAdHocCommandInvocation(String exe, Run<?, ?> build, FilePath ws, TaskListener listener)
+    public AnsibleAdHocCommandInvocation(String exe, Run<?, ?> build, FilePath ws, TaskListener listener, EnvVars envVars)
             throws IOException, InterruptedException, AnsibleInvocationException
     {
-        super(exe, build, ws, listener);
+        super(exe, build, ws, listener, envVars);
     }
 
     public AnsibleAdHocCommandInvocation setHostPattern(String hostPattern) {

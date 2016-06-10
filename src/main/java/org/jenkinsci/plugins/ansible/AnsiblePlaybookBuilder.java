@@ -206,7 +206,7 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
         try {
             CLIRunner runner = new CLIRunner(run, ws, launcher, listener);
             String exe = AnsibleInstallation.getExecutable(ansibleName, AnsibleCommand.ANSIBLE_PLAYBOOK, node, listener, envVars);
-            AnsiblePlaybookInvocation invocation = new AnsiblePlaybookInvocation(exe, run, ws, listener);
+            AnsiblePlaybookInvocation invocation = new AnsiblePlaybookInvocation(exe, run, ws, listener, envVars);
             invocation.setPlaybook(playbook);
             invocation.setInventory(inventory);
             invocation.setLimit(limit);
