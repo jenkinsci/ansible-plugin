@@ -32,6 +32,7 @@ public class AnsibleJobDslExtension extends ContextExtensionPoint {
         adhoc.setSudo(context.isSudo());
         adhoc.setSudoUser(context.getSudoUser());
         adhoc.setUnbufferedOutput(context.isUnbufferedOutput());
+        adhoc.setExtraVars(context.getExtraVars());
 
         return adhoc;
     }
@@ -52,12 +53,12 @@ public class AnsibleJobDslExtension extends ContextExtensionPoint {
         plbook.setSudo(context.isSudo());
         plbook.setSudoUser(context.getSudoUser());
         plbook.setUnbufferedOutput(context.isUnbufferedOutput());
-        
         plbook.setLimit(context.getLimit());
         plbook.setTags(context.getTags());
         plbook.setSkippedTags(context.getSkippedTags());
         plbook.setStartAtTask(context.getStartAtTask());
-        
+        plbook.setExtraVars(context.getExtraVars());
+
         return plbook;
     }
 }
