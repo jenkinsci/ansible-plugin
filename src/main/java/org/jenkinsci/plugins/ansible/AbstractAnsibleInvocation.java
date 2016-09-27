@@ -191,7 +191,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
             }
         } else if (credentials instanceof UsernamePasswordCredentials) {
             args.add("-u").add(credentials.getUsername());
-            args.add("-k");
+            //args.add("-k"); // Not working, this is freezing Jenkins. 
         }
         return args;
     }
