@@ -147,11 +147,27 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     protected ArgumentListBuilder appendSudo(ArgumentListBuilder args) {
         if (sudo) {
             args.add("-s");
-            if (StringUtils.isNotBlank(sudoUser)) {
-                args.add("-U").add(envVars.expand(sudoUser));
-            }
+            addOptionAndValue(args, "-U", sudoUser);
         }
         return args;
+    }
+
+    protected void addOptionAndValue(final ArgumentListBuilder args, final String option, final String value) {
+        if (StringUtils.isNotBlank(value)) {
+            String expandedValue = envVars.expand(value);
+            if (StringUtils.isNotBlank(expandedValue)) {
+                args.add(option).add(expandedValue);
+            }
+        }
+    }
+
+    protected void addKeyValuePair(final ArgumentListBuilder args, final String key, final String value) {
+        if (StringUtils.isNotBlank(value)) {
+            String expandedValue = envVars.expand(value);
+            if (StringUtils.isNotBlank(expandedValue)) {
+                args.addKeyValuePair("", key, expandedValue, false);
+            }
+        }
     }
 
     public T setCredentials(StandardUsernameCredentials credentials) {

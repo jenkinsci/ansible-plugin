@@ -18,13 +18,11 @@ package org.jenkinsci.plugins.ansible;
 import java.io.IOException;
 
 import hudson.FilePath;
-import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Invoke the ansible command
@@ -62,10 +60,8 @@ public class AnsibleAdHocCommandInvocation extends AbstractAnsibleInvocation<Ans
         return this;
     }
 
-    private ArgumentListBuilder appendHModule(ArgumentListBuilder args) {
-        if (StringUtils.isNotBlank(module)) {
-            args.add("-m").add(envVars.expand(module));
-        }
+    private ArgumentListBuilder appendModule(ArgumentListBuilder args) {
+        addOptionAndValue(args, "-m", module);
         return args;
     }
 
@@ -75,9 +71,7 @@ public class AnsibleAdHocCommandInvocation extends AbstractAnsibleInvocation<Ans
     }
 
     public ArgumentListBuilder appendModuleCommand(ArgumentListBuilder args) {
-        if (StringUtils.isNotBlank(command)) {
-            args.add("-a").add(envVars.expand(command));
-        }
+        addOptionAndValue(args, "-a", command);
         return args;
     }
 
@@ -90,7 +84,7 @@ public class AnsibleAdHocCommandInvocation extends AbstractAnsibleInvocation<Ans
         appendExecutable(args);
         appendHostPattern(args);
         appendInventory(args);
-        appendHModule(args);
+        appendModule(args);
         appendModuleCommand(args);
         appendSudo(args);
         appendForks(args);

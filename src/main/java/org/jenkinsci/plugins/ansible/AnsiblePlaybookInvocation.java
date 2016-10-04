@@ -18,13 +18,11 @@ package org.jenkinsci.plugins.ansible;
 import java.io.IOException;
 
 import hudson.FilePath;
-import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Invoke the ansible-playbook command
@@ -65,9 +63,7 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
     }
 
     private ArgumentListBuilder appendLimit(ArgumentListBuilder args) {
-        if (StringUtils.isNotBlank(limit)) {
-            args.add("-l").add(envVars.expand(limit));
-        }
+        addOptionAndValue(args, "-l", limit);
         return args;
     }
 
@@ -77,9 +73,7 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
     }
 
     private ArgumentListBuilder appendTags(ArgumentListBuilder args) {
-        if (StringUtils.isNotBlank(tags)) {
-            args.add("-t").add(envVars.expand(tags));
-        }
+        addOptionAndValue(args, "-t", tags);
         return args;
     }
 
@@ -89,9 +83,7 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
     }
 
     private ArgumentListBuilder appendSkippedTags(ArgumentListBuilder args) {
-        if (StringUtils.isNotBlank(skippedTags)) {
-            args.addKeyValuePair("", "--skip-tags", envVars.expand(skippedTags), false);
-        }
+        addKeyValuePair(args, "--skip-tags", skippedTags);
         return args;
     }
 
@@ -101,9 +93,7 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
     }
 
     private ArgumentListBuilder appendStartTask(ArgumentListBuilder args) {
-        if (StringUtils.isNotBlank(startAtTask)) {
-            args.addKeyValuePair("", "--start-at-task", envVars.expand(startAtTask), false);
-        }
+        addKeyValuePair(args, "--start-at-task", startAtTask);
         return args;
     }
 
