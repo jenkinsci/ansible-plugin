@@ -15,10 +15,10 @@
  */
 package org.jenkinsci.plugins.ansible;
 
+import hudson.EnvVars;
 import java.io.IOException;
 
 import hudson.FilePath;
-import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Run;
@@ -37,16 +37,16 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
     private String skippedTags;
     private String startAtTask;
 
-    protected AnsiblePlaybookInvocation(String exe, AbstractBuild<?, ?> build, BuildListener listener)
+    protected AnsiblePlaybookInvocation(String exe, AbstractBuild<?, ?> build, BuildListener listener, EnvVars envVars)
             throws IOException, InterruptedException, AnsibleInvocationException
     {
-        this(exe, build, build.getWorkspace(), listener);
+        this(exe, build, build.getWorkspace(), listener, envVars);
     }
 
-    public AnsiblePlaybookInvocation(String exe, Run<?, ?> build, FilePath ws, TaskListener listener)
+    public AnsiblePlaybookInvocation(String exe, Run<?, ?> build, FilePath ws, TaskListener listener, EnvVars envVars)
             throws IOException, InterruptedException, AnsibleInvocationException
     {
-        super(exe, build, ws, listener);
+        super(exe, build, ws, listener,envVars);
     }
 
     public AnsiblePlaybookInvocation setPlaybook(String playbook) {
