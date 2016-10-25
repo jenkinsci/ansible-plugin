@@ -16,11 +16,9 @@
 package org.jenkinsci.plugins.ansible;
 
 import java.io.IOException;
-import java.util.Map;
 
 import hudson.EnvVars;
 import hudson.FilePath;
-import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Run;

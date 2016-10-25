@@ -21,7 +21,12 @@ import java.util.List;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
-import hudson.*;
+import hudson.AbortException;
+import hudson.EnvVars;
+import hudson.Extension;
+import hudson.FilePath;
+import hudson.Launcher;
+import hudson.Util;
 import hudson.model.Computer;
 import hudson.model.Run;
 import hudson.model.TaskListener;
