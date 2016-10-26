@@ -70,7 +70,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     private Map extraVars = null;
     private String extras = null;
     private boolean colorized = false;
-    private Integer forks = 5;
+    private int forks = 5;
 
     @DataBoundConstructor
     public AnsiblePlaybookStep(String playbook) {
@@ -138,7 +138,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     }
 
     @DataBoundSetter
-    public void setForks(Integer forks) {
+    public void setForks(int forks) {
         this.forks = forks;
     }
 
@@ -194,7 +194,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         return colorized;
     }
 
-    public Integer getForks() {
+    public int getForks() {
         return forks;
     }
 
