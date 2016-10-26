@@ -22,6 +22,7 @@ import java.util.List;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import hudson.AbortException;
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -164,8 +165,9 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
             if (computer == null) {
                 throw new AbortException("The ansible playbook build step requires to be launched on a node");
             }
-            String exe = AnsibleInstallation.getExecutable(ansibleName, AnsibleCommand.ANSIBLE, computer.getNode(), listener, run.getEnvironment(listener));
-            AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation(exe, run, ws, listener);
+            EnvVars envVars = run.getEnvironment(listener);
+            String exe = AnsibleInstallation.getExecutable(ansibleName, AnsibleCommand.ANSIBLE, computer.getNode(), listener, envVars);
+            AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation(exe, run, ws, listener, envVars);
             invocation.setHostPattern(hostPattern);
             invocation.setInventory(inventory);
             invocation.setModule(module);
