@@ -30,6 +30,9 @@
     <f:entry field="startAtTask" title="Task to start at">
         <f:textbox/>
     </f:entry>
+    <f:entry field="forks" title="Number of parallel processes to use">
+        <f:textbox/>
+    </f:entry>
     <f:entry field="colorized" title="${%Colorized output}">
       <f:checkbox default="false" />
     </f:entry>

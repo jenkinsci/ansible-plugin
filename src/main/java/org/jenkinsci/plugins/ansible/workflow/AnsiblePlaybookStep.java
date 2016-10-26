@@ -70,6 +70,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     private Map extraVars = null;
     private String extras = null;
     private boolean colorized = false;
+    private int forks = 5;
 
     @DataBoundConstructor
     public AnsiblePlaybookStep(String playbook) {
@@ -136,6 +137,11 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         this.colorized = colorized;
     }
 
+    @DataBoundSetter
+    public void setForks(int forks) {
+        this.forks = forks;
+    }
+
     public String getInstallation() {
         return installation;
     }
@@ -186,6 +192,10 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
 
     public boolean isColorized() {
         return colorized;
+    }
+
+    public int getForks() {
+        return forks;
     }
 
     @Extension
@@ -277,7 +287,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             builder.setSudo(step.isSudo());
             builder.setSudoUser(step.getSudoUser());
             builder.setCredentialsId(step.getCredentialsId(), true);
-            builder.setForks(5);
+            builder.setForks(step.getForks());
             builder.setLimit(step.getLimit());
             builder.setTags(step.getTags());
             builder.setStartAtTask(step.getStartAtTask());
