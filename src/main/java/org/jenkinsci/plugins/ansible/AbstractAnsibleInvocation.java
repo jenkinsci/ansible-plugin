@@ -157,6 +157,8 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
             String expandedValue = envVars.expand(value);
             if (StringUtils.isNotBlank(expandedValue)) {
                 args.add(option).add(expandedValue);
+            } else {
+                listener.getLogger().println("[WARNING] parameter " + value + " is empty. Omitting option '" + option + "'.");
             }
         }
     }
@@ -166,6 +168,8 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
             String expandedValue = envVars.expand(value);
             if (StringUtils.isNotBlank(expandedValue)) {
                 args.addKeyValuePair("", key, expandedValue, false);
+            } else {
+                listener.getLogger().println("[WARNING] parameter " + value + " is empty. Omitting option '" + key + "'.");
             }
         }
     }
