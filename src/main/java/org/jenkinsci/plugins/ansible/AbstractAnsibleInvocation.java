@@ -198,7 +198,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
         if (credentials instanceof SSHUserPrivateKey) {
             SSHUserPrivateKey privateKeyCredentials = (SSHUserPrivateKey)credentials;
             key = Utils.createSshKeyFile(key, ws, privateKeyCredentials, copyCredentialsInWorkspace);
-            args.add("--private-key").add(key);
+            args.add("--private-key").add(key.toString().replace("%", "%%"));
             args.add("-u").add(privateKeyCredentials.getUsername());
             if (privateKeyCredentials.getPassphrase() != null) {
                 script = Utils.createSshAskPassFile(script, ws, privateKeyCredentials, copyCredentialsInWorkspace);
