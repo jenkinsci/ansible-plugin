@@ -94,12 +94,14 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     }
 
     public T setForks(int forks) {
-        this.forks = forks;
+        this.forks = Math.max(forks, 0);
         return (T) this;
     }
 
     public ArgumentListBuilder appendForks(ArgumentListBuilder args) {
-        args.add("-f").add(forks);
+        if (forks > 0) {
+            args.add("-f").add(forks);
+        }
         return args;
     }
 

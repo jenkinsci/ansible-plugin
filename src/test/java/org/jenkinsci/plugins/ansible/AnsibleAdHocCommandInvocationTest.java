@@ -56,6 +56,28 @@ public class AnsibleAdHocCommandInvocationTest {
     }
 
     @Test
+    public void should_generate_no_forks() throws Exception {
+        // Given
+        Inventory inventory = new InventoryPath("/tmp/hosts");
+        BuildListener listener = mock(BuildListener.class);
+        CLIRunner runner = mock(CLIRunner.class);
+        AbstractBuild<?,?> build = mock(AbstractBuild.class);
+        when(build.getEnvironment(any(TaskListener.class))).thenReturn(new EnvVars());
+        AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
+        invocation.setHostPattern("localhost");
+        invocation.setInventory(inventory);
+        invocation.setModule("ping");
+        invocation.setForks(0);
+        // When
+        invocation.execute(runner);
+        // Then
+        ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
+        verify(runner).execute(argument.capture(), anyMap());
+        assertThat(argument.getValue().toString())
+                .isEqualTo("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping");
+    }
+
+    @Test
     public void should_generate_simple_invocation_with_env() throws Exception {
         // Given
         Inventory inventory = new InventoryPath("/tmp/hosts");

@@ -70,7 +70,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     private Map extraVars = null;
     private String extras = null;
     private boolean colorized = false;
-    private int forks = 5;
+    private int forks = 0;
 
     @DataBoundConstructor
     public AnsiblePlaybookStep(String playbook) {

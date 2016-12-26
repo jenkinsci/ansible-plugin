@@ -66,7 +66,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
 
     public String sudoUser = "root";
 
-    public int forks = 5;
+    public int forks = 0;
 
     public boolean unbufferedOutput = true;
 
