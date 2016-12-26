@@ -18,7 +18,6 @@ package org.jenkinsci.plugins.ansible;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
-import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 import org.apache.commons.lang.StringUtils;

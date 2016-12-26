@@ -19,7 +19,6 @@ import java.io.IOException;
 
 import hudson.EnvVars;
 import hudson.FilePath;
-import hudson.model.BuildListener;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.TaskListener;

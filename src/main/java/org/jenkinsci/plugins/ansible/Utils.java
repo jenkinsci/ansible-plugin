@@ -15,13 +15,13 @@
  */
 package org.jenkinsci.plugins.ansible;
 
+import java.io.IOException;
+import java.util.List;
+
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import hudson.util.Secret;
-
-import java.io.IOException;
-import java.util.List;
 
 class Utils
 {

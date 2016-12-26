@@ -15,9 +15,9 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;

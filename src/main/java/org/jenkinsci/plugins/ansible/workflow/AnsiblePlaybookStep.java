@@ -15,6 +15,13 @@
  */
 package org.jenkinsci.plugins.ansible.workflow;
 
+import static com.cloudbees.plugins.credentials.CredentialsMatchers.anyOf;
+import static com.cloudbees.plugins.credentials.CredentialsMatchers.instanceOf;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
@@ -44,13 +51,6 @@ import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static com.cloudbees.plugins.credentials.CredentialsMatchers.anyOf;
-import static com.cloudbees.plugins.credentials.CredentialsMatchers.instanceOf;
 
 /**
  * The Ansible playbook invocation step for the Jenkins workflow plugin.
