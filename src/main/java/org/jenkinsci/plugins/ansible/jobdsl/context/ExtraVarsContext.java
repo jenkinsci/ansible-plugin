@@ -1,10 +1,10 @@
 package org.jenkinsci.plugins.ansible.jobdsl.context;
 
-import javaposse.jobdsl.dsl.Context;
-import org.jenkinsci.plugins.ansible.ExtraVar;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import javaposse.jobdsl.dsl.Context;
+import org.jenkinsci.plugins.ansible.ExtraVar;
 
 /**
  * @author pawbur (Pawel Burchard)

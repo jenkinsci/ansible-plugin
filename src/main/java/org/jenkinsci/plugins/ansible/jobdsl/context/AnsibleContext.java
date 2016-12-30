@@ -1,13 +1,13 @@
 package org.jenkinsci.plugins.ansible.jobdsl.context;
 
+import java.util.List;
+
 import javaposse.jobdsl.dsl.Context;
 import javaposse.jobdsl.plugin.ContextExtensionPoint;
+import org.jenkinsci.plugins.ansible.ExtraVar;
 import org.jenkinsci.plugins.ansible.Inventory;
 import org.jenkinsci.plugins.ansible.InventoryContent;
 import org.jenkinsci.plugins.ansible.InventoryPath;
-import org.jenkinsci.plugins.ansible.ExtraVar;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
