@@ -5,6 +5,11 @@ import org.jenkinsci.plugins.ansible.AnsibleAdHocCommandBuilder;
 import org.jenkinsci.plugins.ansible.AnsiblePlaybookBuilder;
 import org.jenkinsci.plugins.ansible.InventoryContent;
 import org.jenkinsci.plugins.ansible.InventoryPath;
+import org.jenkinsci.plugins.ansible.ExtraVar;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -49,6 +54,10 @@ public class JobDslIntegrationTest {
         assertThat("colorizedOutput", step.colorizedOutput, is(true));
         assertThat("hostKeyChecking", step.hostKeyChecking, is(false));
         assertThat("additionalParameters", step.additionalParameters, is("params"));
+        assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
+        assertThat("extraVar.value", step.extraVars.get(0).getValue(), is("value"));
+        assertThat("extraVar.hidden", step.extraVars.get(0).isHidden(), is(true));
+
     }
 
     @Test

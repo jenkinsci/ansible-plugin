@@ -15,6 +15,9 @@ freeStyleJob('ansible') {
             colorizedOutput(true)
             hostKeyChecking(false)
             additionalParameters('params')
+            extraVars {
+                extraVar ("key","value",true)
+            }
         }
     }
 }

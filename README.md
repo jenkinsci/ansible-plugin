@@ -27,6 +27,9 @@ steps {
         colorizedOutput(boolean colorizedOutput = false)
         hostKeyChecking(boolean hostKeyChecking = false)
         additionalParameters(String params)
+        extraVars {
+            extraVar(String key, String value, boolean hidden)
+        }
     }
         
     ansibleAdHoc(String module, String command) {
@@ -42,6 +45,9 @@ steps {
         colorizedOutput(boolean colorizedOutput = false)
         hostKeyChecking(boolean hostKeyChecking = false)
         additionalParameters(String params)
+        extraVars {
+            extraVar(String key, String value, boolean hidden)
+        }
     }
 }
 ```
@@ -57,6 +63,10 @@ steps {
         credentialsId('credsid')
         sudo(true)
         sudoUser("user")
+        extraVars {
+            extraVar("key1", "value1", false)
+            extraVar("key2", "value2", true)
+        }
     }
 }
 ```
