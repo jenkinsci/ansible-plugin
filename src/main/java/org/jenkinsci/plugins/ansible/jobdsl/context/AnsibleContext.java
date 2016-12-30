@@ -1,9 +1,14 @@
 package org.jenkinsci.plugins.ansible.jobdsl.context;
 
+import java.util.List;
+
 import javaposse.jobdsl.dsl.Context;
+import javaposse.jobdsl.plugin.ContextExtensionPoint;
+import org.jenkinsci.plugins.ansible.ExtraVar;
 import org.jenkinsci.plugins.ansible.Inventory;
 import org.jenkinsci.plugins.ansible.InventoryContent;
 import org.jenkinsci.plugins.ansible.InventoryPath;
+
 
 /**
  * @author lanwen (Merkushev Kirill)
@@ -19,9 +24,10 @@ public class AnsibleContext implements Context {
     private boolean colorizedOutput = false;
     private boolean hostKeyChecking = false;
     private String additionalParameters;
+    ExtraVarsContext extraVarsContext = new ExtraVarsContext();
 
     /* adhoc-only */
-    
+
     private String hostPattern;
 
     /* playbook-only */
@@ -38,7 +44,7 @@ public class AnsibleContext implements Context {
     public void inventoryContent(String content) {
         this.inventory = new InventoryContent(content, false);
     }
-    
+
     public void inventoryPath(String path) {
         this.inventory = new InventoryPath(path);
     }
@@ -99,6 +105,10 @@ public class AnsibleContext implements Context {
         this.startAtTask = startAtTask;
     }
 
+    public void extraVars(Runnable closure) {
+        ContextExtensionPoint.executeInContext(closure, extraVarsContext);
+    }
+
     public String getAnsibleName() {
         return ansibleName;
     }
@@ -157,5 +167,9 @@ public class AnsibleContext implements Context {
 
     public String getStartAtTask() {
         return startAtTask;
+    }
+
+    public List<ExtraVar> getExtraVars() {
+        return extraVarsContext.getExtraVars();
     }
 }

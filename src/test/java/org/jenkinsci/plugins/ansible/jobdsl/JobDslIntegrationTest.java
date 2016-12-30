@@ -1,5 +1,10 @@
 package org.jenkinsci.plugins.ansible.jobdsl;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import org.hamcrest.Matcher;
 import org.jenkinsci.plugins.ansible.AnsibleAdHocCommandBuilder;
 import org.jenkinsci.plugins.ansible.AnsiblePlaybookBuilder;
@@ -9,11 +14,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.jvnet.hudson.test.JenkinsRule;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * @author lanwen (Merkushev Kirill)
@@ -49,6 +49,10 @@ public class JobDslIntegrationTest {
         assertThat("colorizedOutput", step.colorizedOutput, is(true));
         assertThat("hostKeyChecking", step.hostKeyChecking, is(false));
         assertThat("additionalParameters", step.additionalParameters, is("params"));
+        assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
+        assertThat("extraVar.value", step.extraVars.get(0).getValue(), is("value"));
+        assertThat("extraVar.hidden", step.extraVars.get(0).isHidden(), is(true));
+
     }
 
     @Test
