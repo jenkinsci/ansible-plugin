@@ -44,6 +44,7 @@ import org.jenkinsci.plugins.ansible.AnsiblePlaybookBuilder;
 import org.jenkinsci.plugins.ansible.ExtraVar;
 import org.jenkinsci.plugins.ansible.Inventory;
 import org.jenkinsci.plugins.ansible.InventoryPath;
+import org.jenkinsci.plugins.ansible.InventoryContent;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
@@ -59,6 +60,8 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
 
     private final String playbook;
     private String inventory;
+    private String inventoryContent;
+    private boolean dynamicInventory = false;
     private String installation;
     private String credentialsId;
     private boolean sudo = false;
@@ -80,6 +83,16 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     @DataBoundSetter
     public void setInventory(String inventory) {
         this.inventory = Util.fixEmptyAndTrim(inventory);
+    }
+
+    @DataBoundSetter
+    public void setInventoryContent(String inventoryContent) {
+        this.inventoryContent = Util.fixEmptyAndTrim(inventoryContent);
+    }
+
+    @DataBoundSetter
+    public void setDynamicInventory(boolean dynamicInventory) {
+        this.dynamicInventory = dynamicInventory;
     }
 
     @DataBoundSetter
@@ -152,6 +165,14 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
 
     public String getInventory() {
         return inventory;
+    }
+
+    public String getInventoryContent() {
+        return inventoryContent;
+    }
+
+    public boolean isDynamicInventory() {
+        return dynamicInventory;
     }
 
     public String getCredentialsId() {
@@ -281,7 +302,15 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
 
         @Override
         protected Void run() throws Exception {
-            Inventory inventory = StringUtils.isNotBlank(step.getInventory()) ? new InventoryPath(step.getInventory()) : null;
+            Inventory inventory = null;
+            if (StringUtils.isNotBlank(step.getInventory())) {
+                inventory = new InventoryPath(step.getInventory());
+            } else if (StringUtils.isNotBlank(step.getInventoryContent())) {
+                inventory = new InventoryContent(
+                        step.getInventoryContent(),
+                        step.isDynamicInventory()
+                );
+            }
             AnsiblePlaybookBuilder builder = new AnsiblePlaybookBuilder(step.getPlaybook(), inventory);
             builder.setAnsibleName(step.getInstallation());
             builder.setSudo(step.isSudo());
