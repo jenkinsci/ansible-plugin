@@ -61,7 +61,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     private final String playbook;
     private String inventory;
     private String inventoryContent;
-    private boolean inventoryContentDynamic = false;
+    private boolean dynamicInventory = false;
     private String installation;
     private String credentialsId;
     private boolean sudo = false;
@@ -91,8 +91,8 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     }
 
     @DataBoundSetter
-    public void setInventoryContentDynamic(boolean inventoryContentDynamic) {
-        this.inventoryContentDynamic = inventoryContentDynamic;
+    public void setDynamicInventory(boolean dynamicInventory) {
+        this.dynamicInventory = dynamicInventory;
     }
 
     @DataBoundSetter
@@ -171,8 +171,8 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         return inventoryContent;
     }
 
-    public boolean isInventoryContentDynamic() {
-        return inventoryContentDynamic;
+    public boolean isDynamicInventory() {
+        return dynamicInventory;
     }
 
     public String getCredentialsId() {
@@ -303,15 +303,14 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         @Override
         protected Void run() throws Exception {
             Inventory inventory = null;
-            if(StringUtils.isNotBlank(step.getInventory())) {
+            if (StringUtils.isNotBlank(step.getInventory())) {
                 inventory = new InventoryPath(step.getInventory());
-            } else if(StringUtils.isNotBlank(step.getInventoryContent())) {
+            } else if (StringUtils.isNotBlank(step.getInventoryContent())) {
                 inventory = new InventoryContent(
                         step.getInventoryContent(),
-                        step.isInventoryContentDynamic()
+                        step.isDynamicInventory()
                 );
             }
-
             AnsiblePlaybookBuilder builder = new AnsiblePlaybookBuilder(step.getPlaybook(), inventory);
             builder.setAnsibleName(step.getInstallation());
             builder.setSudo(step.isSudo());
