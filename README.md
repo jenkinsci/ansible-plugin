@@ -9,7 +9,7 @@ Jenkins Wiki page: https://wiki.jenkins-ci.org/display/JENKINS/Ansible+Plugin
 
 ## Using Jenkins Build and Environment Variables
 
-It is possible to access build and environment variables in ansible playbooks. These variables are injected as environment variables within the ansible process. For example, use this code to access Jenkins ```BUILD_ID``` variable.
+It is possible to access build and environment variables in ansible playbooks. These variables are injected as environment variables within the ansible process. For example, use this code in an ansible playbook to access Jenkins ```BUILD_TAG``` variable.
 
 ```yaml
 ---
