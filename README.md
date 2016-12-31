@@ -7,6 +7,17 @@ Jenkins Wiki page: https://wiki.jenkins-ci.org/display/JENKINS/Ansible+Plugin
 
 [![Build Status](https://jenkins.ci.cloudbees.com/buildStatus/icon?job=plugins/ansible-plugin)](https://jenkins.ci.cloudbees.com/job/plugins/job/ansible-plugin/)
 
+## Using Jenkins Build and Environment Variables
+
+It is possible to access build and environment variables in ansible playbooks. These variables are injected as environment variables within the ansible process. For example, use this code to access Jenkins ```BUILD_ID``` variable.
+
+```yaml
+---
+- hosts: example
+  tasks:
+    - debug: msg="{{ lookup('env','BUILD_TAG') }}"
+```
+
 ## Job DSL support 
 
 ```groovy  
