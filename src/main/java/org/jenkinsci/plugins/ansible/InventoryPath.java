@@ -59,7 +59,7 @@ public class InventoryPath extends Inventory
 
         @Override
         public String getDisplayName() {
-            return "File";
+            return "File or host list";
         }
     }
 
