@@ -30,6 +30,7 @@ import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import com.google.inject.Inject;
 import hudson.*;
 import hudson.model.Computer;
+import hudson.model.Node;
 import hudson.model.Project;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -323,10 +324,11 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             builder.setUnbufferedOutput(true);
             builder.setColorizedOutput(step.isColorized());
             Computer computer = Computer.currentComputer();
-            if (computer == null || computer.getNode() == null) {
+            Node node;
+            if (computer == null || (node = computer.getNode()) == null) {
                 throw new AbortException("The ansible playbook build step requires to be launched on a node");
             }
-            builder.perform(run, computer.getNode(), ws, launcher, listener, envVars);
+            builder.perform(run, node, ws, launcher, listener, envVars);
             return null;
         }
     }
