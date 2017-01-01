@@ -84,7 +84,7 @@ public class AnsibleInstallation extends ToolInstallation
     }
 
     public static AnsibleInstallation[] allInstallations() {
-        AnsibleInstallation.DescriptorImpl ansibleDescriptor = Jenkins.getInstance().getDescriptorByType(AnsibleInstallation.DescriptorImpl.class);
+        AnsibleInstallation.DescriptorImpl ansibleDescriptor = Jenkins.getActiveInstance().getDescriptorByType(AnsibleInstallation.DescriptorImpl.class);
         return ansibleDescriptor.getInstallations();
     }
 
