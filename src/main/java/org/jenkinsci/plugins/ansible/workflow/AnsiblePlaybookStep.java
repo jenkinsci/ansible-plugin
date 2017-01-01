@@ -28,11 +28,7 @@ import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import com.google.inject.Inject;
-import hudson.EnvVars;
-import hudson.Extension;
-import hudson.FilePath;
-import hudson.Launcher;
-import hudson.Util;
+import hudson.*;
 import hudson.model.Computer;
 import hudson.model.Project;
 import hudson.model.Run;
@@ -284,10 +280,10 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
                 return null;
             }
             List<ExtraVar> extraVarList = new ArrayList<ExtraVar>();
-            for (String key: extraVars.keySet()) {
+            for (Map.Entry<String, Object> entry: extraVars.entrySet()) {
                 ExtraVar var = new ExtraVar();
-                var.setKey(key);
-                Object o = extraVars.get(key);
+                var.setKey(entry.getKey());
+                Object o = entry.getValue();
                 if (o instanceof Map) {
                     var.setValue(((Map)o).get("value").toString());
                     var.setHidden((Boolean)((Map)o).get("hidden"));
@@ -326,6 +322,10 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             builder.setHostKeyChecking(false);
             builder.setUnbufferedOutput(true);
             builder.setColorizedOutput(step.isColorized());
+            Computer computer = Computer.currentComputer();
+            if (computer == null || computer.getNode() == null) {
+                throw new AbortException("The ansible playbook build step requires to be launched on a node");
+            }
             builder.perform(run, computer.getNode(), ws, launcher, listener, envVars);
             return null;
         }

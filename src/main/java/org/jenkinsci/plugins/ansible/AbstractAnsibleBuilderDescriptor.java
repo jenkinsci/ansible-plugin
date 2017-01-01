@@ -51,7 +51,7 @@ public abstract class AbstractAnsibleBuilderDescriptor extends BuildStepDescript
     }
 
     public List<InventoryDescriptor> getInventories() {
-        return Jenkins.getInstance().getDescriptorList(Inventory.class);
+        return Jenkins.getActiveInstance().getDescriptorList(Inventory.class);
     }
 
     @Override

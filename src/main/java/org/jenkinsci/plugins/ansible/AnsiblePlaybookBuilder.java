@@ -192,7 +192,7 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
             throws InterruptedException, IOException
     {
         Computer computer = Computer.currentComputer();
-        if (computer == null) {
+        if (computer == null || computer.getNode() == null) {
             throw new AbortException("The ansible playbook build step requires to be launched on a node");
         }
         perform(run, computer.getNode(), ws, launcher, listener, run.getEnvironment(listener));
