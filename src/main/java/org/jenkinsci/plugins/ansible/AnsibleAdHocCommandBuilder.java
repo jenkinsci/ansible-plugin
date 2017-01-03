@@ -163,7 +163,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
             CLIRunner runner = new CLIRunner(run, ws, launcher, listener);
             Computer computer = Computer.currentComputer();
             if (computer == null) {
-                throw new AbortException("The ansible playbook build step requires to be launched on a node");
+                throw new AbortException("The ansible ad-hoc command build step requires to be launched on a node");
             }
             EnvVars envVars = run.getEnvironment(listener);
             String exe = AnsibleInstallation.getExecutable(ansibleName, AnsibleCommand.ANSIBLE, computer.getNode(), listener, envVars);

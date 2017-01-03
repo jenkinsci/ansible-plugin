@@ -323,7 +323,6 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             builder.setHostKeyChecking(false);
             builder.setUnbufferedOutput(true);
             builder.setColorizedOutput(step.isColorized());
-            Computer computer = Computer.currentComputer();
             Node node;
             if (computer == null || (node = computer.getNode()) == null) {
                 throw new AbortException("The ansible playbook build step requires to be launched on a node");
