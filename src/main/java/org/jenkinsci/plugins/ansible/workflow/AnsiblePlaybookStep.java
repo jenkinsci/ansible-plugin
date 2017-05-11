@@ -71,6 +71,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     private String extras = null;
     private boolean colorized = false;
     private int forks = 0;
+    private boolean hostKeyChecking = false;
 
     @DataBoundConstructor
     public AnsiblePlaybookStep(String playbook) {
@@ -152,6 +153,11 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         this.forks = forks;
     }
 
+    @DataBoundSetter
+    public void setHostKeyChecking(boolean hostKeyChecking) {
+        this.hostKeyChecking = hostKeyChecking;
+    }
+
     public String getInstallation() {
         return installation;
     }
@@ -208,12 +214,16 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         return extras;
     }
 
-    public boolean isColorized() {
-        return colorized;
+    public boolean isHostKeyChecking() {
+        return hostKeyChecking;
     }
 
     public int getForks() {
         return forks;
+    }
+
+    public boolean isColorized() {
+        return colorized;
     }
 
     @Extension
@@ -320,7 +330,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             builder.setSkippedTags(step.getSkippedTags());
             builder.setExtraVars(convertExtraVars(step.extraVars));
             builder.setAdditionalParameters(step.getExtras());
-            builder.setHostKeyChecking(false);
+            builder.setHostKeyChecking(step.isHostKeyChecking());
             builder.setUnbufferedOutput(true);
             builder.setColorizedOutput(step.isColorized());
             Node node;
