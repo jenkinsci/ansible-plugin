@@ -111,7 +111,8 @@ node {
         extraVars: [
             login: 'mylogin',
             secret_key: [value: 'g4dfKWENpeF6pY05', hidden: true]
-        ])
+        ]
+    )
 }
 ```
 
@@ -127,7 +128,8 @@ node {
             playbook: 'path/to/playbook.yml',
             inventory: 'path/to/inventory.ini', 
             credentialsId: 'sample-ssh-key',
-            colorized: true) 
+            colorized: true
+        ) 
     }
 }
 ```
