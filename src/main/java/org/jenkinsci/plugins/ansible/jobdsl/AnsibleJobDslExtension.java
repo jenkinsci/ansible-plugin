@@ -29,6 +29,8 @@ public class AnsibleJobDslExtension extends ContextExtensionPoint {
         adhoc.setColorizedOutput(context.isColorizedOutput());
         adhoc.setForks(context.getForks());
         adhoc.setHostKeyChecking(context.isHostKeyChecking());
+        adhoc.setBecome(context.isBecome());
+        adhoc.setBecomeUser(context.getBecomeUser());
         adhoc.setSudo(context.isSudo());
         adhoc.setSudoUser(context.getSudoUser());
         adhoc.setUnbufferedOutput(context.isUnbufferedOutput());
@@ -50,6 +52,8 @@ public class AnsibleJobDslExtension extends ContextExtensionPoint {
         plbook.setColorizedOutput(context.isColorizedOutput());
         plbook.setForks(context.getForks());
         plbook.setHostKeyChecking(context.isHostKeyChecking());
+        plbook.setBecome(context.isBecome());
+        plbook.setBecomeUser(context.getBecomeUser());
         plbook.setSudo(context.isSudo());
         plbook.setSudoUser(context.getSudoUser());
         plbook.setUnbufferedOutput(context.isUnbufferedOutput());

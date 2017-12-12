@@ -20,6 +20,7 @@ import org.jvnet.hudson.test.JenkinsRule;
  */
 public class JobDslIntegrationTest {
     public static final String ANSIBLE_DSL_GROOVY_PLAYBOOK = "jobdsl/playbook.groovy";
+    public static final String ANSIBLE_DSL_GROOVY_PLAYBOOK_LEGACY = "jobdsl/legacyPlaybook.groovy";
     public static final String ANSIBLE_DSL_GROOVY_ADHOC = "jobdsl/adhoc.groovy";
 
     public JenkinsRule jenkins = new JenkinsRule();
@@ -42,6 +43,37 @@ public class JobDslIntegrationTest {
         assertThat("skippedTags", step.skippedTags, is("three"));
         assertThat("startAtTask", step.startAtTask, is("task"));
         assertThat("credentialsId", step.credentialsId, is("credsid"));
+        assertThat("become", step.become, is(true));
+        assertThat("becomeUser", step.becomeUser, is("user"));
+        assertThat("sudo", step.sudo, is(false));
+        assertThat("sudoUser", step.sudoUser, is("root"));
+        assertThat("forks", step.forks, is(6));
+        assertThat("unbufferedOutput", step.unbufferedOutput, is(false));
+        assertThat("colorizedOutput", step.colorizedOutput, is(true));
+        assertThat("hostKeyChecking", step.hostKeyChecking, is(false));
+        assertThat("additionalParameters", step.additionalParameters, is("params"));
+        assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
+        assertThat("extraVar.value", step.extraVars.get(0).getValue(), is("value"));
+        assertThat("extraVar.hidden", step.extraVars.get(0).isHidden(), is(true));
+
+    }
+
+    @Test
+    @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_PLAYBOOK_LEGACY)
+    public void shouldCreateJobWithLegacyPlaybookDsl() throws Exception {
+        AnsiblePlaybookBuilder step = dsl.getGeneratedJob().getBuildersList().get(AnsiblePlaybookBuilder.class);
+        assertThat("Should add playbook builder", step, notNullValue());
+
+        assertThat("playbook", step.playbook, is("path/playbook.yml"));
+        assertThat("inventory", step.inventory, (Matcher) isA(InventoryPath.class));
+        assertThat("ansibleName", step.ansibleName, is("1.9.4"));
+        assertThat("limit", step.limit, is("retry.limit"));
+        assertThat("tags", step.tags, is("one,two"));
+        assertThat("skippedTags", step.skippedTags, is("three"));
+        assertThat("startAtTask", step.startAtTask, is("task"));
+        assertThat("credentialsId", step.credentialsId, is("credsid"));
+        assertThat("become", step.become, is(false));
+        assertThat("becomeUser", step.becomeUser, is("root"));
         assertThat("sudo", step.sudo, is(true));
         assertThat("sudoUser", step.sudoUser, is("user"));
         assertThat("forks", step.forks, is(6));
@@ -67,8 +99,8 @@ public class JobDslIntegrationTest {
 
         assertThat("credentialsId", step.credentialsId, is("credsid"));
         assertThat("hostPattern", step.hostPattern, is("pattern"));
-        assertThat("sudo", step.sudo, is(false));
-        assertThat("sudoUser", step.sudoUser, is("root"));
+        assertThat("become", step.become, is(false));
+        assertThat("becomeUser", step.becomeUser, is("root"));
         assertThat("forks", step.forks, is(5));
         assertThat("unbufferedOutput", step.unbufferedOutput, is(true));
         assertThat("colorizedOutput", step.colorizedOutput, is(false));

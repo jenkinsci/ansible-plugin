@@ -61,6 +61,8 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     private boolean dynamicInventory = false;
     private String installation;
     private String credentialsId;
+    private boolean become = false;
+    private String becomeUser = "root";
     private boolean sudo = false;
     private String sudoUser = "root";
     private String limit = null;
@@ -96,6 +98,16 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     @DataBoundSetter
     public void setCredentialsId(String credentialsId) {
         this.credentialsId = Util.fixEmptyAndTrim(credentialsId);
+    }
+
+    @DataBoundSetter
+    public void setBecome(boolean become) {
+        this.become = become;
+    }
+
+    @DataBoundSetter
+    public void setBecomeUser(String becomeUser) {
+        this.becomeUser = Util.fixEmptyAndTrim(becomeUser);
     }
 
     @DataBoundSetter
@@ -180,6 +192,14 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
 
     public String getCredentialsId() {
         return credentialsId;
+    }
+
+    public boolean isBecome() {
+        return become;
+    }
+
+    public String getBecomeUser() {
+        return becomeUser;
     }
 
     public boolean isSudo() {
@@ -320,6 +340,8 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             }
             AnsiblePlaybookBuilder builder = new AnsiblePlaybookBuilder(step.getPlaybook(), inventory);
             builder.setAnsibleName(step.getInstallation());
+            builder.setBecome(step.isBecome());
+            builder.setBecomeUser(step.getBecomeUser());
             builder.setSudo(step.isSudo());
             builder.setSudoUser(step.getSudoUser());
             builder.setCredentialsId(step.getCredentialsId(), true);

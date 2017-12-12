@@ -45,6 +45,8 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
 
     protected String exe;
     protected int forks;
+    protected boolean become;
+    protected String becomeUser;
     protected boolean sudo;
     protected String sudoUser;
     protected StandardUsernameCredentials credentials;
@@ -137,6 +139,20 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
 
     public ArgumentListBuilder appendAdditionalParameters(ArgumentListBuilder args) {
         args.addTokenized(envVars.expand(additionalParameters));
+        return args;
+    }
+
+    public T setBecome(boolean become, String becomeUser) {
+        this.become = become;
+        this.becomeUser = becomeUser;
+        return (T) this;
+    }
+
+    protected ArgumentListBuilder appendBecome(ArgumentListBuilder args) {
+        if (become) {
+            args.add("-b");
+            addOptionAndValue(args, "--become-user", becomeUser);
+        }
         return args;
     }
 

@@ -62,6 +62,10 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
 
     public final String command;
 
+    public boolean become = false;
+
+    public String becomeUser = "root";
+
     public boolean sudo = false;
 
     public String sudoUser = "root";
@@ -80,9 +84,9 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
 
     @Deprecated
     public AnsibleAdHocCommandBuilder(String ansibleName, String hostPattern, Inventory inventory, String module,
-                                      String command, String credentialsId, boolean sudo, String sudoUser, int forks,
-                                      boolean unbufferedOutput, boolean colorizedOutput, boolean hostKeyChecking,
-                                      String additionalParameters)
+                                      String command, String credentialsId, boolean become,  String becomeUser, 
+                                      boolean sudo, String sudoUser, int forks, boolean unbufferedOutput, 
+                                      boolean colorizedOutput, boolean hostKeyChecking, String additionalParameters)
     {
         this.ansibleName = ansibleName;
         this.hostPattern = hostPattern;
@@ -90,6 +94,8 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
         this.module = module;
         this.command = command;
         this.credentialsId = credentialsId;
+        this.become = become;
+        this.becomeUser = becomeUser;
         this.sudo = sudo;
         this.sudoUser = sudoUser;
         this.forks = forks;
@@ -115,6 +121,16 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
     @DataBoundSetter
     public void setCredentialsId(String credentialsId) {
         this.credentialsId = credentialsId;
+    }
+
+    @DataBoundSetter
+    public void setBecome(boolean become) {
+        this.become = become;
+    }
+
+    @DataBoundSetter
+    public void setBecomeUser(String becomeUser) {
+        this.becomeUser = becomeUser;
     }
 
     @DataBoundSetter
@@ -172,6 +188,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
             invocation.setInventory(inventory);
             invocation.setModule(module);
             invocation.setModuleCommand(command);
+            invocation.setBecome(become, becomeUser);
             invocation.setSudo(sudo, sudoUser);
             invocation.setForks(forks);
             invocation.setCredentials(StringUtils.isNotBlank(credentialsId) ?

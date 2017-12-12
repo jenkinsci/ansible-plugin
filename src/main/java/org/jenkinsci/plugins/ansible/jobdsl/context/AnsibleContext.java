@@ -17,6 +17,8 @@ public class AnsibleContext implements Context {
     private Inventory inventory;
     private String ansibleName;
     private String credentialsId;
+    private boolean become = false;
+    private String becomeUser = "root";
     private boolean sudo = false;
     private String sudoUser = "root";
     private int forks = 5;
@@ -55,6 +57,14 @@ public class AnsibleContext implements Context {
 
     public void credentialsId(String credentialsId) {
         this.credentialsId = credentialsId;
+    }
+
+    public void become(boolean become) {
+        this.become = become;
+    }
+
+    public void becomeUser(String becomeUser) {
+        this.becomeUser = becomeUser;
     }
 
     public void sudo(boolean sudo) {
@@ -119,6 +129,14 @@ public class AnsibleContext implements Context {
 
     public Inventory getInventory() {
         return inventory;
+    }
+
+    public boolean isBecome() {
+        return become;
+    }
+
+    public String getBecomeUser() {
+        return becomeUser;
     }
 
     public boolean isSudo() {

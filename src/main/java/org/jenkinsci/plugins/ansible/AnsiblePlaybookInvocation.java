@@ -109,6 +109,7 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
         appendTags(args);
         appendSkippedTags(args);
         appendStartTask(args);
+        appendBecome(args);
         appendSudo(args);
         appendForks(args);
         appendCredentials(args);
