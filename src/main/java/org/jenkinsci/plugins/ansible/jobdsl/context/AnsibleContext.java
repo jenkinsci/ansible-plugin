@@ -16,7 +16,13 @@ import org.jenkinsci.plugins.ansible.InventoryPath;
 public class AnsibleContext implements Context {
     private Inventory inventory;
     private String ansibleName;
+    private String action;
     private String credentialsId;
+    private String vaultCredentialsId;
+    private String newVaultCredentialsId;
+    private String content;
+    private String input;
+    private String output;
     private boolean sudo = false;
     private String sudoUser = "root";
     private int forks = 5;
@@ -53,8 +59,32 @@ public class AnsibleContext implements Context {
         this.ansibleName = ansibleName;
     }
 
+    public void action(String action) {
+        this.action = action;
+    }
+
     public void credentialsId(String credentialsId) {
         this.credentialsId = credentialsId;
+    }
+
+    public void vaultCredentialsId(String vaultCredentialsId) {
+        this.vaultCredentialsId = vaultCredentialsId;
+    }
+
+    public void newVaultCredentialsId(String newVaultCredentialsId) {
+        this.newVaultCredentialsId = newVaultCredentialsId;
+    }
+
+    public void content(String content) {
+        this.content = content;
+    }
+
+    public void input(String input) {
+        this.input = input;
+    }
+
+    public void output(String output) {
+        this.output = output;
     }
 
     public void sudo(boolean sudo) {
@@ -109,12 +139,36 @@ public class AnsibleContext implements Context {
         ContextExtensionPoint.executeInContext(closure, extraVarsContext);
     }
 
+    public String getAction() {
+        return action;
+    }
+
     public String getAnsibleName() {
         return ansibleName;
     }
 
     public String getCredentialsId() {
         return credentialsId;
+    }
+
+    public String getVaultCredentialsId() {
+        return vaultCredentialsId;
+    }
+
+    public String getNewVaultCredentialsId() {
+        return newVaultCredentialsId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public String getInput() {
+        return input;
+    }
+
+    public String getOutput() {
+        return output;
     }
 
     public Inventory getInventory() {

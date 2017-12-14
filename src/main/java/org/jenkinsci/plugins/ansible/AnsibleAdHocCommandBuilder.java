@@ -20,6 +20,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import hudson.AbortException;
 import hudson.EnvVars;
@@ -51,6 +52,8 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
      */
     public String credentialsId = null;
 
+    public String vaultCredentialsId = null;
+
     public final String hostPattern;
 
     /**
@@ -80,9 +83,9 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
 
     @Deprecated
     public AnsibleAdHocCommandBuilder(String ansibleName, String hostPattern, Inventory inventory, String module,
-                                      String command, String credentialsId, boolean sudo, String sudoUser, int forks,
-                                      boolean unbufferedOutput, boolean colorizedOutput, boolean hostKeyChecking,
-                                      String additionalParameters)
+                                      String command, String credentialsId, String vaultCredentialsId, boolean sudo, 
+                                      String sudoUser, int forks, boolean unbufferedOutput, boolean colorizedOutput, 
+                                      boolean hostKeyChecking, String additionalParameters)
     {
         this.ansibleName = ansibleName;
         this.hostPattern = hostPattern;
@@ -90,6 +93,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
         this.module = module;
         this.command = command;
         this.credentialsId = credentialsId;
+        this.vaultCredentialsId = vaultCredentialsId;
         this.sudo = sudo;
         this.sudoUser = sudoUser;
         this.forks = forks;
@@ -115,6 +119,11 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
     @DataBoundSetter
     public void setCredentialsId(String credentialsId) {
         this.credentialsId = credentialsId;
+    }
+
+    @DataBoundSetter
+    public void setVaultCredentialsId(String vaultCredentialsId) {
+        this.vaultCredentialsId = vaultCredentialsId;
     }
 
     @DataBoundSetter
@@ -176,6 +185,9 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
             invocation.setForks(forks);
             invocation.setCredentials(StringUtils.isNotBlank(credentialsId) ?
                     CredentialsProvider.findCredentialById(credentialsId, StandardUsernameCredentials.class, run) :
+                    null);
+            invocation.setVaultCredentials(StringUtils.isNotBlank(vaultCredentialsId) ?
+                    CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run) :
                     null);
             invocation.setExtraVars(extraVars);
             invocation.setAdditionalParameters(additionalParameters);

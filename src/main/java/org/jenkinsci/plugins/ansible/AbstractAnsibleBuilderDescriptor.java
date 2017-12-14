@@ -7,9 +7,12 @@ import java.util.List;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
+import org.jenkinsci.plugins.plaincredentials.FileCredentials;
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import hudson.model.AbstractProject;
 import hudson.model.Project;
 import hudson.tasks.BuildStepDescriptor;
@@ -48,6 +51,15 @@ public abstract class AbstractAnsibleBuilderDescriptor extends BuildStepDescript
                             instanceOf(SSHUserPrivateKey.class),
                             instanceOf(UsernamePasswordCredentials.class)),
                         CredentialsProvider.lookupCredentials(StandardUsernameCredentials.class, project));
+    }
+
+    public ListBoxModel doFillVaultCredentialsIdItems(@AncestorInPath Project project) {
+        return new StandardListBoxModel()
+            .withEmptySelection()
+            .withMatching(anyOf(
+                instanceOf(FileCredentials.class),
+                instanceOf(StringCredentials.class)),
+                CredentialsProvider.lookupCredentials(StandardCredentials.class, project));
     }
 
     public List<InventoryDescriptor> getInventories() {

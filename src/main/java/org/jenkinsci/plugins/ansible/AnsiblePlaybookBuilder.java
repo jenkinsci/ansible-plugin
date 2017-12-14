@@ -20,6 +20,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import hudson.AbortException;
 import hudson.EnvVars;
@@ -65,6 +66,8 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
      */
     public String credentialsId = null;
 
+    public String vaultCredentialsId = null;
+
     public boolean sudo = false;
 
     public String sudoUser = "root";
@@ -85,9 +88,9 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
 
     @Deprecated
     public AnsiblePlaybookBuilder(String ansibleName, String playbook, Inventory inventory, String limit, String tags,
-                                  String skippedTags, String startAtTask, String credentialsId, boolean sudo,
-                                  String sudoUser, int forks, boolean unbufferedOutput, boolean colorizedOutput,
-                                  boolean hostKeyChecking, String additionalParameters)
+                                  String skippedTags, String startAtTask, String credentialsId, String vaultCredentialsId, 
+                                  boolean sudo, String sudoUser, int forks, boolean unbufferedOutput, 
+                                  boolean colorizedOutput, boolean hostKeyChecking, String additionalParameters)
     {
         this.ansibleName = ansibleName;
         this.playbook = playbook;
@@ -97,6 +100,7 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
         this.skippedTags = skippedTags;
         this.startAtTask = startAtTask;
         this.credentialsId = credentialsId;
+        this.vaultCredentialsId = vaultCredentialsId;
         this.sudo = sudo;
         this.sudoUser = sudoUser;
         this.forks = forks;
@@ -145,6 +149,11 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
     public void setCredentialsId(String credentialsId, boolean copyCredentialsInWorkspace) {
         this.credentialsId = credentialsId;
         this.copyCredentialsInWorkspace = copyCredentialsInWorkspace;
+    }
+
+    @DataBoundSetter
+    public void setVaultCredentialsId(String vaultCredentialsId) {
+        this.vaultCredentialsId = vaultCredentialsId;
     }
 
     @DataBoundSetter
@@ -217,6 +226,8 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
             invocation.setCredentials(StringUtils.isNotBlank(credentialsId) ?
                 CredentialsProvider.findCredentialById(credentialsId, StandardUsernameCredentials.class, run) : null,
                 copyCredentialsInWorkspace);
+            invocation.setVaultCredentials(StringUtils.isNotBlank(vaultCredentialsId) ?
+                CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run) : null);
             invocation.setExtraVars(extraVars);
             invocation.setAdditionalParameters(additionalParameters);
             invocation.setHostKeyCheck(hostKeyChecking);

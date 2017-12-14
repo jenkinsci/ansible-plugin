@@ -112,6 +112,7 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
         appendSudo(args);
         appendForks(args);
         appendCredentials(args);
+        appendVaultPasswordFile(args);
         appendExtraVars(args);
         appendAdditionalParameters(args);
         return args;

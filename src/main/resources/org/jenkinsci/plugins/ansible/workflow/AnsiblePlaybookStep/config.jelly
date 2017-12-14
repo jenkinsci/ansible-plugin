@@ -12,6 +12,9 @@
     <f:entry field="credentialsId" title="SSH connection credentials">
         <c:select/>
     </f:entry>
+    <f:entry field="vaultCredentialsId" title="Vault credentials">
+        <c:select/>
+    </f:entry>
     <f:entry field="sudo" title="Use sudo">
         <f:checkbox/>
     </f:entry>
