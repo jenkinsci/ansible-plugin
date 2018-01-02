@@ -5,7 +5,7 @@ This plugin gives the possibility to run [Ansible](http://www.ansible.com/) ad-h
 
 Jenkins Wiki page: https://wiki.jenkins-ci.org/display/JENKINS/Ansible+Plugin
 
-[![Build Status](https://jenkins.ci.cloudbees.com/buildStatus/icon?job=plugins/ansible-plugin)](https://jenkins.ci.cloudbees.com/job/plugins/job/ansible-plugin/)
+[![Build Status](https://ci.jenkins.io/buildStatus/icon?job=Plugins/ansible-plugin/master)](https://ci.jenkins.io/job/Plugins/job/ansible-plugin/job/master/)
 
 ## Using Jenkins Build and Environment Variables
 
