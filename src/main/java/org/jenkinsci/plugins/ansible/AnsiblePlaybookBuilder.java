@@ -88,9 +88,9 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
 
     @Deprecated
     public AnsiblePlaybookBuilder(String ansibleName, String playbook, Inventory inventory, String limit, String tags,
-                                  String skippedTags, String startAtTask, String credentialsId, String vaultCredentialsId, 
-                                  boolean sudo, String sudoUser, int forks, boolean unbufferedOutput, 
-                                  boolean colorizedOutput, boolean hostKeyChecking, String additionalParameters)
+                                  String skippedTags, String startAtTask, String credentialsId, boolean sudo,
+                                  String sudoUser, int forks, boolean unbufferedOutput, boolean colorizedOutput,
+                                  boolean hostKeyChecking, String additionalParameters)
     {
         this.ansibleName = ansibleName;
         this.playbook = playbook;
@@ -100,7 +100,6 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
         this.skippedTags = skippedTags;
         this.startAtTask = startAtTask;
         this.credentialsId = credentialsId;
-        this.vaultCredentialsId = vaultCredentialsId;
         this.sudo = sudo;
         this.sudoUser = sudoUser;
         this.forks = forks;
