@@ -84,9 +84,9 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
 
     @Deprecated
     public AnsibleAdHocCommandBuilder(String ansibleName, String hostPattern, Inventory inventory, String module,
-                                      String command, String credentialsId, boolean become,  String becomeUser, 
-                                      boolean sudo, String sudoUser, int forks, boolean unbufferedOutput, 
-                                      boolean colorizedOutput, boolean hostKeyChecking, String additionalParameters)
+                                      String command, String credentialsId, boolean sudo, String sudoUser, int forks,
+                                      boolean unbufferedOutput, boolean colorizedOutput, boolean hostKeyChecking,
+                                      String additionalParameters)
     {
         this.ansibleName = ansibleName;
         this.hostPattern = hostPattern;
