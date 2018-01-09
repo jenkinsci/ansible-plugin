@@ -94,8 +94,6 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
         this.module = module;
         this.command = command;
         this.credentialsId = credentialsId;
-        this.become = become;
-        this.becomeUser = becomeUser;
         this.sudo = sudo;
         this.sudoUser = sudoUser;
         this.forks = forks;

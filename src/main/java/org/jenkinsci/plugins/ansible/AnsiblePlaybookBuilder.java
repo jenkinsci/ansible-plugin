@@ -101,8 +101,6 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
         this.skippedTags = skippedTags;
         this.startAtTask = startAtTask;
         this.credentialsId = credentialsId;
-        this.become = become;
-        this.becomeUser = becomeUser;
         this.sudo = sudo;
         this.sudoUser = sudoUser;
         this.forks = forks;
