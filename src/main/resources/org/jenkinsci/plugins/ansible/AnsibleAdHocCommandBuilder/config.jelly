@@ -32,6 +32,10 @@
     <c:select/>
   </f:entry>
 
+  <f:entry title="${%Vault Credentials}" field="vaultCredentialsId">
+    <c:select/>
+  </f:entry>
+
   <f:optionalBlock name="sudo" title="${%sudo}" checked="${instance.sudo}" inline="true" help="${descriptor.getHelpFile('sudo')}">
     <f:entry title="${%sudo user}" field="sudoUser">
       <f:textbox />

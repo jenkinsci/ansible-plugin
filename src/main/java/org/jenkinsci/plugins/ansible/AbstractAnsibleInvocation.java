@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import hudson.EnvVars;
@@ -32,6 +33,8 @@ import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 import hudson.util.Secret;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugins.plaincredentials.FileCredentials;
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
 /**
  * Ansible command invocation
@@ -47,12 +50,14 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     protected int forks;
     protected boolean sudo;
     protected String sudoUser;
+    protected StandardCredentials vaultCredentials;
     protected StandardUsernameCredentials credentials;
     protected List<ExtraVar> extraVars;
     protected String additionalParameters;
 
     private FilePath key = null;
     private FilePath script = null;
+    private FilePath vaultPassword = null;
     private Inventory inventory;
     private boolean copyCredentialsInWorkspace = false;
     private final FilePath ws;
@@ -186,6 +191,11 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
         return setCredentials(credentials);
     }
 
+    public T setVaultCredentials(StandardCredentials vaultCredentials) {
+        this.vaultCredentials = vaultCredentials;
+        return (T) this;
+    }
+
     protected ArgumentListBuilder prependPasswordCredentials(ArgumentListBuilder args) {
         if (credentials instanceof UsernamePasswordCredentials) {
             UsernamePasswordCredentials passwordCredentials = (UsernamePasswordCredentials)credentials;
@@ -214,6 +224,23 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
         } else if (credentials instanceof UsernamePasswordCredentials) {
             args.add("-u").add(credentials.getUsername());
             args.add("-k");
+        }
+        return args;
+    }
+
+    protected ArgumentListBuilder appendVaultPasswordFile(ArgumentListBuilder args)
+            throws IOException, InterruptedException
+    {
+        if(vaultCredentials != null){
+            if (vaultCredentials instanceof FileCredentials) {
+                FileCredentials secretFile = (FileCredentials)vaultCredentials;
+                vaultPassword = Utils.createVaultPasswordFile(vaultPassword, ws, secretFile);
+                args.add("--vault-password-file").add(vaultPassword.getRemote().replace("%", "%%"));
+            } else if (vaultCredentials instanceof StringCredentials) {
+                StringCredentials secretText = (StringCredentials)vaultCredentials;
+                vaultPassword = Utils.createVaultPasswordFile(vaultPassword, ws, secretText);
+                args.add("--vault-password-file").add(vaultPassword.getRemote().replace("%", "%%"));
+            }
         }
         return args;
     }
@@ -251,6 +278,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
             }
             Utils.deleteTempFile(key, listener);
             Utils.deleteTempFile(script, listener);
+            Utils.deleteTempFile(vaultPassword, listener);
         }
     }
 }

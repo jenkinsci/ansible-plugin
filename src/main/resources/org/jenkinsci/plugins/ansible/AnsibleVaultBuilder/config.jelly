@@ -1,0 +1,39 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
+
+  <j:set var="installations" value="${descriptor.getInstallations()}"/>
+  <j:if test="${not empty(installations)}">
+    <f:entry title="${%Ansible installation}">
+      <select class="setting-input" name="ansibleName">
+        <j:forEach var="inst" items="${installations}">
+          <f:option value="${inst.name}" selected="${inst.name==instance.ansibleName}">${inst.name}</f:option>
+        </j:forEach>
+      </select>
+    </f:entry>
+  </j:if>
+    
+  <f:entry title="${%Action}" field="action">
+    <f:textbox/>
+  </f:entry>
+
+  <f:entry title="${%Vault Credentials}" field="vaultCredentialsId">
+    <c:select/>
+  </f:entry>
+
+  <f:entry title="${%New Vault Credentials}" field="newVaultCredentialsId">
+    <c:select/>
+  </f:entry>
+
+  <f:entry title="${%Content}" field="content">
+    <f:textbox/>
+  </f:entry>
+
+  <f:entry title="${%Input}" field="input">
+    <f:textbox/>
+  </f:entry>
+
+  <f:entry title="${%Output}" field="output">
+    <f:textbox/>
+  </f:entry>
+
+</j:jelly>

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import org.hamcrest.Matcher;
 import org.jenkinsci.plugins.ansible.AnsibleAdHocCommandBuilder;
 import org.jenkinsci.plugins.ansible.AnsiblePlaybookBuilder;
+import org.jenkinsci.plugins.ansible.AnsibleVaultBuilder;
 import org.jenkinsci.plugins.ansible.InventoryContent;
 import org.jenkinsci.plugins.ansible.InventoryPath;
 import org.junit.Rule;
@@ -21,6 +22,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 public class JobDslIntegrationTest {
     public static final String ANSIBLE_DSL_GROOVY_PLAYBOOK = "jobdsl/playbook.groovy";
     public static final String ANSIBLE_DSL_GROOVY_ADHOC = "jobdsl/adhoc.groovy";
+    public static final String ANSIBLE_DSL_GROOVY_VAULT = "jobdsl/vault.groovy";
 
     public JenkinsRule jenkins = new JenkinsRule();
     public DslJobRule dsl = new DslJobRule(jenkins);
@@ -73,5 +75,17 @@ public class JobDslIntegrationTest {
         assertThat("unbufferedOutput", step.unbufferedOutput, is(true));
         assertThat("colorizedOutput", step.colorizedOutput, is(false));
         assertThat("hostKeyChecking", step.hostKeyChecking, is(false));
+    }
+
+    @Test
+    @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_VAULT)
+    public void shouldCreateJobWithVaultDsl() throws Exception {
+        AnsibleVaultBuilder step = dsl.getGeneratedJob().getBuildersList().get(AnsibleVaultBuilder.class);
+        assertThat("Should add playbook builder", step, notNullValue());
+
+        assertThat("action", step.action, is("encrypt_string"));
+        assertThat("content", step.content, is("my_secret"));
+        assertThat("vaultCredentialsId", step.vaultCredentialsId, is("ansible_vault_credentials"));
+
     }
 }

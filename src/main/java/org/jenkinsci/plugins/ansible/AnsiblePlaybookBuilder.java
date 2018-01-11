@@ -20,6 +20,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import hudson.AbortException;
 import hudson.EnvVars;
@@ -64,6 +65,8 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
      * The id of the credentials to use.
      */
     public String credentialsId = null;
+
+    public String vaultCredentialsId = null;
 
     public boolean sudo = false;
 
@@ -148,6 +151,11 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
     }
 
     @DataBoundSetter
+    public void setVaultCredentialsId(String vaultCredentialsId) {
+        this.vaultCredentialsId = vaultCredentialsId;
+    }
+
+    @DataBoundSetter
     public void setSudo(boolean sudo) {
         this.sudo = sudo;
     }
@@ -217,6 +225,8 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
             invocation.setCredentials(StringUtils.isNotBlank(credentialsId) ?
                 CredentialsProvider.findCredentialById(credentialsId, StandardUsernameCredentials.class, run) : null,
                 copyCredentialsInWorkspace);
+            invocation.setVaultCredentials(StringUtils.isNotBlank(vaultCredentialsId) ?
+                CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run) : null);
             invocation.setExtraVars(extraVars);
             invocation.setAdditionalParameters(additionalParameters);
             invocation.setHostKeyCheck(hostKeyChecking);

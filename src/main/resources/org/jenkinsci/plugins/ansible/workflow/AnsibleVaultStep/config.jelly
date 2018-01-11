@@ -1,0 +1,24 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
+    <f:entry field="installation" title="Ansible tool">
+        <f:select/>
+    </f:entry>
+    <f:entry field="action" title="Action">
+      <f:textbox default="encrypt_string"/>
+    </f:entry>
+    <f:entry field="vaultCredentialsId" title="Vault credentials">
+        <c:select/>
+    </f:entry>
+    <f:entry field="newVaultCredentialsId" title="New vault credentials">
+        <c:select/>
+    </f:entry>
+    <f:entry field="content" title="Content">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="input" title="Input">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="output" title="Output">
+        <f:textbox/>
+    </f:entry>
+</j:jelly>

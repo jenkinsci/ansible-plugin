@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
@@ -42,6 +43,8 @@ import org.jenkinsci.plugins.ansible.ExtraVar;
 import org.jenkinsci.plugins.ansible.Inventory;
 import org.jenkinsci.plugins.ansible.InventoryPath;
 import org.jenkinsci.plugins.ansible.InventoryContent;
+import org.jenkinsci.plugins.plaincredentials.FileCredentials;
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
@@ -61,6 +64,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     private boolean dynamicInventory = false;
     private String installation;
     private String credentialsId;
+    private String vaultCredentialsId;
     private boolean sudo = false;
     private String sudoUser = "root";
     private String limit = null;
@@ -96,6 +100,11 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     @DataBoundSetter
     public void setCredentialsId(String credentialsId) {
         this.credentialsId = Util.fixEmptyAndTrim(credentialsId);
+    }
+
+    @DataBoundSetter
+    public void setVaultCredentialsId(String vaultCredentialsId) {
+        this.vaultCredentialsId = Util.fixEmptyAndTrim(vaultCredentialsId);
     }
 
     @DataBoundSetter
@@ -182,6 +191,10 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         return credentialsId;
     }
 
+    public String getVaultCredentialsId() {
+        return vaultCredentialsId;
+    }
+
     public boolean isSudo() {
         return sudo;
     }
@@ -250,6 +263,15 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
                     instanceOf(SSHUserPrivateKey.class),
                     instanceOf(UsernamePasswordCredentials.class)),
                     CredentialsProvider.lookupCredentials(StandardUsernameCredentials.class, project));
+        }
+
+        public ListBoxModel doFillVaultCredentialsIdItems(@AncestorInPath Project project) {
+            return new StandardListBoxModel()
+                .withEmptySelection()
+                .withMatching(anyOf(
+                    instanceOf(FileCredentials.class),
+                    instanceOf(StringCredentials.class)),
+                    CredentialsProvider.lookupCredentials(StandardCredentials.class, project));
         }
 
         public ListBoxModel doFillInstallationItems() {
@@ -323,6 +345,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             builder.setSudo(step.isSudo());
             builder.setSudoUser(step.getSudoUser());
             builder.setCredentialsId(step.getCredentialsId(), true);
+            builder.setVaultCredentialsId(step.getVaultCredentialsId());
             builder.setForks(step.getForks());
             builder.setLimit(step.getLimit());
             builder.setTags(step.getTags());
