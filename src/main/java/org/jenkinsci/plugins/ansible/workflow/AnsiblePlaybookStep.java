@@ -65,6 +65,8 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     private String installation;
     private String credentialsId;
     private String vaultCredentialsId;
+    private boolean become = false;
+    private String becomeUser = "root";
     private boolean sudo = false;
     private String sudoUser = "root";
     private String limit = null;
@@ -105,6 +107,15 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     @DataBoundSetter
     public void setVaultCredentialsId(String vaultCredentialsId) {
         this.vaultCredentialsId = Util.fixEmptyAndTrim(vaultCredentialsId);
+    }
+
+    public void setBecome(boolean become) {
+        this.become = become;
+    }
+
+    @DataBoundSetter
+    public void setBecomeUser(String becomeUser) {
+        this.becomeUser = Util.fixEmptyAndTrim(becomeUser);
     }
 
     @DataBoundSetter
@@ -193,6 +204,14 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
 
     public String getVaultCredentialsId() {
         return vaultCredentialsId;
+    }
+
+    public boolean isBecome() {
+        return become;
+    }
+
+    public String getBecomeUser() {
+        return becomeUser;
     }
 
     public boolean isSudo() {
@@ -342,6 +361,8 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             }
             AnsiblePlaybookBuilder builder = new AnsiblePlaybookBuilder(step.getPlaybook(), inventory);
             builder.setAnsibleName(step.getInstallation());
+            builder.setBecome(step.isBecome());
+            builder.setBecomeUser(step.getBecomeUser());
             builder.setSudo(step.isSudo());
             builder.setSudoUser(step.getSudoUser());
             builder.setCredentialsId(step.getCredentialsId(), true);
