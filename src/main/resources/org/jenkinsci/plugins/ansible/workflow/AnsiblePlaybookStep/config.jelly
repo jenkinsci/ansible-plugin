@@ -15,10 +15,16 @@
     <f:entry field="vaultCredentialsId" title="Vault credentials">
         <c:select/>
     </f:entry>
-    <f:entry field="sudo" title="Use sudo">
+    <f:entry field="become" title="Use become">
         <f:checkbox/>
     </f:entry>
-    <f:entry field="sudoUser" title="Sudo username">
+    <f:entry field="becomeUser" title="Become username">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="sudo" title="Use sudo (deprecated)">
+        <f:checkbox/>
+    </f:entry>
+    <f:entry field="sudoUser" title="Sudo username (deprecated)">
         <f:textbox/>
     </f:entry>
     <f:entry field="limit" title="Host subset">

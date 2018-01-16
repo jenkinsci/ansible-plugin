@@ -68,6 +68,10 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
 
     public String vaultCredentialsId = null;
 
+    public boolean become = false;
+
+    public String becomeUser = "root";
+
     public boolean sudo = false;
 
     public String sudoUser = "root";
@@ -155,6 +159,15 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
         this.vaultCredentialsId = vaultCredentialsId;
     }
 
+    public void setBecome(boolean become) {
+        this.become = become;
+    }
+
+    @DataBoundSetter
+    public void setBecomeUser(String becomeUser) {
+        this.becomeUser = becomeUser;
+    }
+
     @DataBoundSetter
     public void setSudo(boolean sudo) {
         this.sudo = sudo;
@@ -220,6 +233,7 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
             invocation.setTags(tags);
             invocation.setSkippedTags(skippedTags);
             invocation.setStartTask(startAtTask);
+            invocation.setBecome(become, becomeUser);
             invocation.setSudo(sudo, sudoUser);
             invocation.setForks(forks);
             invocation.setCredentials(StringUtils.isNotBlank(credentialsId) ?

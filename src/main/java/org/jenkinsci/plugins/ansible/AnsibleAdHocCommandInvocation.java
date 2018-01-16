@@ -87,6 +87,7 @@ public class AnsibleAdHocCommandInvocation extends AbstractAnsibleInvocation<Ans
         appendInventory(args);
         appendModule(args);
         appendModuleCommand(args);
+        appendBecome(args);
         appendSudo(args);
         appendForks(args);
         appendCredentials(args);

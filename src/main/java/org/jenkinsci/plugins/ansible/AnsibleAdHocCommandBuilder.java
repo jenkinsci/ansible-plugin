@@ -65,6 +65,10 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
 
     public final String command;
 
+    public boolean become = false;
+
+    public String becomeUser = "root";
+
     public boolean sudo = false;
 
     public String sudoUser = "root";
@@ -124,6 +128,15 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
     public void setVaultCredentialsId(String vaultCredentialsId) {
         this.vaultCredentialsId = vaultCredentialsId;
     }
+    
+    public void setBecome(boolean become) {
+        this.become = become;
+    }
+
+    @DataBoundSetter
+    public void setBecomeUser(String becomeUser) {
+        this.becomeUser = becomeUser;
+    }
 
     @DataBoundSetter
     public void setSudo(boolean sudo) {
@@ -180,6 +193,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
             invocation.setInventory(inventory);
             invocation.setModule(module);
             invocation.setModuleCommand(command);
+            invocation.setBecome(become, becomeUser);
             invocation.setSudo(sudo, sudoUser);
             invocation.setForks(forks);
             invocation.setCredentials(StringUtils.isNotBlank(credentialsId) ?
