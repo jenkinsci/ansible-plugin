@@ -8,7 +8,7 @@
 
   <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>ansible</artifactId>
-  <version>0.8-SNAPSHOT</version>
+  <version>0.8</version>
   <packaging>hpi</packaging>
   <name>Jenkins Ansible plugin</name>
   <description>Ansible support in Jenkins</description>
@@ -34,7 +34,7 @@
     <connection>scm:git:ssh://github.com/jenkinsci/ansible-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/jenkinsci/ansible-plugin.git</developerConnection>
     <url>https://github.com/jcsirot/ansible-plugin</url>
-    <tag>HEAD</tag>
+    <tag>ansible-0.8</tag>
   </scm>
 
   <repositories>
