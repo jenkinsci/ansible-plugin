@@ -19,13 +19,13 @@
         <f:checkbox/>
     </f:entry>
     <f:entry field="becomeUser" title="Become username">
-        <f:textbox/>
+        <f:textbox default="root"/>
     </f:entry>
     <f:entry field="sudo" title="Use sudo (deprecated)">
         <f:checkbox/>
     </f:entry>
     <f:entry field="sudoUser" title="Sudo username (deprecated)">
-        <f:textbox/>
+        <f:textbox default="root"/>
     </f:entry>
     <f:entry field="limit" title="Host subset">
         <f:textbox/>

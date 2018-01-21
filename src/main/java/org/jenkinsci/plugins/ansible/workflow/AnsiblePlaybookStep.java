@@ -109,6 +109,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         this.vaultCredentialsId = Util.fixEmptyAndTrim(vaultCredentialsId);
     }
 
+    @DataBoundSetter
     public void setBecome(boolean become) {
         this.become = become;
     }
