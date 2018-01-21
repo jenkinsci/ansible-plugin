@@ -212,7 +212,7 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
     public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener)
             throws InterruptedException, IOException
     {
-        Computer computer = Computer.currentComputer();
+        Computer computer = ws.toComputer();
         Node node;
         if (computer == null || (node = computer.getNode()) == null) {
             throw new AbortException("The ansible playbook build step requires to be launched on a node");

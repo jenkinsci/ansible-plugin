@@ -182,7 +182,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
     public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener) throws InterruptedException, IOException {
         try {
             CLIRunner runner = new CLIRunner(run, ws, launcher, listener);
-            Computer computer = Computer.currentComputer();
+            Computer computer = ws.toComputer();
             if (computer == null) {
                 throw new AbortException("The ansible ad-hoc command build step requires to be launched on a node");
             }
