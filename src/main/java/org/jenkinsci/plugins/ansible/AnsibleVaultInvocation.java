@@ -79,7 +79,9 @@ public class AnsibleVaultInvocation extends AbstractAnsibleInvocation<AnsibleVau
     }
     
     private ArgumentListBuilder appendContent(ArgumentListBuilder args) {
-        args.addMasked(content);
+        if (content != null && !content.isEmpty()) {
+            args.addMasked(content);
+        }
         return args;
     }
 
@@ -89,7 +91,9 @@ public class AnsibleVaultInvocation extends AbstractAnsibleInvocation<AnsibleVau
     }
     
     private ArgumentListBuilder appendInput(ArgumentListBuilder args) {
-        args.add(input);
+        if (input != null && !input.isEmpty()) {
+            args.add(input);
+        }
         return args;
     }
 
@@ -121,7 +125,9 @@ public class AnsibleVaultInvocation extends AbstractAnsibleInvocation<AnsibleVau
     }
     
     private ArgumentListBuilder appendOutput(ArgumentListBuilder args) {
-        args.add(output);
+        if (output != null && !output.isEmpty()) {
+            args.add(output);
+        }
         return args;
     }
 
