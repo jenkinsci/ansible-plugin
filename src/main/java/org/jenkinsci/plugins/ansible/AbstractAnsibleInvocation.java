@@ -275,8 +275,8 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
         return (T) this;
     }
 
-    public T setHostKeyCheck(boolean hostKeyChecking) {
-        if (! hostKeyChecking) {
+    public T setDisableHostKeyCheck(boolean disableHostKeyChecking) {
+        if (disableHostKeyChecking) {
             environment.put("ANSIBLE_HOST_KEY_CHECKING", "False");
         }
         return (T) this;

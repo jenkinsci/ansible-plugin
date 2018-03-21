@@ -30,7 +30,7 @@ public class AnsibleJobDslExtension extends ContextExtensionPoint {
         adhoc.setVaultCredentialsId(context.getVaultCredentialsId());
         adhoc.setColorizedOutput(context.isColorizedOutput());
         adhoc.setForks(context.getForks());
-        adhoc.setHostKeyChecking(context.isHostKeyChecking());
+        adhoc.setDisableHostKeyChecking(context.isDisableHostKeyChecking());
         adhoc.setBecome(context.isBecome());
         adhoc.setBecomeUser(context.getBecomeUser());
         adhoc.setSudo(context.isSudo());
@@ -54,7 +54,7 @@ public class AnsibleJobDslExtension extends ContextExtensionPoint {
         plbook.setVaultCredentialsId(context.getVaultCredentialsId());
         plbook.setColorizedOutput(context.isColorizedOutput());
         plbook.setForks(context.getForks());
-        plbook.setHostKeyChecking(context.isHostKeyChecking());
+        plbook.setDisableHostKeyChecking(context.isDisableHostKeyChecking());
         plbook.setBecome(context.isBecome());
         plbook.setBecomeUser(context.getBecomeUser());
         plbook.setSudo(context.isSudo());

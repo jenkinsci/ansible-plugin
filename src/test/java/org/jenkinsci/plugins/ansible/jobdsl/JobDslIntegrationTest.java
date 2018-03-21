@@ -21,6 +21,7 @@ import org.jvnet.hudson.test.JenkinsRule;
  */
 public class JobDslIntegrationTest {
     public static final String ANSIBLE_DSL_GROOVY_PLAYBOOK = "jobdsl/playbook.groovy";
+    public static final String ANSIBLE_DSL_GROOVY_SECURITY_630 = "jobdsl/security630.groovy";
     public static final String ANSIBLE_DSL_GROOVY_PLAYBOOK_LEGACY = "jobdsl/legacyPlaybook.groovy";
     public static final String ANSIBLE_DSL_GROOVY_ADHOC = "jobdsl/adhoc.groovy";
     public static final String ANSIBLE_DSL_GROOVY_VAULT = "jobdsl/vault.groovy";
@@ -30,6 +31,14 @@ public class JobDslIntegrationTest {
 
     @Rule
     public RuleChain chain = RuleChain.outerRule(jenkins).around(dsl);
+
+    @Test
+    @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_SECURITY_630)
+    public void shouldCreateJobSecurity630Dsl() throws Exception {
+        AnsiblePlaybookBuilder step = dsl.getGeneratedJob().getBuildersList().get(AnsiblePlaybookBuilder.class);
+        assertThat("Should add playbook builder", step, notNullValue());
+        assertThat("disableHostKeyChecking", step.disableHostKeyChecking, is(false));
+    }
 
     @Test
     @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_PLAYBOOK)
@@ -52,7 +61,7 @@ public class JobDslIntegrationTest {
         assertThat("forks", step.forks, is(6));
         assertThat("unbufferedOutput", step.unbufferedOutput, is(false));
         assertThat("colorizedOutput", step.colorizedOutput, is(true));
-        assertThat("hostKeyChecking", step.hostKeyChecking, is(false));
+        assertThat("disableHostKeyChecking", step.disableHostKeyChecking, is(false));
         assertThat("additionalParameters", step.additionalParameters, is("params"));
         assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
         assertThat("extraVar.value", step.extraVars.get(0).getValue(), is("value"));
@@ -81,7 +90,7 @@ public class JobDslIntegrationTest {
         assertThat("forks", step.forks, is(6));
         assertThat("unbufferedOutput", step.unbufferedOutput, is(false));
         assertThat("colorizedOutput", step.colorizedOutput, is(true));
-        assertThat("hostKeyChecking", step.hostKeyChecking, is(false));
+        assertThat("disableHostKeyChecking", step.disableHostKeyChecking, is(true));
         assertThat("additionalParameters", step.additionalParameters, is("params"));
         assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
         assertThat("extraVar.value", step.extraVars.get(0).getValue(), is("value"));
@@ -106,7 +115,7 @@ public class JobDslIntegrationTest {
         assertThat("forks", step.forks, is(5));
         assertThat("unbufferedOutput", step.unbufferedOutput, is(true));
         assertThat("colorizedOutput", step.colorizedOutput, is(false));
-        assertThat("hostKeyChecking", step.hostKeyChecking, is(false));
+        assertThat("disableHostKeyChecking", step.disableHostKeyChecking, is(false));
     }
 
     @Test

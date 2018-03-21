@@ -29,6 +29,7 @@ import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import com.google.inject.Inject;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.*;
 import hudson.model.Computer;
 import hudson.model.Node;
@@ -77,7 +78,11 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     private String extras = null;
     private boolean colorized = false;
     private int forks = 0;
-    private boolean hostKeyChecking = false;
+    private boolean disableHostKeyChecking = false;
+    @Deprecated
+    @SuppressWarnings("unused")
+    @SuppressFBWarnings("URF_UNREAD_FIELD")
+    private transient boolean hostKeyChecking = true;
 
     @DataBoundConstructor
     public AnsiblePlaybookStep(String playbook) {
@@ -175,8 +180,13 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     }
 
     @DataBoundSetter
+    public void setDisableHostKeyChecking(boolean disableHostKeyChecking) {
+        this.disableHostKeyChecking = disableHostKeyChecking;
+    }
+
+    @DataBoundSetter
+    @Deprecated
     public void setHostKeyChecking(boolean hostKeyChecking) {
-        this.hostKeyChecking = hostKeyChecking;
     }
 
     public String getInstallation() {
@@ -247,8 +257,13 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         return extras;
     }
 
+    public boolean isDisableHostKeyChecking() {
+        return disableHostKeyChecking;
+    }
+
+    @Deprecated
     public boolean isHostKeyChecking() {
-        return hostKeyChecking;
+        return true;
     }
 
     public int getForks() {
@@ -375,7 +390,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             builder.setSkippedTags(step.getSkippedTags());
             builder.setExtraVars(convertExtraVars(step.extraVars));
             builder.setAdditionalParameters(step.getExtras());
-            builder.setHostKeyChecking(step.isHostKeyChecking());
+            builder.setDisableHostKeyChecking(step.isDisableHostKeyChecking());
             builder.setUnbufferedOutput(true);
             builder.setColorizedOutput(step.isColorized());
             Node node;

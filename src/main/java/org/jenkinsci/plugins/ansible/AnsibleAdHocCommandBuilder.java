@@ -22,6 +22,7 @@ import javax.annotation.Nonnull;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -79,7 +80,12 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
 
     public boolean colorizedOutput = false;
 
-    public boolean hostKeyChecking = false;
+    public boolean disableHostKeyChecking = false;
+
+    @Deprecated
+    @SuppressWarnings("unused")
+    @SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
+    public transient boolean hostKeyChecking = true;
 
     public String additionalParameters = null;
 
@@ -102,7 +108,8 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
         this.forks = forks;
         this.unbufferedOutput = unbufferedOutput;
         this.colorizedOutput = colorizedOutput;
-        this.hostKeyChecking = hostKeyChecking;
+        // ignored because of SECURITY-630
+        //this.hostKeyChecking = hostKeyChecking;
         this.additionalParameters = additionalParameters;
     }
 
@@ -164,8 +171,14 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
     }
 
     @DataBoundSetter
+    public void setDisableHostKeyChecking(boolean disableHostKeyChecking) {
+        this.disableHostKeyChecking = disableHostKeyChecking;
+    }
+
+    @DataBoundSetter
+    @Deprecated
     public void setHostKeyChecking(boolean hostKeyChecking) {
-        this.hostKeyChecking = hostKeyChecking;
+        this.hostKeyChecking = true;
     }
 
     @DataBoundSetter
@@ -204,7 +217,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
                     null);
             invocation.setExtraVars(extraVars);
             invocation.setAdditionalParameters(additionalParameters);
-            invocation.setHostKeyCheck(hostKeyChecking);
+            invocation.setDisableHostKeyCheck(disableHostKeyChecking);
             invocation.setUnbufferedOutput(unbufferedOutput);
             invocation.setColorizedOutput(colorizedOutput);
             if (!invocation.execute(runner)) {

@@ -13,7 +13,6 @@ freeStyleJob('ansible') {
             forks(6)
             unbufferedOutput(false)
             colorizedOutput(true)
-            disableHostKeyChecking(false)
             additionalParameters('params')
             extraVars {
                 extraVar ("key","value",true)

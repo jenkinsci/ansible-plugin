@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.ansible.jobdsl.context;
 
 import java.util.List;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javaposse.jobdsl.dsl.Context;
 import javaposse.jobdsl.plugin.ContextExtensionPoint;
 import org.jenkinsci.plugins.ansible.ExtraVar;
@@ -30,7 +31,11 @@ public class AnsibleContext implements Context {
     private int forks = 5;
     private boolean unbufferedOutput = true;
     private boolean colorizedOutput = false;
-    private boolean hostKeyChecking = false;
+    private boolean disableHostKeyChecking = false;
+    @Deprecated
+    @SuppressWarnings("unused")
+    @SuppressFBWarnings("URF_UNREAD_FIELD")
+    private transient boolean hostKeyChecking = true;
     private String additionalParameters;
     ExtraVarsContext extraVarsContext = new ExtraVarsContext();
 
@@ -117,8 +122,8 @@ public class AnsibleContext implements Context {
         this.colorizedOutput = colorizedOutput;
     }
 
-    public void hostKeyChecking(boolean hostKeyChecking) {
-        this.hostKeyChecking = hostKeyChecking;
+    public void disableHostKeyChecking(boolean disableHostKeyChecking) {
+        this.disableHostKeyChecking = disableHostKeyChecking;
     }
 
     public void additionalParameters(String additionalParameters) {
@@ -213,8 +218,8 @@ public class AnsibleContext implements Context {
         return colorizedOutput;
     }
 
-    public boolean isHostKeyChecking() {
-        return hostKeyChecking;
+    public boolean isDisableHostKeyChecking() {
+        return disableHostKeyChecking;
     }
 
     public String getAdditionalParameters() {
@@ -243,5 +248,13 @@ public class AnsibleContext implements Context {
 
     public List<ExtraVar> getExtraVars() {
         return extraVarsContext.getExtraVars();
+    }
+
+    @Deprecated
+    public void hostKeyChecking(boolean hostKeyChecking) {
+    }
+    @Deprecated
+    public boolean isHostKeyChecking() {
+        return true;
     }
 }
