@@ -15,10 +15,6 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.List;
-
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -32,8 +28,13 @@ import hudson.tools.ToolInstallation;
 import hudson.tools.ToolProperty;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * {@code ToolInstallation} for Ansible
@@ -114,6 +115,7 @@ public class AnsibleInstallation extends ToolInstallation
     }
 
     @Extension
+    @Symbol("ansible")
     public static class DescriptorImpl extends ToolDescriptor<AnsibleInstallation> {
 
         public DescriptorImpl() {
