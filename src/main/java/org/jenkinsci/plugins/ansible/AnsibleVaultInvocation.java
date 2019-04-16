@@ -36,10 +36,10 @@ import hudson.util.ArgumentListBuilder;
  */
 public class AnsibleVaultInvocation extends AbstractAnsibleInvocation<AnsibleVaultInvocation> {
 
-	private String action;
-	private String content;
-	private String input;
-	private String output;
+    private String action;
+    private String content;
+    private String input;
+    private String output;
     private StandardCredentials newVaultCredentials;
     
     private FilePath newVaultPassword = null;
@@ -126,7 +126,7 @@ public class AnsibleVaultInvocation extends AbstractAnsibleInvocation<AnsibleVau
     
     private ArgumentListBuilder appendOutput(ArgumentListBuilder args) {
         if (output != null && !output.isEmpty()) {
-            args.add(output);
+            args.add("--output").add(output);
         }
         return args;
     }
