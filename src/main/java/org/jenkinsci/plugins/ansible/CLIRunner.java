@@ -42,10 +42,15 @@ public class CLIRunner
     public boolean execute(ArgumentListBuilder args, Map<String, String> environment)
             throws IOException, InterruptedException
     {
-        return launcher.launch()
-                .pwd(ws)
-                .envs(environment)
-                .cmds(args)
-                .stdout(listener).join() == 0;
+        try {
+            return launcher.launch()
+                    .pwd(ws)
+                    .envs(environment)
+                    .cmds(args)
+                    .stdout(listener).join() == 0;
+        }
+        finally {
+            listener.getLogger().flush();
+        }
     }
 }
