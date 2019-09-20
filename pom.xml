@@ -78,6 +78,12 @@
       <version>${job-dsl.version}</version>
       <optional>true</optional>
     </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci</groupId>
+      <artifactId>symbol-annotation</artifactId>
+      <version>${symbol-annotation.version}</version>
+      <optional>true</optional>
+    </dependency>
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>
@@ -158,6 +164,7 @@
     <assertj.version>1.7.1</assertj.version>
     <commons-lang.version>3.4</commons-lang.version>
     <job-dsl.version>1.36</job-dsl.version>
+    <symbol-annotation.version>1.14</symbol-annotation.version>
   </properties>
 
 </project>
