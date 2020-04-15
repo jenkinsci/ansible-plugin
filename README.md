@@ -35,7 +35,7 @@ steps {
         becomeUser(String user = 'root')
         sudo(boolean sudo = true)
         sudoUser(String user = 'root')
-        forks(int forks = 5)
+        forks(int forks)
         unbufferedOutput(boolean unbufferedOutput = true)
         colorizedOutput(boolean colorizedOutput = false)
         hostKeyChecking(boolean hostKeyChecking = false)
