@@ -28,7 +28,7 @@ public class AnsibleContext implements Context {
     private String becomeUser = "root";
     private boolean sudo = false;
     private String sudoUser = "root";
-    private int forks = 5;
+    private int forks;
     private boolean unbufferedOutput = true;
     private boolean colorizedOutput = false;
     private boolean disableHostKeyChecking = false;
