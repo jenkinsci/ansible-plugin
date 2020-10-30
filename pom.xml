@@ -145,13 +145,13 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jenkins.version>1.596.1</jenkins.version>
+    <jenkins.version>1.609.1</jenkins.version>
     <maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
     <maven-resources-plugin.version>2.6</maven-resources-plugin.version>
     <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
     <ssh-credentials.version>1.10</ssh-credentials.version>
     <plain-credentials.version>1.4</plain-credentials.version>
-    <credentials.version>1.16.1</credentials.version>
+    <credentials.version>2.1.0</credentials.version>
     <workflow-step-api.version>1.10</workflow-step-api.version>
     <junit.version>4.12</junit.version>
     <mockito.version>1.10.19</mockito.version>

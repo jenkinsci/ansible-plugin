@@ -32,11 +32,13 @@ import com.google.inject.Inject;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.*;
 import hudson.model.Computer;
+import hudson.model.Item;
 import hudson.model.Node;
 import hudson.model.Project;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ListBoxModel;
+import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.ansible.AnsibleInstallation;
 import org.jenkinsci.plugins.ansible.AnsiblePlaybookBuilder;
@@ -53,6 +55,7 @@ import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
+import org.kohsuke.stapler.QueryParameter;
 
 /**
  * The Ansible playbook invocation step for the Jenkins workflow plugin.
@@ -291,22 +294,49 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             return "Invoke an ansible playbook";
         }
 
-        public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Project project) {
-            return new StandardListBoxModel()
-                .withEmptySelection()
-                .withMatching(anyOf(
-                    instanceOf(SSHUserPrivateKey.class),
-                    instanceOf(UsernamePasswordCredentials.class)),
-                    CredentialsProvider.lookupCredentials(StandardUsernameCredentials.class, project));
+        public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item,
+                                                     @QueryParameter String credentialsId) {
+
+            StandardListBoxModel result = new StandardListBoxModel();
+            if (item == null) {
+                if (!Jenkins.getActiveInstance().hasPermission(Jenkins.ADMINISTER)) {
+                    return result.includeCurrentValue(credentialsId);
+                }
+            } else {
+                if (!item.hasPermission(Item.EXTENDED_READ)
+                        && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+                    return result.includeCurrentValue(credentialsId);
+                }
+            }
+
+            return result.includeEmptyValue()
+                    .withMatching(anyOf(
+                            instanceOf(SSHUserPrivateKey.class),
+                            instanceOf(UsernamePasswordCredentials.class)),
+                            CredentialsProvider.lookupCredentials(StandardUsernameCredentials.class, item))
+                    .includeCurrentValue(credentialsId);
         }
 
-        public ListBoxModel doFillVaultCredentialsIdItems(@AncestorInPath Project project) {
-            return new StandardListBoxModel()
-                .withEmptySelection()
-                .withMatching(anyOf(
-                    instanceOf(FileCredentials.class),
-                    instanceOf(StringCredentials.class)),
-                    CredentialsProvider.lookupCredentials(StandardCredentials.class, project));
+        public ListBoxModel doFillVaultCredentialsIdItems(@AncestorInPath Item item,
+                                                          @QueryParameter String vaultCredentialsId) {
+            StandardListBoxModel result = new StandardListBoxModel();
+            if (item == null) {
+                if (!Jenkins.getActiveInstance().hasPermission(Jenkins.ADMINISTER)) {
+                    return result.includeCurrentValue(vaultCredentialsId);
+                }
+            } else {
+                if (!item.hasPermission(Item.EXTENDED_READ)
+                        && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+                    return result.includeCurrentValue(vaultCredentialsId);
+                }
+            }
+
+            return result.includeEmptyValue()
+                    .withMatching(anyOf(
+                            instanceOf(FileCredentials.class),
+                            instanceOf(StringCredentials.class)),
+                            CredentialsProvider.lookupCredentials(StandardCredentials.class, item))
+                    .includeCurrentValue(vaultCredentialsId);
         }
 
         public ListBoxModel doFillInstallationItems() {
