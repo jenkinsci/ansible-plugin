@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+    <actions/>
+    <description></description>
+    <keepDependencies>false</keepDependencies>
+    <scm class="hudson.scm.NullSCM"/>
+    <canRoam>true</canRoam>
+    <disabled>false</disabled>
+    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+    <triggers/>
+    <concurrentBuild>false</concurrentBuild>
+    <builders>
+        <org.jenkinsci.plugins.ansible.AnsiblePlaybookBuilder plugin="ansible@0.8">
+            <playbook>playbook.yml</playbook>
+            <limit></limit>
+            <tags></tags>
+            <skippedTags></skippedTags>
+            <startAtTask></startAtTask>
+            <credentialsId></credentialsId>
+            <vaultCredentialsId></vaultCredentialsId>
+            <sudo>false</sudo>
+            <sudoUser></sudoUser>
+            <forks>5</forks>
+            <unbufferedOutput>true</unbufferedOutput>
+            <colorizedOutput>false</colorizedOutput>
+            <hostKeyChecking>false</hostKeyChecking>
+            <additionalParameters></additionalParameters>
+            <copyCredentialsInWorkspace>false</copyCredentialsInWorkspace>
+        </org.jenkinsci.plugins.ansible.AnsiblePlaybookBuilder>
+        <org.jenkinsci.plugins.ansible.AnsibleAdHocCommandBuilder plugin="ansible@0.8">
+            <credentialsId></credentialsId>
+            <vaultCredentialsId></vaultCredentialsId>
+            <hostPattern>one.example.com</hostPattern>
+            <module></module>
+            <command></command>
+            <sudo>false</sudo>
+            <sudoUser></sudoUser>
+            <forks>5</forks>
+            <unbufferedOutput>true</unbufferedOutput>
+            <colorizedOutput>false</colorizedOutput>
+            <hostKeyChecking>true</hostKeyChecking>
+            <additionalParameters></additionalParameters>
+        </org.jenkinsci.plugins.ansible.AnsibleAdHocCommandBuilder>
+    </builders>
+    <publishers/>
+    <buildWrappers/>
+</project>

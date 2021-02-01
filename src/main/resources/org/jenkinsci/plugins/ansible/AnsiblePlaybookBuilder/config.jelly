@@ -28,11 +28,22 @@
     <c:select/>
   </f:entry>
 
-  <f:optionalBlock name="sudo" title="${%sudo}" checked="${instance.sudo}" inline="true" help="${descriptor.getHelpFile('sudo')}">
-    <f:entry title="${%sudo user}" field="sudoUser">
+  <f:entry title="${%Vault Credentials}" field="vaultCredentialsId">
+    <c:select/>
+  </f:entry>
+
+  <f:optionalBlock name="become" title="${%become}" checked="${instance.become}" inline="true" help="${descriptor.getHelpFile('become')}">
+    <f:entry title="${%become user}" field="becomeUser">
       <f:textbox />
     </f:entry>
   </f:optionalBlock>
+
+  <f:optionalBlock name="sudo" title="${%sudo}" checked="${instance.sudo}" inline="true" help="${descriptor.getHelpFile('sudo')}">
+     <f:entry title="${%sudo user}" field="sudoUser">
+       <f:textbox />
+     </f:entry>
+   </f:optionalBlock>
+
 
   <f:advanced>
     <f:entry title="${%Tags to run}" field="tags">
@@ -51,7 +62,7 @@
       <f:number default="5"/>
     </f:entry>
 
-    <f:entry title="${%Check host SSH key}" field="hostKeyChecking">
+    <f:entry title="${%Disable the host SSH key check}" field="disableHostKeyChecking">
       <f:checkbox default="false" />
     </f:entry>
 
@@ -61,6 +72,27 @@
 
     <f:entry title="${%Colorized stdout}" field="colorizedOutput">
       <f:checkbox default="false" />
+    </f:entry>
+
+    <f:entry title="${%Extra Variables}">
+      <f:repeatable add="${%Add Extra Variable}" field="extraVars" noAddButton="false">
+        <table width="100%">
+          <f:entry title="${%Key}" field="key">
+            <f:textbox  clazz="required" />
+          </f:entry>
+          <f:entry title="${%Value}" field="value">
+            <f:textbox clazz="required" />
+          </f:entry>
+          <f:entry title="${%Hidden variable in build log}" field="hidden">
+            <f:checkbox default="false" />
+          </f:entry>
+          <f:entry>
+            <div align="right" class="repeatable-delete show-if-only">
+              <f:repeatableDeleteButton value="${%Delete Extra Variable}" />
+            </div>
+          </f:entry>
+        </table>
+      </f:repeatable>
     </f:entry>
 
     <f:entry title="Additional parameters" field="additionalParameters">

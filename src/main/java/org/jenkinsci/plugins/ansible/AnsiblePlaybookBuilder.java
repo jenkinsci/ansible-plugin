@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015 Jean-Christophe Sirot <sirot@chelonix.com>
+ *     Copyright 2015-2016 Jean-Christophe Sirot <sirot@chelonix.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,20 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.List;
+import javax.annotation.Nonnull;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
 import hudson.model.Computer;
 import hudson.model.Node;
 import hudson.model.Run;
@@ -66,21 +67,34 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
      */
     public String credentialsId = null;
 
+    public String vaultCredentialsId = null;
+
+    public boolean become = false;
+
+    public String becomeUser = "root";
+
     public boolean sudo = false;
 
     public String sudoUser = "root";
 
-    public int forks = 5;
+    public int forks = 0;
 
     public boolean unbufferedOutput = true;
 
     public boolean colorizedOutput = false;
 
-    public boolean hostKeyChecking = false;
+    public boolean disableHostKeyChecking = false;
+
+    @Deprecated
+    @SuppressWarnings("unused")
+    @SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
+    public transient boolean hostKeyChecking = true;
 
     public String additionalParameters = null;
 
     public boolean copyCredentialsInWorkspace = false;
+
+    public List<ExtraVar> extraVars;
 
     @Deprecated
     public AnsiblePlaybookBuilder(String ansibleName, String playbook, Inventory inventory, String limit, String tags,
@@ -101,7 +115,7 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
         this.forks = forks;
         this.unbufferedOutput = unbufferedOutput;
         this.colorizedOutput = colorizedOutput;
-        this.hostKeyChecking = hostKeyChecking;
+        //this.hostKeyChecking = hostKeyChecking;
         this.additionalParameters = additionalParameters;
     }
 
@@ -147,6 +161,20 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
     }
 
     @DataBoundSetter
+    public void setVaultCredentialsId(String vaultCredentialsId) {
+        this.vaultCredentialsId = vaultCredentialsId;
+    }
+
+    public void setBecome(boolean become) {
+        this.become = become;
+    }
+
+    @DataBoundSetter
+    public void setBecomeUser(String becomeUser) {
+        this.becomeUser = becomeUser;
+    }
+
+    @DataBoundSetter
     public void setSudo(boolean sudo) {
         this.sudo = sudo;
     }
@@ -172,8 +200,14 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
     }
 
     @DataBoundSetter
+    public void setDisableHostKeyChecking(boolean disableHostKeyChecking) {
+        this.disableHostKeyChecking = disableHostKeyChecking;
+    }
+
+    @DataBoundSetter
+    @Deprecated
     public void setHostKeyChecking(boolean hostKeyChecking) {
-        this.hostKeyChecking = hostKeyChecking;
+        this.hostKeyChecking = true;
     }
 
     @DataBoundSetter
@@ -181,15 +215,21 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
         this.additionalParameters = additionalParameters;
     }
 
+    @DataBoundSetter
+    public void setExtraVars(List<ExtraVar> extraVars) {
+        this.extraVars = extraVars;
+    }
+
     @Override
     public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener)
             throws InterruptedException, IOException
     {
-        Computer computer = Computer.currentComputer();
-        if (computer == null) {
+        Computer computer = ws.toComputer();
+        Node node;
+        if (computer == null || (node = computer.getNode()) == null) {
             throw new AbortException("The ansible playbook build step requires to be launched on a node");
         }
-        perform(run, computer.getNode(), ws, launcher, listener, run.getEnvironment(listener));
+        perform(run, node, ws, launcher, listener, run.getEnvironment(listener));
     }
 
     public void perform(@Nonnull Run<?, ?> run, @Nonnull Node node, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener, EnvVars envVars)
@@ -198,20 +238,24 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
         try {
             CLIRunner runner = new CLIRunner(run, ws, launcher, listener);
             String exe = AnsibleInstallation.getExecutable(ansibleName, AnsibleCommand.ANSIBLE_PLAYBOOK, node, listener, envVars);
-            AnsiblePlaybookInvocation invocation = new AnsiblePlaybookInvocation(exe, run, ws, listener);
+            AnsiblePlaybookInvocation invocation = new AnsiblePlaybookInvocation(exe, run, ws, listener, envVars);
             invocation.setPlaybook(playbook);
             invocation.setInventory(inventory);
             invocation.setLimit(limit);
             invocation.setTags(tags);
             invocation.setSkippedTags(skippedTags);
             invocation.setStartTask(startAtTask);
+            invocation.setBecome(become, becomeUser);
             invocation.setSudo(sudo, sudoUser);
             invocation.setForks(forks);
             invocation.setCredentials(StringUtils.isNotBlank(credentialsId) ?
                 CredentialsProvider.findCredentialById(credentialsId, StandardUsernameCredentials.class, run) : null,
                 copyCredentialsInWorkspace);
+            invocation.setVaultCredentials(StringUtils.isNotBlank(vaultCredentialsId) ?
+                CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run) : null);
+            invocation.setExtraVars(extraVars);
             invocation.setAdditionalParameters(additionalParameters);
-            invocation.setHostKeyCheck(hostKeyChecking);
+            invocation.setDisableHostKeyCheck(disableHostKeyChecking);
             invocation.setUnbufferedOutput(unbufferedOutput);
             invocation.setColorizedOutput(colorizedOutput);
             if (!invocation.execute(runner)) {

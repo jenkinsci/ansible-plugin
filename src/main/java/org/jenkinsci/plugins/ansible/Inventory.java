@@ -19,7 +19,6 @@ import java.io.IOException;
 
 import hudson.EnvVars;
 import hudson.FilePath;
-import hudson.model.BuildListener;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.TaskListener;
@@ -32,12 +31,11 @@ import jenkins.model.Jenkins;
 public abstract class Inventory implements Describable<Inventory>
 {
     /**
-     * @return
      * @see hudson.model.Describable#getDescriptor()
      */
     @SuppressWarnings("unchecked")
     public Descriptor<Inventory> getDescriptor() {
-        return Jenkins.getInstance().getDescriptorOrDie(getClass());
+        return Jenkins.getActiveInstance().getDescriptorOrDie(getClass());
     }
 
     protected abstract InventoryHandler getHandler();

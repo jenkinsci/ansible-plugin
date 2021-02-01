@@ -15,13 +15,16 @@
  */
 package org.jenkinsci.plugins.ansible;
 
+import java.io.InputStream;
+import java.io.IOException;
+import java.util.List;
+
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import hudson.util.Secret;
-
-import java.io.IOException;
-import java.util.List;
+import org.jenkinsci.plugins.plaincredentials.FileCredentials;
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
 class Utils
 {
@@ -51,6 +54,39 @@ class Utils
         script = workspace.createTextTempFile("ssh", ".sh", sb.toString(), inWorkspace);
         script.chmod(0700);
         return script;
+    }
+
+    /**
+     * Copy the Vault password into a temporary file.
+     *
+     * @param key the destination file
+     * @param credentials the SSH key
+     * @return the file
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    static FilePath createVaultPasswordFile(FilePath key, FilePath workspace, FileCredentials credentials) throws IOException, InterruptedException {
+        try (InputStream content = credentials.getContent()) {
+            key = workspace.createTempFile("vault", ".password");
+            key.copyFrom(content);
+            key.chmod(0400);
+        }
+        return key;
+    }
+
+    /**
+     * Copy the Vault password into a temporary file.
+     *
+     * @param key the destination file
+     * @param credentials the SSH key
+     * @return the file
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    static FilePath createVaultPasswordFile(FilePath key, FilePath workspace, StringCredentials credentials) throws IOException, InterruptedException {
+        key = workspace.createTextTempFile("vault", ".password", credentials.getSecret().getPlainText(), true);
+        key.chmod(0400);
+        return key;
     }
 
     /**

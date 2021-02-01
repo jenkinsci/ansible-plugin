@@ -7,21 +7,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
 import java.util.Map;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import hudson.EnvVars;
-import hudson.FilePath;
-import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 import hudson.util.Secret;
-import org.junit.*;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 /**
@@ -56,6 +53,28 @@ public class AnsibleAdHocCommandInvocationTest {
     }
 
     @Test
+    public void should_generate_no_forks() throws Exception {
+        // Given
+        Inventory inventory = new InventoryPath("/tmp/hosts");
+        BuildListener listener = mock(BuildListener.class);
+        CLIRunner runner = mock(CLIRunner.class);
+        AbstractBuild<?,?> build = mock(AbstractBuild.class);
+        when(build.getEnvironment(any(TaskListener.class))).thenReturn(new EnvVars());
+        AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
+        invocation.setHostPattern("localhost");
+        invocation.setInventory(inventory);
+        invocation.setModule("ping");
+        invocation.setForks(0);
+        // When
+        invocation.execute(runner);
+        // Then
+        ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
+        verify(runner).execute(argument.capture(), anyMap());
+        assertThat(argument.getValue().toString())
+                .isEqualTo("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping");
+    }
+
+    @Test
     public void should_generate_simple_invocation_with_env() throws Exception {
         // Given
         Inventory inventory = new InventoryPath("/tmp/hosts");
@@ -69,7 +88,7 @@ public class AnsibleAdHocCommandInvocationTest {
         invocation.setModule("ping");
         invocation.setForks(5);
         invocation.setColorizedOutput(true);
-        invocation.setHostKeyCheck(false);
+        invocation.setDisableHostKeyCheck(true);
         invocation.setUnbufferedOutput(true);
         // When
         invocation.execute(runner);
@@ -81,6 +100,34 @@ public class AnsibleAdHocCommandInvocationTest {
                 .containsEntry("ANSIBLE_FORCE_COLOR", "true")
                 .containsEntry("ANSIBLE_HOST_KEY_CHECKING", "False");
     }
+
+    @Test
+    public void secure_by_default_SEC_630() throws Exception {
+        // Given
+        Inventory inventory = new InventoryPath("/tmp/hosts");
+        BuildListener listener = mock(BuildListener.class);
+        CLIRunner runner = mock(CLIRunner.class);
+        AbstractBuild<?,?> build = mock(AbstractBuild.class);
+        when(build.getEnvironment(any(TaskListener.class))).thenReturn(new EnvVars());
+        AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
+        invocation.setHostPattern("localhost");
+        invocation.setInventory(inventory);
+        invocation.setModule("ping");
+        invocation.setForks(5);
+        invocation.setColorizedOutput(true);
+        //invocation.setDisableHostKeyCheck(true);
+        invocation.setUnbufferedOutput(true);
+        // When
+        invocation.execute(runner);
+        // Then
+        ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
+        verify(runner).execute(any(ArgumentListBuilder.class), argument.capture());
+        assertThat((Map<String, String>)argument.getValue())
+                .containsEntry("PYTHONUNBUFFERED", "1")
+                .containsEntry("ANSIBLE_FORCE_COLOR", "true")
+                .doesNotContainEntry("ANSIBLE_HOST_KEY_CHECKING", "False");
+    }
+
 
     @Test
     @Ignore("build.getWorkspace() cannot be mocked")

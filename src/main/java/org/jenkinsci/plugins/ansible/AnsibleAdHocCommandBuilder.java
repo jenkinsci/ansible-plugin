@@ -15,12 +15,16 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.List;
+import javax.annotation.Nonnull;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.AbortException;
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -49,6 +53,8 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
      */
     public String credentialsId = null;
 
+    public String vaultCredentialsId = null;
+
     public final String hostPattern;
 
     /**
@@ -60,20 +66,30 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
 
     public final String command;
 
+    public boolean become = false;
+
+    public String becomeUser = "root";
+
     public boolean sudo = false;
 
     public String sudoUser = "root";
 
-    public int forks = 5;
+    public int forks = 0;
 
     public boolean unbufferedOutput = true;
 
     public boolean colorizedOutput = false;
 
-    public boolean hostKeyChecking = false;
+    public boolean disableHostKeyChecking = false;
+
+    @Deprecated
+    @SuppressWarnings("unused")
+    @SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
+    public transient boolean hostKeyChecking = true;
 
     public String additionalParameters = null;
 
+    public List<ExtraVar> extraVars;
 
     @Deprecated
     public AnsibleAdHocCommandBuilder(String ansibleName, String hostPattern, Inventory inventory, String module,
@@ -92,7 +108,8 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
         this.forks = forks;
         this.unbufferedOutput = unbufferedOutput;
         this.colorizedOutput = colorizedOutput;
-        this.hostKeyChecking = hostKeyChecking;
+        // ignored because of SECURITY-630
+        //this.hostKeyChecking = hostKeyChecking;
         this.additionalParameters = additionalParameters;
     }
 
@@ -112,6 +129,20 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
     @DataBoundSetter
     public void setCredentialsId(String credentialsId) {
         this.credentialsId = credentialsId;
+    }
+
+    @DataBoundSetter
+    public void setVaultCredentialsId(String vaultCredentialsId) {
+        this.vaultCredentialsId = vaultCredentialsId;
+    }
+    
+    public void setBecome(boolean become) {
+        this.become = become;
+    }
+
+    @DataBoundSetter
+    public void setBecomeUser(String becomeUser) {
+        this.becomeUser = becomeUser;
     }
 
     @DataBoundSetter
@@ -140,8 +171,14 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
     }
 
     @DataBoundSetter
+    public void setDisableHostKeyChecking(boolean disableHostKeyChecking) {
+        this.disableHostKeyChecking = disableHostKeyChecking;
+    }
+
+    @DataBoundSetter
+    @Deprecated
     public void setHostKeyChecking(boolean hostKeyChecking) {
-        this.hostKeyChecking = hostKeyChecking;
+        this.hostKeyChecking = true;
     }
 
     @DataBoundSetter
@@ -149,27 +186,38 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
         this.additionalParameters = additionalParameters;
     }
 
+    @DataBoundSetter
+    public void setExtraVars(List<ExtraVar> extraVars) {
+        this.extraVars = extraVars;
+    }
+
     @Override
     public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener) throws InterruptedException, IOException {
         try {
             CLIRunner runner = new CLIRunner(run, ws, launcher, listener);
-            Computer computer = Computer.currentComputer();
+            Computer computer = ws.toComputer();
             if (computer == null) {
-                throw new AbortException("The ansible playbook build step requires to be launched on a node");
+                throw new AbortException("The ansible ad-hoc command build step requires to be launched on a node");
             }
-            String exe = AnsibleInstallation.getExecutable(ansibleName, AnsibleCommand.ANSIBLE, computer.getNode(), listener, run.getEnvironment(listener));
-            AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation(exe, run, ws, listener);
+            EnvVars envVars = run.getEnvironment(listener);
+            String exe = AnsibleInstallation.getExecutable(ansibleName, AnsibleCommand.ANSIBLE, computer.getNode(), listener, envVars);
+            AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation(exe, run, ws, listener, envVars);
             invocation.setHostPattern(hostPattern);
             invocation.setInventory(inventory);
             invocation.setModule(module);
             invocation.setModuleCommand(command);
+            invocation.setBecome(become, becomeUser);
             invocation.setSudo(sudo, sudoUser);
             invocation.setForks(forks);
             invocation.setCredentials(StringUtils.isNotBlank(credentialsId) ?
                     CredentialsProvider.findCredentialById(credentialsId, StandardUsernameCredentials.class, run) :
                     null);
+            invocation.setVaultCredentials(StringUtils.isNotBlank(vaultCredentialsId) ?
+                    CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run) :
+                    null);
+            invocation.setExtraVars(extraVars);
             invocation.setAdditionalParameters(additionalParameters);
-            invocation.setHostKeyCheck(hostKeyChecking);
+            invocation.setDisableHostKeyCheck(disableHostKeyChecking);
             invocation.setUnbufferedOutput(unbufferedOutput);
             invocation.setColorizedOutput(colorizedOutput);
             if (!invocation.execute(runner)) {

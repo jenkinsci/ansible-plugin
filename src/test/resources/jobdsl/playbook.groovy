@@ -8,13 +8,16 @@ freeStyleJob('ansible') {
             skippedTags('three')
             startAtTask('task')
             credentialsId('credsid')
-            sudo(true)
-            sudoUser("user")
+            become(true)
+            becomeUser("user")
             forks(6)
             unbufferedOutput(false)
             colorizedOutput(true)
-            hostKeyChecking(false)
+            disableHostKeyChecking(false)
             additionalParameters('params')
+            extraVars {
+                extraVar ("key","value",true)
+            }
         }
     }
 }
