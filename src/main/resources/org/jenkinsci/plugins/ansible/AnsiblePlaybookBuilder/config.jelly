@@ -31,7 +31,7 @@
   <f:entry title="${%Vault Credentials}">
     <f:repeatable add="${%Add Extra Credential}" field="vaultCredentialsId" noAddButton="false">
       <c:select/>
-	</f:repeatable>
+    </f:repeatable>
   </f:entry>
 
   <f:optionalBlock name="become" title="${%become}" checked="${instance.become}" inline="true" help="${descriptor.getHelpFile('become')}">
