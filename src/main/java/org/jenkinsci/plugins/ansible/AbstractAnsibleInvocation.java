@@ -251,11 +251,11 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
             if (vaultCredentials instanceof FileCredentials) {
                 FileCredentials secretFile = (FileCredentials)vaultCredentials;
                 vaultPassword = Utils.createVaultPasswordFile(vaultPassword, ws, secretFile);
-                args.add("--vault-password-file").add(vaultPassword.getRemote().replace("%", "%%"));
+                args.add("--vault-id").add(vaultPassword.getRemote().replace("%", "%%"));
             } else if (vaultCredentials instanceof StringCredentials) {
                 StringCredentials secretText = (StringCredentials)vaultCredentials;
                 vaultPassword = Utils.createVaultPasswordFile(vaultPassword, ws, secretText);
-                args.add("--vault-password-file").add(vaultPassword.getRemote().replace("%", "%%"));
+                args.add("--vault-id").add(vaultPassword.getRemote().replace("%", "%%"));
             }
         }
         return args;
