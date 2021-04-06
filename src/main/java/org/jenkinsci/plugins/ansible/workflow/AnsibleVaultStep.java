@@ -24,11 +24,13 @@ import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.google.inject.Inject;
 import hudson.*;
 import hudson.model.Computer;
+import hudson.model.Item;
 import hudson.model.Node;
 import hudson.model.Project;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ListBoxModel;
+import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.ansible.AnsibleInstallation;
 import org.jenkinsci.plugins.ansible.AnsibleVaultBuilder;
 import org.jenkinsci.plugins.plaincredentials.FileCredentials;
@@ -40,6 +42,7 @@ import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
+import org.kohsuke.stapler.QueryParameter;
 
 /**
  * The Ansible vault invocation step for the Jenkins workflow plugin.
@@ -139,22 +142,14 @@ public class AnsibleVaultStep extends AbstractStepImpl {
             return "Invoke ansible vault";
         }
 
-        public ListBoxModel doFillVaultCredentialsIdItems(@AncestorInPath Project project) {
-            return new StandardListBoxModel()
-                .withEmptySelection()
-                .withMatching(anyOf(
-                    instanceOf(FileCredentials.class),
-                    instanceOf(StringCredentials.class)),
-                    CredentialsProvider.lookupCredentials(StandardCredentials.class, project));
+        public ListBoxModel doFillVaultCredentialsIdItems(@AncestorInPath Item item,
+                                                          @QueryParameter String vaultCredentialsId) {
+            return fillVaultCredentials(item, vaultCredentialsId);
         }
 
-        public ListBoxModel doFillNewVaultCredentialsIdItems(@AncestorInPath Project project) {
-            return new StandardListBoxModel()
-                .withEmptySelection()
-                .withMatching(anyOf(
-                    instanceOf(FileCredentials.class),
-                    instanceOf(StringCredentials.class)),
-                    CredentialsProvider.lookupCredentials(StandardCredentials.class, project));
+        public ListBoxModel doFillNewVaultCredentialsIdItems(@AncestorInPath Item item,
+                                                             @QueryParameter String newVaultCredentialsId) {
+            return fillVaultCredentials(item, newVaultCredentialsId);
         }
 
         public ListBoxModel doFillInstallationItems() {
@@ -163,6 +158,28 @@ public class AnsibleVaultStep extends AbstractStepImpl {
                 model.add(tool.getName());
             }
             return model;
+        }
+
+
+        private ListBoxModel fillVaultCredentials(Item item, String credentialsId) {
+            StandardListBoxModel result = new StandardListBoxModel();
+            if (item == null) {
+                if (!Jenkins.getActiveInstance().hasPermission(Jenkins.ADMINISTER)) {
+                    return result.includeCurrentValue(credentialsId);
+                }
+            } else {
+                if (!item.hasPermission(Item.EXTENDED_READ)
+                        && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+                    return result.includeCurrentValue(credentialsId);
+                }
+            }
+
+            return result.includeEmptyValue()
+                    .withMatching(anyOf(
+                            instanceOf(FileCredentials.class),
+                            instanceOf(StringCredentials.class)),
+                            CredentialsProvider.lookupCredentials(StandardCredentials.class, item))
+                    .includeCurrentValue(credentialsId);
         }
     }
 
