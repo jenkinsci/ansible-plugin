@@ -112,7 +112,7 @@ public class JobDslIntegrationTest {
         assertThat("hostPattern", step.hostPattern, is("pattern"));
         assertThat("become", step.become, is(false));
         assertThat("becomeUser", step.becomeUser, is("root"));
-        assertThat("forks", step.forks, is(5));
+        assertThat("forks", step.forks, is(0));
         assertThat("unbufferedOutput", step.unbufferedOutput, is(true));
         assertThat("colorizedOutput", step.colorizedOutput, is(false));
         assertThat("disableHostKeyChecking", step.disableHostKeyChecking, is(false));

@@ -20,6 +20,8 @@ It is possible to access build and environment variables in ansible playbooks. T
 
 ## Job DSL support 
 
+Note that some of these parameters are passed in to ansible as CLI arguments and take presedent over other ansible configurations. 
+
 ```groovy  
 steps {
     ansiblePlaybook(String playbook) {
@@ -35,7 +37,7 @@ steps {
         becomeUser(String user = 'root')
         sudo(boolean sudo = true)
         sudoUser(String user = 'root')
-        forks(int forks = 5)
+        forks(int forks = 0)
         unbufferedOutput(boolean unbufferedOutput = true)
         colorizedOutput(boolean colorizedOutput = false)
         hostKeyChecking(boolean hostKeyChecking = false)
@@ -55,7 +57,7 @@ steps {
         becomeUser(String user = 'root')
         sudo(boolean sudo = true)
         sudoUser(String user = 'root')
-        forks(int forks = 5)
+        forks(int forks = 0)
         unbufferedOutput(boolean unbufferedOutput = true)
         colorizedOutput(boolean colorizedOutput = false)
         hostKeyChecking(boolean hostKeyChecking = false)
