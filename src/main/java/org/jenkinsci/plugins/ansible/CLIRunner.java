@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.ansible;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Map;
 
 import hudson.FilePath;
@@ -42,10 +43,17 @@ public class CLIRunner
     public boolean execute(ArgumentListBuilder args, Map<String, String> environment)
             throws IOException, InterruptedException
     {
-        return launcher.launch()
-                .pwd(ws)
-                .envs(environment)
-                .cmds(args)
-                .stdout(listener).join() == 0;
+        PrintStream logger = listener.getLogger();
+        try {
+            return launcher.launch()
+                    .pwd(ws)
+                    .envs(environment)
+                    .cmds(args)
+                    .stdout(logger)
+                    .stderr(logger).join() == 0;
+        }
+        finally {
+            logger.flush();
+        }
     }
 }
