@@ -254,16 +254,15 @@ ansibleVault(action: 'encrypt_string', content: 'secret_content', vaultCredentia
 
 ### Arguments
 
-See also [jenkins.io](https://jenkins.io/doc/pipeline/steps/ansible/)
-documentation.
+See also [jenkins.io Pipeline step](https://jenkins.io/doc/pipeline/steps/ansible/) documentation.
 
 | Freestyle Name                         | Pipeline Name         | Description                                                   |
 | -------------------------------------- | --------------------- | ------------------------------------------------------------- |
 | Ansible installation                   | installation          | Ansible installation to use for the playbook invocation       |
 | Action                                 | action                | Mandatory. The name of the action to use. Interactive operations such as create, edit, and view are not supported. |
 | Vault Credentials                      | vaultCredentialsId    | CLI arg: `--vault-password-file`. The Jenkins credential to use as the vault credential. See the Vault Credentials section for more details |
-| New Vault Credentials                  | newVaultCredentialsId | CLI arg: `--nw-vault-password-file`. The Jenkins credential to use as the vault credential. See the Vault Credentials section for more details |
-| Content                                | content               | The content to encrypt with the encrypt_string action.        |
+| New Vault Credentials                  | newVaultCredentialsId | CLI arg: `--new-vault-password-file`. The Jenkins credential to use as the vault credential. See the Vault Credentials section for more details |
+| Content                                | content               | The content to encrypt with the 'encrypt_string' action.      |
 | Input                                  | input                 | The file to encrypt with the encrypt actions.                 |
 | Output                                 | output                | CLI arg: `--output`                                           |
 
