@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.ansible;
 
-import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
 import org.junit.Rule;
 import org.junit.Test;
