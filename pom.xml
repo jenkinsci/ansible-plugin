@@ -8,7 +8,7 @@
 
   <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>ansible</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.2-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <name>Jenkins Ansible plugin</name>
   <description>Ansible support in Jenkins</description>
@@ -40,13 +40,13 @@
   <repositories>
     <repository>
       <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
+      <url>https://repo.jenkins-ci.org/public/</url>
     </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
+      <url>https://repo.jenkins-ci.org/public/</url>
     </pluginRepository>
   </pluginRepositories>
 
@@ -76,6 +76,12 @@
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>job-dsl</artifactId>
       <version>${job-dsl.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci</groupId>
+      <artifactId>symbol-annotation</artifactId>
+      <version>${symbol-annotation.version}</version>
       <optional>true</optional>
     </dependency>
     <!-- Test -->
@@ -145,19 +151,20 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jenkins.version>1.596.1</jenkins.version>
+    <jenkins.version>1.609.1</jenkins.version>
     <maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
     <maven-resources-plugin.version>2.6</maven-resources-plugin.version>
     <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
     <ssh-credentials.version>1.10</ssh-credentials.version>
     <plain-credentials.version>1.4</plain-credentials.version>
-    <credentials.version>1.16.1</credentials.version>
+    <credentials.version>2.1.0</credentials.version>
     <workflow-step-api.version>1.10</workflow-step-api.version>
     <junit.version>4.12</junit.version>
     <mockito.version>1.10.19</mockito.version>
     <assertj.version>1.7.1</assertj.version>
     <commons-lang.version>3.4</commons-lang.version>
     <job-dsl.version>1.36</job-dsl.version>
+    <symbol-annotation.version>1.14</symbol-annotation.version>
   </properties>
 
 </project>
