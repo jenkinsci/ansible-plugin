@@ -12,7 +12,7 @@
   <packaging>hpi</packaging>
   <name>Jenkins Ansible plugin</name>
   <description>Ansible support in Jenkins</description>
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Ansible+Plugin</url>
+  <url>https://github.com/jenkinsci/ansible-plugin</url>
 
   <licenses>
     <license>
@@ -33,7 +33,7 @@
   <scm>
     <connection>scm:git:ssh://github.com/jenkinsci/ansible-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/jenkinsci/ansible-plugin.git</developerConnection>
-    <url>https://github.com/jcsirot/ansible-plugin</url>
+    <url>https://github.com/jenkinsci/ansible-plugin</url>
     <tag>HEAD</tag>
   </scm>
 
