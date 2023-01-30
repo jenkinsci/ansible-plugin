@@ -4,7 +4,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -52,18 +52,12 @@ public class DslJobRule implements TestRule {
         String script = description.getAnnotation(WithJobDsl.class).value();
         String scriptText = Resources.toString(Resources.getResource(script), Charsets.UTF_8);
 
-        job.getBuildersList().add(
-                new ExecuteDslScripts(
-                        new ExecuteDslScripts.ScriptLocation(
-                                null, null,
-                                scriptText
-                        ),
-                        false,
-                        RemovedJobAction.DELETE,
-                        RemovedViewAction.DELETE,
-                        LookupStrategy.JENKINS_ROOT
-                )
-        );
+        ExecuteDslScripts builder = new ExecuteDslScripts();
+        builder.setScriptText(scriptText);
+        builder.setRemovedJobAction(RemovedJobAction.DELETE);
+        builder.setRemovedViewAction(RemovedViewAction.DELETE);
+        builder.setLookupStrategy(LookupStrategy.JENKINS_ROOT);
+        job.getBuildersList().add(builder);
 
         jRule.buildAndAssertSuccess(job);
 

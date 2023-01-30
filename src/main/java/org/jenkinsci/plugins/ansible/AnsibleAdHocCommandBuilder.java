@@ -225,7 +225,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
             }
         } catch (IOException ioe) {
             Util.displayIOException(ioe, listener);
-            ioe.printStackTrace(listener.fatalError(hudson.tasks.Messages.CommandInterpreter_CommandFailed()));
+            ioe.printStackTrace(listener.fatalError("command execution failed"));
             throw ioe;
         } catch (AnsibleInvocationException aie) {
             listener.fatalError(aie.getMessage());
