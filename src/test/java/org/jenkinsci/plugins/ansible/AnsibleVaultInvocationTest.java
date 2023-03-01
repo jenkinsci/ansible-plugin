@@ -1,7 +1,9 @@
 package org.jenkinsci.plugins.ansible;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
 
 import java.io.IOException;
 
@@ -36,7 +38,8 @@ public class AnsibleVaultInvocationTest {
 		// Then
 		ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
 		verify(runner).execute(argument.capture(), anyMap());
-		assertThat(argument.getValue().toString()).isEqualTo("ansible-vault encrypt_string ******");
+
+		assertThat(argument.getValue().toString(), is("ansible-vault encrypt_string ******"));
 	}
 
 	@Test
@@ -51,7 +54,7 @@ public class AnsibleVaultInvocationTest {
 		// Then
 		ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
 		verify(runner).execute(argument.capture(), anyMap());
-		assertThat(argument.getValue().toString()).isEqualTo("ansible-vault encrypt /tmp/my_var_file.yml");
+		assertThat(argument.getValue().toString(), is("ansible-vault encrypt /tmp/my_var_file.yml"));
 	}
 
 	@Test
@@ -66,7 +69,7 @@ public class AnsibleVaultInvocationTest {
 		// Then
 		ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
 		verify(runner).execute(argument.capture(), anyMap());
-		assertThat(argument.getValue().toString()).isEqualTo("ansible-vault decrypt /tmp/my_var_file.yml");
+		assertThat(argument.getValue().toString(), is("ansible-vault decrypt /tmp/my_var_file.yml"));
 	}
 
 	@Test
@@ -81,7 +84,7 @@ public class AnsibleVaultInvocationTest {
 		// Then
 		ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
 		verify(runner).execute(argument.capture(), anyMap());
-		assertThat(argument.getValue().toString()).isEqualTo("ansible-vault rekey /tmp/my_var_file.yml");
+		assertThat(argument.getValue().toString(), is("ansible-vault rekey /tmp/my_var_file.yml"));
 	}
 
 	@Test(expected = AbortException.class)
