@@ -1,7 +1,10 @@
 package org.jenkinsci.plugins.ansible;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.aMapWithSize;
 
 import java.util.Map;
 
@@ -44,8 +47,8 @@ public class AnsibleAdHocCommandInvocationTest {
         // Then
         ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
         verify(runner).execute(argument.capture(), anyMap());
-        assertThat(argument.getValue().toString())
-                .isEqualTo("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5");
+        assertThat(argument.getValue().toString(), is("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5"));
+
     }
 
     @Test
@@ -66,8 +69,8 @@ public class AnsibleAdHocCommandInvocationTest {
         // Then
         ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
         verify(runner).execute(argument.capture(), anyMap());
-        assertThat(argument.getValue().toString())
-                .isEqualTo("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping");
+        assertThat(argument.getValue().toString(), is("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping"));
+
     }
 
     @Test
@@ -91,10 +94,11 @@ public class AnsibleAdHocCommandInvocationTest {
         // Then
         ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
         verify(runner).execute(any(ArgumentListBuilder.class), argument.capture());
-        assertThat((Map<String, String>)argument.getValue())
-                .containsEntry("PYTHONUNBUFFERED", "1")
-                .containsEntry("ANSIBLE_FORCE_COLOR", "true")
-                .containsEntry("ANSIBLE_HOST_KEY_CHECKING", "False");
+
+        assertThat((Map<String, String>)argument.getValue(), hasEntry("PYTHONUNBUFFERED", "1"));
+        assertThat((Map<String, String>)argument.getValue(), hasEntry("ANSIBLE_FORCE_COLOR", "true"));
+        assertThat((Map<String, String>)argument.getValue(), hasEntry("ANSIBLE_HOST_KEY_CHECKING", "False"));
+
     }
 
     @Test
@@ -118,10 +122,12 @@ public class AnsibleAdHocCommandInvocationTest {
         // Then
         ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
         verify(runner).execute(any(ArgumentListBuilder.class), argument.capture());
-        assertThat((Map<String, String>)argument.getValue())
-                .containsEntry("PYTHONUNBUFFERED", "1")
-                .containsEntry("ANSIBLE_FORCE_COLOR", "true")
-                .doesNotContainEntry("ANSIBLE_HOST_KEY_CHECKING", "False");
+
+        assertThat((Map<String, String>)argument.getValue(), aMapWithSize(2));
+        assertThat((Map<String, String>)argument.getValue(), hasEntry("PYTHONUNBUFFERED", "1"));
+        assertThat((Map<String, String>)argument.getValue(), hasEntry("ANSIBLE_FORCE_COLOR", "true"));
+
+
     }
 
 
@@ -147,8 +153,9 @@ public class AnsibleAdHocCommandInvocationTest {
         // Then
         ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
         verify(runner).execute(argument.capture(), anyMap());
-        assertThat(argument.getValue().toString())
-                .matches("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5 --private-key .+ -u mylogin");
+
+        assertThat(argument.getValue().toString(), is("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5 --private-key .+ -u mylogin"));
+
     }
 
     @Test
@@ -174,10 +181,11 @@ public class AnsibleAdHocCommandInvocationTest {
         // Then
         ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
         verify(runner).execute(argument.capture(), anyMap());
-        assertThat(argument.getValue().toString())
-                .isEqualTo("sshpass ****** /usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5 " +
-                        "-u" +
-                        " mylogin -k");
+
+        assertThat(argument.getValue().toString(), is("sshpass ****** /usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5 " +
+                                                        "-u" +
+                                                        " mylogin -k"));
+
     }
 
     @Test
@@ -200,7 +208,9 @@ public class AnsibleAdHocCommandInvocationTest {
         // Then
         ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
         verify(runner).execute(argument.capture(), anyMap());
-        assertThat(argument.getValue().toString())
-                .isEqualTo("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5");
+
+        assertThat(argument.getValue().toString(), is("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5"));
+
+
     }
 }
