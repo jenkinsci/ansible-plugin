@@ -21,7 +21,7 @@
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/ansible-plugin</gitHubRepo>
-    <jenkins.version>2.361.4</jenkins.version>
+    <jenkins.version>2.375.3</jenkins.version>
   </properties>
   <licenses>
     <license>
@@ -34,7 +34,7 @@
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.361.x</artifactId>
+        <artifactId>bom-2.375.x</artifactId>
         <version>1836.vfe602c266c05</version>
         <scope>import</scope>
         <type>pom</type>
@@ -79,13 +79,11 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>5.1.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-inline</artifactId>
-      <version>5.1.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
