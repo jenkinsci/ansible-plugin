@@ -77,7 +77,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     private String tags = null;
     private String skippedTags = null;
     private String startAtTask = null;
-    private Map extraVars = null;
+    private List<ExtraVar> extraVars = null;
     private String extras = null;
     private boolean colorized = false;
     private int forks = 0;
@@ -162,8 +162,30 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         this.startAtTask = Util.fixEmptyAndTrim(startAtTask);
     }
 
+    @Deprecated
     @DataBoundSetter
-    public void setExtraVars(Map extraVars) {
+    public void setExtraVars(Map<String, Object> extraVars) {
+        if (this.extraVars == null) {
+	        List<ExtraVar> extraVarList = new ArrayList<ExtraVar>();
+	        for (Map.Entry<String, Object> entry: extraVars.entrySet()) {
+	            ExtraVar var = new ExtraVar();
+	            var.setKey(entry.getKey());
+	            Object o = entry.getValue();
+	            if (o instanceof Map) {
+	                var.setValue(((Map)o).get("value").toString());
+	                var.setHidden((Boolean)((Map)o).get("hidden"));
+	            } else {
+	                var.setValue(o.toString());
+	                var.setHidden(false);
+	            }
+	            extraVarList.add(var);
+	        }
+	        setExtraVariables(extraVarList);
+        }
+    }
+
+    @DataBoundSetter
+    public void setExtraVariables(List<ExtraVar> extraVars) {
         this.extraVars = extraVars;
     }
 
@@ -252,7 +274,12 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         return startAtTask;
     }
 
+    @Deprecated
     public Map<String, Object> getExtraVars() {
+        return null;
+    }
+
+    public List<ExtraVar> getExtraVariables() {
         return extraVars;
     }
 
@@ -373,27 +400,6 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         @StepContextParameter
         private transient Computer computer;
 
-        private List<ExtraVar> convertExtraVars(Map<String, Object> extraVars) {
-            if (extraVars == null) {
-                return null;
-            }
-            List<ExtraVar> extraVarList = new ArrayList<ExtraVar>();
-            for (Map.Entry<String, Object> entry: extraVars.entrySet()) {
-                ExtraVar var = new ExtraVar();
-                var.setKey(entry.getKey());
-                Object o = entry.getValue();
-                if (o instanceof Map) {
-                    var.setValue(((Map)o).get("value").toString());
-                    var.setHidden((Boolean)((Map)o).get("hidden"));
-                } else {
-                    var.setValue(o.toString());
-                    var.setHidden(false);
-                }
-                extraVarList.add(var);
-            }
-            return extraVarList;
-        }
-
         @Override
         protected Void run() throws Exception {
             Inventory inventory = null;
@@ -418,7 +424,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             builder.setTags(step.getTags());
             builder.setStartAtTask(step.getStartAtTask());
             builder.setSkippedTags(step.getSkippedTags());
-            builder.setExtraVars(convertExtraVars(step.extraVars));
+            builder.setExtraVars(step.getExtraVariables());
             builder.setAdditionalParameters(step.getExtras());
             builder.setDisableHostKeyChecking(step.isDisableHostKeyChecking());
             builder.setUnbufferedOutput(true);
