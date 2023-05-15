@@ -64,7 +64,7 @@ public class JobDslIntegrationTest {
         assertThat("disableHostKeyChecking", step.disableHostKeyChecking, is(false));
         assertThat("additionalParameters", step.additionalParameters, is("params"));
         assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
-        assertThat("extraVar.value", step.extraVars.get(0).getValue(), is("value"));
+        assertThat("extraVar.value", step.extraVars.get(0).getSecretValue().getPlainText(), is("value"));
         assertThat("extraVar.hidden", step.extraVars.get(0).isHidden(), is(true));
 
     }
@@ -93,7 +93,7 @@ public class JobDslIntegrationTest {
         assertThat("disableHostKeyChecking", step.disableHostKeyChecking, is(true));
         assertThat("additionalParameters", step.additionalParameters, is("params"));
         assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
-        assertThat("extraVar.value", step.extraVars.get(0).getValue(), is("value"));
+        assertThat("extraVar.value", step.extraVars.get(0).getSecretValue().getPlainText(), is("value"));
         assertThat("extraVar.hidden", step.extraVars.get(0).isHidden(), is(true));
 
     }

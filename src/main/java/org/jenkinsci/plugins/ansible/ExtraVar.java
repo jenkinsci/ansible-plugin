@@ -18,6 +18,8 @@ package org.jenkinsci.plugins.ansible;
 import hudson.Extension;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
+import hudson.util.Secret;
+
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
@@ -25,12 +27,21 @@ public class ExtraVar extends AbstractDescribableImpl<ExtraVar> {
 
     public String key;
 
-    public String value;
+    public transient String value;
 
-    public boolean hidden;
+    public Secret secretValue;
+
+    public boolean hidden = true;
 
     @DataBoundConstructor
     public ExtraVar() {
+    }
+
+    protected Object readResolve() {
+        if (value != null) {
+            this.setSecretValue(Secret.fromString(value));
+        }
+        return this;
     }
 
     @DataBoundSetter
@@ -39,21 +50,21 @@ public class ExtraVar extends AbstractDescribableImpl<ExtraVar> {
     }
 
     @DataBoundSetter
-    public void setValue(String value) {
-        this.value = value;
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 
     @DataBoundSetter
-    public void setHidden(boolean hidden) {
-        this.hidden = hidden;
+    public void setSecretValue(Secret value) {
+        this.secretValue = value;
     }
 
     public String getKey() {
         return key;
     }
 
-    public String getValue() {
-        return value;
+    public Secret getSecretValue() {
+        return this.secretValue;
     }
 
     public boolean isHidden() {

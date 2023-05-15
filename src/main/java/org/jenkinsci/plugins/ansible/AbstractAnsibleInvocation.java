@@ -121,7 +121,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
         if (extraVars != null && ! extraVars.isEmpty()) {
             for (ExtraVar var : extraVars) {
                 args.add("-e");
-                String value = envVars.expand(var.getValue());
+                String value = envVars.expand(var.getSecretValue().getPlainText());
                 if (Pattern.compile("\\s").matcher(value).find()) {
                     value = Util.singleQuote(value);
                 }

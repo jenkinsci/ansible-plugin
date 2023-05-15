@@ -71,11 +71,11 @@
           <f:entry title="${%Key}" field="key">
             <f:textbox  clazz="required" />
           </f:entry>
-          <f:entry title="${%Value}" field="value">
-            <f:textbox clazz="required" />
+          <f:entry title="${%Value}" field="secretValue">
+            <f:password clazz="required" />
           </f:entry>
           <f:entry title="${%Hidden variable in build log}" field="hidden">
-            <f:checkbox default="false" />
+            <f:checkbox default="true" />
           </f:entry>
           <f:entry>
             <div align="right" class="repeatable-delete show-if-only">

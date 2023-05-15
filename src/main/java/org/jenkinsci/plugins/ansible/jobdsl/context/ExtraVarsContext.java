@@ -6,6 +6,8 @@ import java.util.List;
 import javaposse.jobdsl.dsl.Context;
 import org.jenkinsci.plugins.ansible.ExtraVar;
 
+import hudson.util.Secret;
+
 /**
  * @author pawbur (Pawel Burchard)
  */
@@ -15,7 +17,7 @@ public class ExtraVarsContext implements Context {
     public void extraVar(String key, String value, boolean hidden) {
         ExtraVar extraVar = new ExtraVar();
         extraVar.setKey(key);
-        extraVar.setValue(value);
+        extraVar.setSecretValue(Secret.fromString(value));
         extraVar.setHidden(hidden);
         this.extraVars.add(extraVar);
     }
