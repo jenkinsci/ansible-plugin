@@ -378,17 +378,22 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             if (extraVars == null) {
                 return null;
             }
-            List<ExtraVar> extraVarList = new ArrayList<ExtraVar>();
+            List<ExtraVar> extraVarList = new ArrayList<>();
             for (Map.Entry<String, Object> entry: extraVars.entrySet()) {
                 ExtraVar var = new ExtraVar();
                 var.setKey(entry.getKey());
                 Object o = entry.getValue();
                 if (o instanceof Map) {
-                    var.setSecretValue((Secret)((Map)o).get("value"));
+                    var.setSecretValue(Secret.fromString((String)((Map)o).get("value")));
                     var.setHidden((Boolean)((Map)o).get("hidden"));
-                } else {
+                }
+                else if (o instanceof String) {
+                    var.setSecretValue(Secret.fromString((String)o));
+                    var.setHidden(true);
+                }
+                else if (o instanceof Secret) {
                     var.setSecretValue((Secret)o);
-                    var.setHidden(false);
+                    var.setHidden(true);
                 }
                 extraVarList.add(var);
             }
