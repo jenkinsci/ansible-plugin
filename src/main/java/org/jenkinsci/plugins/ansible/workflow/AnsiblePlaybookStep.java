@@ -391,6 +391,10 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
                     var.setSecretValue(Secret.fromString((String)o));
                     var.setHidden(true);
                 }
+                else if (o instanceof Boolean) {
+                    var.setSecretValue(Secret.fromString(o.toString()));
+                    var.setHidden(true);
+                }
                 else if (o instanceof Secret) {
                     var.setSecretValue((Secret)o);
                     var.setHidden(true);
