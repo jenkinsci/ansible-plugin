@@ -9,7 +9,11 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
-
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.CredentialsScope;
+import com.cloudbees.plugins.credentials.CredentialsStore;
+import com.cloudbees.plugins.credentials.domains.Domain;
+import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import hudson.model.Label;
 import hudson.slaves.DumbSlave;
 
@@ -74,6 +78,26 @@ public class PipelineTest {
         jenkins.waitForCompletion(run1);
         assertThat(run1.getLog(), allOf(
                 containsString("ansible-playbook playbook.yml -e ******** -e ********")
+        ));
+    }
+
+    @Test
+    public void testAnsiblePlaybookSshPass() throws Exception {
+
+        UsernamePasswordCredentialsImpl usernamePassword = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, "usernamePasswordCredentialsId", "test username password", "username", "password");
+        CredentialsStore store = CredentialsProvider.lookupStores(jenkins.jenkins).iterator().next();
+        store.addCredentials(Domain.global(), usernamePassword);
+
+
+        String pipeline = IOUtils.toString(PipelineTest.class.getResourceAsStream("/pipelines/ansiblePlaybookSshPass.groovy"), StandardCharsets.UTF_8);
+        WorkflowJob workflowJob = jenkins.createProject(WorkflowJob.class);
+        workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
+        WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
+        jenkins.waitForCompletion(run1);
+        
+        System.out.println(run1.getLog());
+        assertThat(run1.getLog(), allOf(
+                containsString("sshpass ******** ansible-playbook playbook.yml -u username -k")
         ));
     }
 
