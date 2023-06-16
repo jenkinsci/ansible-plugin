@@ -120,6 +120,10 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     public ArgumentListBuilder appendExtraVars(ArgumentListBuilder args) {
         if (extraVars != null && ! extraVars.isEmpty()) {
             for (ExtraVar var : extraVars) {
+                if (var.getSecretValue() == null) {
+                    listener.getLogger().println("[WARN] Omitting extra var " + var.getKey() + ": check value is a supported type.");
+                    continue;
+                }
                 args.add("-e");
                 String value = envVars.expand(var.getSecretValue().getPlainText());
                 if (Pattern.compile("\\s").matcher(value).find()) {
