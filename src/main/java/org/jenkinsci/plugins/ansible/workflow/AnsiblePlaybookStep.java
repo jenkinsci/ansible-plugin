@@ -374,7 +374,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         @StepContextParameter
         private transient Computer computer;
 
-        private List<ExtraVar> convertExtraVars(Map<String, Object> extraVars) {
+        private static List<ExtraVar> convertExtraVars(Map<String, Object> extraVars) {
             if (extraVars == null) {
                 return null;
             }
@@ -384,24 +384,41 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
                 var.setKey(entry.getKey());
                 Object o = entry.getValue();
                 if (o instanceof Map) {
-                    var.setSecretValue(Secret.fromString((String)((Map)o).get("value")));
-                    var.setHidden((Boolean)((Map)o).get("hidden"));
-                }
-                else if (o instanceof String) {
-                    var.setSecretValue(Secret.fromString((String)o));
-                    var.setHidden(true);
-                }
-                else if (o instanceof Boolean) {
-                    var.setSecretValue(Secret.fromString(o.toString()));
-                    var.setHidden(true);
-                }
-                else if (o instanceof Secret) {
-                    var.setSecretValue((Secret)o);
+                    var.setSecretValue(getSecretFromScalarValue(((Map<?,?>)o).get("value")));
+                    Object hidden = ((Map<?,?>)o).get("hidden");
+                    // If we are given a Boolean value for hidden, respect that.
+                    // Otherwise if omitted or explictly null or any other type adopt the safe default of hidden=true.
+                    if (hidden instanceof Boolean) {
+                        var.setHidden((Boolean)hidden);
+                    } else {
+                        var.setHidden(true);
+                    }
+                } else {
+                    var.setSecretValue(getSecretFromScalarValue(o));
+                    // Consistent with above: for a scalar value effectively hidden is omitted so adopt the safe default of hidden=true.
                     var.setHidden(true);
                 }
                 extraVarList.add(var);
             }
             return extraVarList;
+        }
+        
+        private static Secret getSecretFromScalarValue(Object o) {
+            if (o instanceof String) {
+                return Secret.fromString((String)o);
+            }
+            else if (o instanceof Boolean) {
+                return Secret.fromString(o.toString());
+            }
+            else if (o instanceof Number) {
+                return Secret.fromString(o.toString());
+            }
+            else if (o instanceof Secret) {
+                return (Secret)o;
+            } 
+            else {
+                return null;
+            }
         }
 
         @Override

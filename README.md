@@ -487,8 +487,10 @@ node {
 
 ### Extra Variables
 
-Extra variables can be passed to ansible by using a map in the pipeline script. Use the `hidden` parameter
-to keep the variable secret in the build log.
+Extra variables can be passed to ansible by using a map in the pipeline script.
+Supported value types are: `String`, `Boolean`, `Number`.
+By default the value will be considered potentially sensitive and masked in the logs.
+To override this give a map with keys `value` and `hidden`.
 
 ```groovy
 node {
@@ -497,7 +499,9 @@ node {
         playbook: 'cloud_playbooks/create-aws.yml',
         extraVars: [
             login: 'mylogin',
-            secret_key: [value: 'g4dfKWENpeF6pY05', hidden: true]
+            toggle: true,
+            forks: 8,
+            not_secret: [value: 'I want to see this in the logs', hidden: false]
         ])
 }
 ```

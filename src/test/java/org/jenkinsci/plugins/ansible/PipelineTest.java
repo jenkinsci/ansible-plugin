@@ -88,6 +88,18 @@ public class PipelineTest {
     }
 
     @Test
+    public void testExtraVarsNumeric() throws Exception {
+        String pipeline = IOUtils.toString(PipelineTest.class.getResourceAsStream("/pipelines/extraVarsNumeric.groovy"), StandardCharsets.UTF_8);
+        WorkflowJob workflowJob = jenkins.createProject(WorkflowJob.class);
+        workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
+        WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
+        jenkins.waitForCompletion(run1);
+        assertThat(run1.getLog(), allOf(
+                containsString("ansible-playbook playbook.yml -e ********")
+        ));
+    }
+
+    @Test
     public void testAnsiblePlaybookSshPass() throws Exception {
 
         UsernamePasswordCredentialsImpl usernamePassword = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, "usernamePasswordCredentialsId", "test username password", "username", "password");
