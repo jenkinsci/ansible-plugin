@@ -1,0 +1,65 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
+    <f:entry field="installation" title="Ansible tool">
+        <f:select/>
+    </f:entry>
+    <f:entry field="hosts" title="Host pattern">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="module" title="Module">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="moduleArguments" title="Module arguments">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="inventory" title="Inventory file path in workspace">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="inventoryContent" title="Inventory file content">
+        <f:textbox/>
+    </f:entry>
+    <f:entry field="credentialsId" title="SSH connection credentials">
+        <c:select/>
+    </f:entry>
+    <f:entry field="vaultCredentialsId" title="Vault credentials">
+        <c:select/>
+    </f:entry>
+    <f:entry field="become" title="Use become">
+        <f:checkbox/>
+    </f:entry>
+    <f:entry field="becomeUser" title="Become username">
+        <f:textbox default="root"/>
+    </f:entry>
+    <f:entry field="forks" title="Number of parallel processes to use">
+        <f:textbox/>
+    </f:entry>
+    <f:entry title="${%Check host SSH key}" field="hostKeyChecking">
+        <f:checkbox default="false" />
+    </f:entry>
+    <f:entry field="colorized" title="${%Colorized output}">
+      <f:checkbox default="false" />
+    </f:entry>
+    <f:entry title="${%Extra Variables}">
+      <f:repeatable add="${%Add Extra Variable}" field="extraVars" noAddButton="false">
+        <table width="100%">
+          <f:entry title="${%Key}" field="key">
+            <f:textbox  clazz="required" />
+          </f:entry>
+          <f:entry title="${%Value}" field="value">
+            <f:textbox clazz="required" />
+          </f:entry>
+          <f:entry title="${%Hidden variable in build log}" field="hidden">
+            <f:checkbox default="false" />
+          </f:entry>
+          <f:entry>
+            <div align="right" class="repeatable-delete show-if-only">
+              <f:repeatableDeleteButton value="${%Delete Extra Variable}" />
+            </div>
+          </f:entry>
+        </table>
+      </f:repeatable>
+    </f:entry>
+    <f:entry field="extras" title="Extra parameters">
+        <f:textbox/>
+    </f:entry>
+</j:jelly>

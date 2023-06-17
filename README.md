@@ -44,35 +44,42 @@ allows for a convenient way of doing quick tasks with Ansible.
 
 #### Scripted
 
-Due
-to [JENKINS-43782](https://issues.jenkins.io/browse/JENKINS-43782)
-and [JENKINS-49056](https://issues.jenkins.io/browse/JENKINS-49056),
-adhoc commands cannot be run with a pipeline job.
+**Jenkinsfile**
+
+``` groovy
+ansibleAdhoc credentialsId: 'private_key', inventory: 'inventories/a/hosts', hosts: 'hosts_pattern', moduleArguments: 'module_arguments'
+```
 
 #### Declarative
+
+**Jenkinsfile**
+
+``` groovy
+ansibleAdhoc(credentialsId: 'private_key', inventory: 'inventories/a/hosts', hosts: 'hosts_pattern', moduleArguments: 'module_arguments')
+```
 
 ### Arguments
 
 See also [jenkins.io](https://jenkins.io/doc/pipeline/steps/ansible/) documentation.
 
-| Freestyle Name                         |  Description                                                  |
-| -------------------------------------- | ------------------------------------------------------------- |
-| Ansible installation                   | Ansible installation to use for the playbook invocation       |
-| Host pattern                           | The host pattern to manage. See Ansible Patterns for details. |
-| Module                                 | CLI arg: `-m`                                                 |
-| Module arguments or command to execute | CLI arg: `-a`                                                 |
-| Inventory file or host list            | CLI arg: `-i`: See the Inventory section for additional details. |
-| Inventory inline content               | CLI arg: `-i`: See the Inventory section for additional details. |
-| Credentials                            | The Jenkins credential to use for the SSH connection. See the Authentication section for additional details. |
-| Vault Credentials                      | CLI arg: `--vault-password-file`: The Jenkins credential to use as the vault credential. See the Vault Credentials section for additional details. |
-| sudo                                   | CLI arg: `-s` |
-| sudo user                              | CLI arg: `-U` |
-| Number of parallel processes           | CLI arg: `-f` |
-| Check host SSH key                     | Toggle checking of the host key. Sets the environment variable `ANSIBLE_HOST_KEY_CHECKING`, similar to the recommendations for running with Vagrant. |
-| Unbuffered stdout                      | Toggle buffering of standard out. Sets the environment variable `PYTHONUNBUFFERED`, similar to the recommendations for running with Vagrant. |
-| Colorized stdout                       | Toggle color codes in console text. See Colorized Output section for example usage. Sets the environment variable `ANSIBLE_FORCE_COLOR`, similar to the recommendations for running with Vagrant. |
-| Extra Variables                        | CLI arg: `-e` |
-| Additional parameters                  | String passed to the Ansible Command Line invocation as-is. |
+| Freestyle Name                         | Pipeline Name      |  Description                                                  |
+| -------------------------------------- | ------------------ | ------------------------------------------------------------- |
+| Ansible installation                   | installation       | Ansible installation to use for the playbook invocation       |
+| Host pattern                           | hosts              | The host pattern to manage. See Ansible Patterns for details. |
+| Module                                 | module             | CLI arg: `-m`                                                 |
+| Module arguments or command to execute | moduleArguments    | CLI arg: `-a`                                                 |
+| Inventory file or host list            | inventory          | CLI arg: `-i`: See the Inventory section for additional details. |
+| Inventory inline content               | inventoryContent   | CLI arg: `-i`: See the Inventory section for additional details. |
+| Credentials                            | credentialsId      | The Jenkins credential to use for the SSH connection. See the Authentication section for additional details. |
+| Vault Credentials                      | vaultCredentialsId | CLI arg: `--vault-password-file`: The Jenkins credential to use as the vault credential. See the Vault Credentials section for additional details. |
+| sudo                                   | become             | CLI arg: `-s` |
+| sudo user                              | becomeUser         | CLI arg: `-U` |
+| Number of parallel processes           | forks              | CLI arg: `-f` |
+| Check host SSH key                     | hostKeyChecking    | Toggle checking of the host key. Sets the environment variable `ANSIBLE_HOST_KEY_CHECKING`, similar to the recommendations for running with Vagrant. |
+| Unbuffered stdout                      |                    | Toggle buffering of standard out. Sets the environment variable `PYTHONUNBUFFERED`, similar to the recommendations for running with Vagrant. |
+| Colorized stdout                       | colorized          | Toggle color codes in console text. See Colorized Output section for example usage. Sets the environment variable `ANSIBLE_FORCE_COLOR`, similar to the recommendations for running with Vagrant. |
+| Extra Variables                        | extraVars          | CLI arg: `-e` |
+| Additional parameters                  | extras             | String passed to the Ansible Command Line invocation as-is. |
 
 ## Playbook
 

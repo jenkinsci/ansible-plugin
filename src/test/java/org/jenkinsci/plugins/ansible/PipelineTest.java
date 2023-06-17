@@ -168,4 +168,15 @@ public class PipelineTest {
         ));
     }
 
+    @Test
+    public void testAdhocCommand() throws Exception {
+        String pipeline = IOUtils.toString(PipelineTest.class.getResourceAsStream("/pipelines/adhocCommand.groovy"), StandardCharsets.UTF_8);
+        WorkflowJob workflowJob = jenkins.createProject(WorkflowJob.class);
+        workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
+        WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
+        jenkins.waitForCompletion(run1);
+        assertThat(run1.getLog(), allOf(
+                containsString("ansible 127.0.0.1 -i inventory -a " + "\"" + "echo something" + "\"")
+        ));
+    }
 }
