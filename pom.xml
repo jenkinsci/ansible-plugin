@@ -21,7 +21,7 @@
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/ansible-plugin</gitHubRepo>
-    <jenkins.version>2.387.3</jenkins.version>
+    <jenkins.version>2.401.3</jenkins.version>
   </properties>
   <licenses>
     <license>
@@ -34,7 +34,7 @@
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.387.x</artifactId>
+        <artifactId>bom-2.401.x</artifactId>
         <version>2258.v522c10b_d4695</version>
         <scope>import</scope>
         <type>pom</type>
