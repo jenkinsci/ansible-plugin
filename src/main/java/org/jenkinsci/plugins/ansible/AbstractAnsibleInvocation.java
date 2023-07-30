@@ -219,13 +219,9 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     protected ArgumentListBuilder prependPasswordCredentials(ArgumentListBuilder args) {
         if (credentials instanceof UsernamePasswordCredentials) {
             UsernamePasswordCredentials passwordCredentials = (UsernamePasswordCredentials)credentials;
-            args.add("sshpass").addMasked("-p" + escapeSpecialCharacters(Secret.toString(passwordCredentials.getPassword())));
+            args.add("sshpass").addMasked("-p" + Secret.toString(passwordCredentials.getPassword()));
         }
         return args;
-    }
-
-    protected String escapeSpecialCharacters(String input) {
-        return input.replaceAll("[!\\\"#$%&'()*+,-./:;<=>?@[\\\\\\\\]^`{|}~]", "\\\\$0");
     }
 
     protected ArgumentListBuilder appendCredentials(ArgumentListBuilder args)
