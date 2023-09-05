@@ -476,6 +476,30 @@ steps {
 }
 ```
 
+```groovy
+steps {
+    ansiblePlaybookBuilder {
+        playbook('path/playbook.yml')
+        inventory {
+            inventoryDoNotSpecify()
+        }
+        unbufferedOutput(true)
+        extraVars {
+            extraVar {
+                key('key1')
+                secretValue(hudson.util.Secret.fromString('value1'))
+                hidden(false)
+            }
+            extraVar {
+                key('key2')
+                secretValue(hudson.util.Secret.fromString('value2'))
+                hidden(true)
+            }
+        }
+    }
+}
+```
+
 ## Pipeline support
 
 Ansible playbooks can be executed from workflow scripts. Only the `playbook` parameter is mandatory.
