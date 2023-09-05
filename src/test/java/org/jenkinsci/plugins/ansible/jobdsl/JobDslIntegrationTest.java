@@ -25,6 +25,7 @@ public class JobDslIntegrationTest {
     public static final String ANSIBLE_DSL_GROOVY_PLAYBOOK_LEGACY = "jobdsl/legacyPlaybook.groovy";
     public static final String ANSIBLE_DSL_GROOVY_ADHOC = "jobdsl/adhoc.groovy";
     public static final String ANSIBLE_DSL_GROOVY_VAULT = "jobdsl/vault.groovy";
+    public static final String ANSIBLE_DSL_GROOVY_PLAYBOOK_BUILDER = "jobdsl/playbookBuilder.groovy";
 
     public JenkinsRule jenkins = new JenkinsRule();
     public DslJobRule dsl = new DslJobRule(jenkins);
@@ -127,6 +128,19 @@ public class JobDslIntegrationTest {
         assertThat("action", step.action, is("encrypt_string"));
         assertThat("content", step.content, is("my_secret"));
         assertThat("vaultCredentialsId", step.vaultCredentialsId, is("ansible_vault_credentials"));
+
+    }
+
+    @Test
+    @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_PLAYBOOK_BUILDER)
+    public void shouldCreateJobWithPlaybookBuilderDsl() throws Exception {
+        AnsiblePlaybookBuilder step = dsl.getGeneratedJob().getBuildersList().get(AnsiblePlaybookBuilder.class);
+        assertThat("Should add playbook builder", step, notNullValue());
+
+        assertThat("playbook", step.playbook, is("path/playbook.yml"));
+        assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
+        assertThat("extraVar.value", step.extraVars.get(0).getSecretValue().getPlainText(), is("value"));
+        assertThat("extraVar.hidden", step.extraVars.get(0).isHidden(), is(true));
 
     }
 }
