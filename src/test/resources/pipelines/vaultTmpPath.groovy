@@ -19,7 +19,7 @@ pipeline {
                     ansiblePlaybook(
                         playbook: 'playbook.yml',
                         vaultCredentialsId: 'vaultCredentialsFile',
-                        vaultTmpPath: '/tmp/',
+                        vaultTmpPath: System.getProperty("java.io.tmpdir"),
                     )
                 }
             }

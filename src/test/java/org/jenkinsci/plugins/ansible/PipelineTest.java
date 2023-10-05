@@ -163,11 +163,12 @@ public class PipelineTest {
         workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
         WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
         jenkins.waitForCompletion(run1);
+        String tempDir = System.getProperty("java.io.tmpdir");
         assertThat(run1.getLog(), allOf(
                 containsString("ansible-playbook playbook.yml --vault-password-file ")
         ));
         assertThat(run1.getLog(), not(
-                containsString("ansible-playbook playbook.yml --vault-password-file /tmp/")
+                containsString("ansible-playbook playbook.yml --vault-password-file " + tempDir)
         ));
     }
 
@@ -192,11 +193,12 @@ public class PipelineTest {
 
         String pipeline = IOUtils.toString(PipelineTest.class.getResourceAsStream("/pipelines/vaultTmpPath.groovy"), StandardCharsets.UTF_8);
         WorkflowJob workflowJob = jenkins.createProject(WorkflowJob.class);
-        workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
+        workflowJob.setDefinition(new CpsFlowDefinition(pipeline, false));
         WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
         jenkins.waitForCompletion(run1);
+        String tempDir = System.getProperty("java.io.tmpdir");
         assertThat(run1.getLog(), allOf(
-                containsString("ansible-playbook playbook.yml --vault-password-file /tmp/")
+                containsString("ansible-playbook playbook.yml --vault-password-file " + tempDir)
         ));
     }
 }
