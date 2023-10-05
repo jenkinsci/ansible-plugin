@@ -12,6 +12,9 @@
     <f:entry field="newVaultCredentialsId" title="New vault credentials">
         <c:select/>
     </f:entry>
+    <f:entry field="vaultTmpPath" title="Vault tmp path">
+        <f:textbox/>
+    </f:entry>
     <f:entry field="content" title="Content">
         <f:textbox/>
     </f:entry>

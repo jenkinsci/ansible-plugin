@@ -37,21 +37,21 @@ class Utils
      * @throws IOException
      * @throws InterruptedException
      */
-    static FilePath createSshKeyFile(FilePath key, FilePath workspace, SSHUserPrivateKey credentials, boolean inWorkspace) throws IOException, InterruptedException {
+    static FilePath createSshKeyFile(FilePath key, FilePath tmpPath, SSHUserPrivateKey credentials, boolean inThisDir) throws IOException, InterruptedException {
         StringBuilder sb = new StringBuilder();
         List<String> privateKeys = credentials.getPrivateKeys();
         for (String s : privateKeys) {
             sb.append(s);
         }
-        key = workspace.createTextTempFile("ssh", ".key", sb.toString(), inWorkspace);
+        key = tmpPath.createTextTempFile("ssh", ".key", sb.toString(), inThisDir);
         key.chmod(0400);
         return key;
     }
 
-    static FilePath createSshAskPassFile(FilePath script, FilePath workspace, SSHUserPrivateKey credentials, boolean inWorkspace) throws IOException, InterruptedException {
+    static FilePath createSshAskPassFile(FilePath script, FilePath tmpPath, SSHUserPrivateKey credentials, boolean inThisDir) throws IOException, InterruptedException {
         StringBuilder sb = new StringBuilder();
         sb.append("#! /bin/sh\n").append("/bin/echo \"" + Secret.toString(credentials.getPassphrase()) + "\"");
-        script = workspace.createTextTempFile("ssh", ".sh", sb.toString(), inWorkspace);
+        script = tmpPath.createTextTempFile("ssh", ".sh", sb.toString(), inThisDir);
         script.chmod(0700);
         return script;
     }
@@ -65,9 +65,9 @@ class Utils
      * @throws IOException
      * @throws InterruptedException
      */
-    static FilePath createVaultPasswordFile(FilePath key, FilePath workspace, FileCredentials credentials) throws IOException, InterruptedException {
+    static FilePath createVaultPasswordFile(FilePath key, FilePath tmpPath, FileCredentials credentials) throws IOException, InterruptedException {
         try (InputStream content = credentials.getContent()) {
-            key = workspace.createTempFile("vault", ".password");
+            key = tmpPath.createTempFile("vault", ".password");
             key.copyFrom(content);
             key.chmod(0400);
         }
@@ -83,8 +83,8 @@ class Utils
      * @throws IOException
      * @throws InterruptedException
      */
-    static FilePath createVaultPasswordFile(FilePath key, FilePath workspace, StringCredentials credentials) throws IOException, InterruptedException {
-        key = workspace.createTextTempFile("vault", ".password", credentials.getSecret().getPlainText(), true);
+    static FilePath createVaultPasswordFile(FilePath key, FilePath tmpPath, StringCredentials credentials) throws IOException, InterruptedException {
+        key = tmpPath.createTextTempFile("vault", ".password", credentials.getSecret().getPlainText(), true);
         key.chmod(0400);
         return key;
     }

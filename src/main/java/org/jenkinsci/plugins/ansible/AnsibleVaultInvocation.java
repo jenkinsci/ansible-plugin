@@ -106,13 +106,14 @@ public class AnsibleVaultInvocation extends AbstractAnsibleInvocation<AnsibleVau
             throws IOException, InterruptedException
     {
         if(newVaultCredentials != null){
+            FilePath tmpPath = vaultTmpPath != null ? vaultTmpPath : ws;
             if (newVaultCredentials instanceof FileCredentials) {
                 FileCredentials secretFile = (FileCredentials)newVaultCredentials;
-                newVaultPassword = Utils.createVaultPasswordFile(newVaultPassword, ws, secretFile);
+                newVaultPassword = Utils.createVaultPasswordFile(newVaultPassword, tmpPath, secretFile);
                 args.add("--new-vault-password-file").add(newVaultPassword.getRemote().replace("%", "%%"));
             } else if (newVaultCredentials instanceof StringCredentials) {
                 StringCredentials secretText = (StringCredentials)newVaultCredentials;
-                newVaultPassword = Utils.createVaultPasswordFile(newVaultPassword, ws, secretText);
+                newVaultPassword = Utils.createVaultPasswordFile(newVaultPassword, tmpPath, secretText);
                 args.add("--new-vault-password-file").add(newVaultPassword.getRemote().replace("%", "%%"));
             }
         }

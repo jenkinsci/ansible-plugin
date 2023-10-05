@@ -21,6 +21,7 @@ public class AnsibleContext implements Context {
     private String credentialsId;
     private String vaultCredentialsId;
     private String newVaultCredentialsId;
+    private String vaultTmpPath = null;
     private String content;
     private String input;
     private String output;
@@ -80,6 +81,10 @@ public class AnsibleContext implements Context {
 
     public void newVaultCredentialsId(String newVaultCredentialsId) {
         this.newVaultCredentialsId = newVaultCredentialsId;
+    }
+
+    public void setVaultTmpPath(String vaultTmpPath) {
+        this.vaultTmpPath = vaultTmpPath;
     }
 
     public void content(String content) {
@@ -172,6 +177,10 @@ public class AnsibleContext implements Context {
 
     public String getNewVaultCredentialsId() {
         return newVaultCredentialsId;
+    }
+
+    public String getVaultTmpPath() {
+        return vaultTmpPath;
     }
 
     public String getContent() {

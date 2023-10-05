@@ -16,6 +16,7 @@
 package org.jenkinsci.plugins.ansible;
 
 import java.io.IOException;
+import java.io.File;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -54,6 +55,8 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
     public String credentialsId = null;
 
     public String vaultCredentialsId = null;
+
+    public String vaultTmpPath = null;
 
     public final String hostPattern;
 
@@ -135,6 +138,11 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
     public void setVaultCredentialsId(String vaultCredentialsId) {
         this.vaultCredentialsId = vaultCredentialsId;
     }
+
+    @DataBoundSetter
+    public void setVaultTmpPath(String vaultTmpPath) {
+        this.vaultTmpPath = vaultTmpPath;
+    }
     
     public void setBecome(boolean become) {
         this.become = become;
@@ -215,6 +223,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
             invocation.setVaultCredentials(StringUtils.isNotBlank(vaultCredentialsId) ?
                     CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run) :
                     null);
+            invocation.setVaultTmpPath(StringUtils.isNotBlank(vaultTmpPath) ? new FilePath(new File(vaultTmpPath)) : null);
             invocation.setExtraVars(extraVars);
             invocation.setAdditionalParameters(additionalParameters);
             invocation.setDisableHostKeyCheck(disableHostKeyChecking);

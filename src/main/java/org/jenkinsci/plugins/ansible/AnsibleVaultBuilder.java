@@ -14,6 +14,7 @@
 package org.jenkinsci.plugins.ansible;
 
 import java.io.IOException;
+import java.io.File;
 import javax.annotation.Nonnull;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
@@ -53,6 +54,8 @@ public class AnsibleVaultBuilder extends Builder implements SimpleBuildStep
 
     public String newVaultCredentialsId = null;
 
+    public String vaultTmpPath = null;
+
     public String content = null;
 
     public String input = null;
@@ -82,6 +85,11 @@ public class AnsibleVaultBuilder extends Builder implements SimpleBuildStep
     @DataBoundSetter
     public void setNewVaultCredentialsId(String newVaultCredentialsId) {
         this.newVaultCredentialsId = newVaultCredentialsId;
+    }
+
+    @DataBoundSetter
+    public void setVaultTmpPath(String vaultTmpPath) {
+        this.vaultTmpPath = vaultTmpPath;
     }
 
     @DataBoundSetter
@@ -123,6 +131,7 @@ public class AnsibleVaultBuilder extends Builder implements SimpleBuildStep
                     CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run) : null);
             invocation.setNewVaultCredentials(StringUtils.isNotBlank(newVaultCredentialsId) ?
                     CredentialsProvider.findCredentialById(newVaultCredentialsId, StandardCredentials.class, run) : null);
+            invocation.setVaultTmpPath(StringUtils.isNotBlank(vaultTmpPath) ? new FilePath(new File(vaultTmpPath)) : null);
             invocation.setContent(content);
             invocation.setInput(input);
             invocation.setOutput(output);

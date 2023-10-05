@@ -32,6 +32,10 @@
     <c:select/>
   </f:entry>
 
+  <f:entry title="${%Vault tmp path}" field="vaultTmpPath">
+    <f:textbox/>
+  </f:entry>
+
   <f:optionalBlock name="become" title="${%become}" checked="${instance.become}" inline="true" help="${descriptor.getHelpFile('become')}">
     <f:entry title="${%become user}" field="becomeUser">
       <f:textbox />

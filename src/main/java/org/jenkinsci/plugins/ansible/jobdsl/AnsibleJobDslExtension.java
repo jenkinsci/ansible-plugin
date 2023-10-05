@@ -28,6 +28,7 @@ public class AnsibleJobDslExtension extends ContextExtensionPoint {
         adhoc.setAnsibleName(context.getAnsibleName());
         adhoc.setCredentialsId(context.getCredentialsId());
         adhoc.setVaultCredentialsId(context.getVaultCredentialsId());
+        adhoc.setVaultTmpPath(context.getVaultTmpPath());
         adhoc.setColorizedOutput(context.isColorizedOutput());
         adhoc.setForks(context.getForks());
         adhoc.setDisableHostKeyChecking(context.isDisableHostKeyChecking());
@@ -52,6 +53,7 @@ public class AnsibleJobDslExtension extends ContextExtensionPoint {
         plbook.setAnsibleName(context.getAnsibleName());
         plbook.setCredentialsId(context.getCredentialsId());
         plbook.setVaultCredentialsId(context.getVaultCredentialsId());
+        plbook.setVaultTmpPath(context.getVaultTmpPath());
         plbook.setColorizedOutput(context.isColorizedOutput());
         plbook.setForks(context.getForks());
         plbook.setDisableHostKeyChecking(context.isDisableHostKeyChecking());
@@ -80,6 +82,7 @@ public class AnsibleJobDslExtension extends ContextExtensionPoint {
         vault.setAction(context.getAction());
         vault.setVaultCredentialsId(context.getVaultCredentialsId());
         vault.setNewVaultCredentialsId(context.getNewVaultCredentialsId());
+        vault.setVaultTmpPath(context.getVaultTmpPath());
         vault.setContent(context.getContent());
         vault.setInput(context.getInput());
         vault.setOutput(context.getOutput());
