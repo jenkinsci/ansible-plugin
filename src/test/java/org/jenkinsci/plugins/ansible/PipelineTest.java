@@ -38,6 +38,14 @@ public class PipelineTest {
         agent = jenkins.createSlave(Label.get("test-agent"));
     }
 
+    private String getTmpPath() {
+        // In Windows the last slash is instead a backslash
+        if(System.getProperty("os.name").startsWith("Windows")) {
+            return System.getProperty("java.io.tmpdir").replace('/', '\\');
+        }
+        return System.getProperty("java.io.tmpdir");
+    }
+
     @Test
     public void testMinimalPipeline() throws Exception {
         String pipeline = IOUtils.toString(PipelineTest.class.getResourceAsStream("/pipelines/minimal.groovy"), StandardCharsets.UTF_8);
@@ -146,8 +154,12 @@ public class PipelineTest {
         workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
         WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
         jenkins.waitForCompletion(run1);
+        String tempDir = getTmpPath();
         assertThat(run1.getLog(), allOf(
                 containsString("ansible-playbook playbook.yml --vault-password-file ")
+        ));
+        assertThat(run1.getLog(), not(
+                containsString("ansible-playbook playbook.yml --vault-password-file " + tempDir)
         ));
     }
 
@@ -163,12 +175,8 @@ public class PipelineTest {
         workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
         WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
         jenkins.waitForCompletion(run1);
-        String tempDir = System.getProperty("java.io.tmpdir");
         assertThat(run1.getLog(), allOf(
                 containsString("ansible-playbook playbook.yml --vault-password-file ")
-        ));
-        assertThat(run1.getLog(), not(
-                containsString("ansible-playbook playbook.yml --vault-password-file " + tempDir)
         ));
     }
 
@@ -196,7 +204,7 @@ public class PipelineTest {
         workflowJob.setDefinition(new CpsFlowDefinition(pipeline, false));
         WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
         jenkins.waitForCompletion(run1);
-        String tempDir = System.getProperty("java.io.tmpdir");
+        String tempDir = getTmpPath();
         assertThat(run1.getLog(), allOf(
                 containsString("ansible-playbook playbook.yml --vault-password-file " + tempDir)
         ));
