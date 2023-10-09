@@ -1,0 +1,22 @@
+# More information about the Jenkins security scan can be found at the developer docs: https://www.jenkins.io/redirect/jenkins-security-scan/
+
+name: jenkins-security-scan
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+  workflow_dispatch:
+
+permissions:
+  security-events: write
+  contents: read
+  actions: read
+
+jobs:
+  security-scan:
+    uses: jenkins-infra/jenkins-security-scan/.github/workflows/jenkins-security-scan.yaml@v2
+    with:
+      java-cache: 'maven' # Optionally enable use of a build dependency cache. Specify 'maven' or 'gradle' as appropriate.
+      java-version: 11 # What version of Java to set up for the build.
