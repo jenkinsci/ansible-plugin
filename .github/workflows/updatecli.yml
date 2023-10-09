@@ -1,0 +1,29 @@
+name: updatecli
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *'
+
+jobs:
+  updatecli:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup updatecli
+        uses: updatecli/updatecli-action@v2
+
+      - name: Diff
+        continue-on-error: true
+        run: |
+          updatecli diff --config updatecli/updatecli.d --values updatecli/values.yml
+        env:
+          UPDATECLI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply
+        if: github.ref == 'refs/heads/main'
+        run: |
+          updatecli apply --config updatecli/updatecli.d --values updatecli/values.yml
+        env:
+          UPDATECLI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

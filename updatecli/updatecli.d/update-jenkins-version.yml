@@ -1,0 +1,41 @@
+scms:
+  github:
+    kind: github
+    spec:
+      user: '{{ .github.user }}'
+      email: '{{ .github.email }}'
+      owner: '{{ .github.owner }}'
+      repository: '{{ .github.repository }}'
+      branch: '{{ .github.branch }}'
+      username: '{{ .github.username }}'
+      token: '{{ requiredEnv .github.token }}'
+sources:
+  jenkins:
+    name: Get Jenkins LTS Version
+    kind: jenkins
+    spec:
+      release: stable
+    github:
+      token: '{{ requiredEnv .github.token }}'
+      username: '{{ .github.username }}'
+targets:
+  jenkins:
+    name: Update Jenkins Version
+    sourceid: jenkins
+    scmid: github
+    kind: file
+    spec:
+      file: pom.xml
+      matchpattern: '<jenkins.version>(.*)</jenkins.version>'
+      replacepattern: '<jenkins.version>{{ source `jenkins` }}</jenkins.version>'
+actions:
+  jenkins:
+    title: Bump Jenkins version {{ source "jenkins" }}
+    kind: github/pullrequest
+    scmid: github
+    targets:
+      - jenkins
+    spec:
+      labels:
+        - dependencies
+      automerge: false
