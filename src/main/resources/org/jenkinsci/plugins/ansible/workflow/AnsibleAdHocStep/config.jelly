@@ -24,6 +24,9 @@
     <f:entry field="vaultCredentialsId" title="Vault credentials">
         <c:select/>
     </f:entry>
+    <f:entry field="vaultTmpPath" title="Vault tmp path">
+        <f:textbox/>
+    </f:entry>
     <f:entry field="become" title="Use become">
         <f:checkbox/>
     </f:entry>

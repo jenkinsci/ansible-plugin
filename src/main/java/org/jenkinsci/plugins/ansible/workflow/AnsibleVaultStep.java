@@ -52,6 +52,7 @@ public class AnsibleVaultStep extends AbstractStepImpl {
     private String installation;
     private String action;
     private String vaultCredentialsId;
+    private String vaultTmpPath;
     private String newVaultCredentialsId;
     private String content = null;
     private String input = null;
@@ -75,6 +76,11 @@ public class AnsibleVaultStep extends AbstractStepImpl {
     @DataBoundSetter
     public void setNewVaultCredentialsId(String newVaultCredentialsId) {
         this.newVaultCredentialsId = Util.fixEmptyAndTrim(newVaultCredentialsId);
+    }
+
+    @DataBoundSetter
+    public void setVaultTmpPath(String vaultTmpPath) {
+        this.vaultTmpPath = vaultTmpPath;
     }
 
     @DataBoundSetter
@@ -111,6 +117,10 @@ public class AnsibleVaultStep extends AbstractStepImpl {
 
     public String getNewVaultCredentialsId() {
         return newVaultCredentialsId;
+    }
+
+    public String getVaultTmpPath() {
+        return vaultTmpPath;
     }
 
     public String getContent() {
@@ -215,6 +225,7 @@ public class AnsibleVaultStep extends AbstractStepImpl {
             builder.setAction(step.getAction());
             builder.setVaultCredentialsId(step.getVaultCredentialsId());
             builder.setNewVaultCredentialsId(step.getNewVaultCredentialsId());
+            builder.setVaultTmpPath(step.getVaultTmpPath());
             builder.setContent(step.getContent());
             builder.setInput(step.getInput());
             builder.setOutput(step.getOutput());

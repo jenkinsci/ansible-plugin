@@ -38,6 +38,14 @@ public class PipelineTest {
         agent = jenkins.createSlave(Label.get("test-agent"));
     }
 
+    private String getTmpPath() {
+        // In Windows the last slash is instead a backslash
+        if(System.getProperty("os.name").startsWith("Windows")) {
+            return System.getProperty("java.io.tmpdir").replace('/', '\\');
+        }
+        return System.getProperty("java.io.tmpdir");
+    }
+
     @Test
     public void testMinimalPipeline() throws Exception {
         String pipeline = IOUtils.toString(PipelineTest.class.getResourceAsStream("/pipelines/minimal.groovy"), StandardCharsets.UTF_8);
@@ -146,8 +154,12 @@ public class PipelineTest {
         workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
         WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
         jenkins.waitForCompletion(run1);
+        String tempDir = getTmpPath();
         assertThat(run1.getLog(), allOf(
                 containsString("ansible-playbook playbook.yml --vault-password-file ")
+        ));
+        assertThat(run1.getLog(), not(
+                containsString("ansible-playbook playbook.yml --vault-password-file " + tempDir)
         ));
     }
 
@@ -177,6 +189,24 @@ public class PipelineTest {
         jenkins.waitForCompletion(run1);
         assertThat(run1.getLog(), allOf(
                 containsString("ansible 127.0.0.1 -i inventory -a " + "\"" + "echo something" + "\"")
+        ));
+    }
+
+    @Test
+    public void testVaultTmpPathString() throws Exception {
+        
+        StringCredentials vaultCredentials = new StringCredentialsImpl(CredentialsScope.GLOBAL, "vaultCredentialsString", "test username password", Secret.fromString("test-secret"));
+        CredentialsStore store = CredentialsProvider.lookupStores(jenkins.jenkins).iterator().next();
+        store.addCredentials(Domain.global(), vaultCredentials);
+
+        String pipeline = IOUtils.toString(PipelineTest.class.getResourceAsStream("/pipelines/vaultTmpPath.groovy"), StandardCharsets.UTF_8);
+        WorkflowJob workflowJob = jenkins.createProject(WorkflowJob.class);
+        workflowJob.setDefinition(new CpsFlowDefinition(pipeline, false));
+        WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
+        jenkins.waitForCompletion(run1);
+        String tempDir = getTmpPath();
+        assertThat(run1.getLog(), allOf(
+                containsString("ansible-playbook playbook.yml --vault-password-file " + tempDir)
         ));
     }
 }

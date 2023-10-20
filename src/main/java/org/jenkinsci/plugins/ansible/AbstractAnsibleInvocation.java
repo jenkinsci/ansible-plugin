@@ -53,6 +53,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     protected boolean sudo;
     protected String sudoUser;
     protected StandardCredentials vaultCredentials;
+    protected FilePath vaultTmpPath;
     protected StandardUsernameCredentials credentials;
     protected List<ExtraVar> extraVars;
     protected String additionalParameters;
@@ -216,6 +217,11 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
         return (T) this;
     }
 
+    public T setVaultTmpPath(FilePath vaultTmpPath) {
+        this.vaultTmpPath = vaultTmpPath;
+        return (T) this;
+    }
+
     protected ArgumentListBuilder prependPasswordCredentials(ArgumentListBuilder args) {
         if (credentials instanceof UsernamePasswordCredentials) {
             UsernamePasswordCredentials passwordCredentials = (UsernamePasswordCredentials)credentials;
@@ -228,12 +234,13 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
             throws IOException, InterruptedException
     {
         if (credentials instanceof SSHUserPrivateKey) {
+            FilePath tmpPath = vaultTmpPath != null ? vaultTmpPath : ws;
             SSHUserPrivateKey privateKeyCredentials = (SSHUserPrivateKey)credentials;
-            key = Utils.createSshKeyFile(key, ws, privateKeyCredentials, copyCredentialsInWorkspace);
+            key = Utils.createSshKeyFile(key, tmpPath, privateKeyCredentials, copyCredentialsInWorkspace);
             args.add("--private-key").add(key.getRemote().replace("%", "%%"));
             args.add("-u").add(privateKeyCredentials.getUsername());
             if (privateKeyCredentials.getPassphrase() != null) {
-                script = Utils.createSshAskPassFile(script, ws, privateKeyCredentials, copyCredentialsInWorkspace);
+                script = Utils.createSshAskPassFile(script, tmpPath, privateKeyCredentials, copyCredentialsInWorkspace);
                 environment.put("SSH_ASKPASS", script.getRemote());
                 // inspired from https://github.com/jenkinsci/git-client-plugin/pull/168
                 // but does not work with MacOSX
@@ -252,13 +259,14 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
             throws IOException, InterruptedException
     {
         if(vaultCredentials != null){
+            FilePath tmpPath = vaultTmpPath != null ? vaultTmpPath : ws;
             if (vaultCredentials instanceof FileCredentials) {
                 FileCredentials secretFile = (FileCredentials)vaultCredentials;
-                vaultPassword = Utils.createVaultPasswordFile(vaultPassword, ws, secretFile);
+                vaultPassword = Utils.createVaultPasswordFile(vaultPassword, tmpPath, secretFile);
                 args.add("--vault-password-file").add(vaultPassword.getRemote().replace("%", "%%"));
             } else if (vaultCredentials instanceof StringCredentials) {
                 StringCredentials secretText = (StringCredentials)vaultCredentials;
-                vaultPassword = Utils.createVaultPasswordFile(vaultPassword, ws, secretText);
+                vaultPassword = Utils.createVaultPasswordFile(vaultPassword, tmpPath, secretText);
                 args.add("--vault-password-file").add(vaultPassword.getRemote().replace("%", "%%"));
             }
         }

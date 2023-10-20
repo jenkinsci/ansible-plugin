@@ -24,6 +24,10 @@
     <c:select/>
   </f:entry>
 
+  <f:entry title="${%Vault tmp path}" field="vaultTmpPath">
+    <f:textbox/>
+  </f:entry>
+
   <f:entry title="${%Content}" field="content">
     <f:textbox/>
   </f:entry>

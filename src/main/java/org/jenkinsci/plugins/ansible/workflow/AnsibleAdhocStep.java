@@ -65,6 +65,7 @@ public class AnsibleAdhocStep extends AbstractStepImpl {
     private String installation;
     private String credentialsId;
     private String vaultCredentialsId;
+    private String vaultTmpPath = null;
     private boolean become = false;
     private String becomeUser = "root";
     private List<ExtraVar> extraVars = null;
@@ -111,6 +112,11 @@ public class AnsibleAdhocStep extends AbstractStepImpl {
     @DataBoundSetter
     public void setVaultCredentialsId(String vaultCredentialsId) {
         this.vaultCredentialsId = Util.fixEmptyAndTrim(vaultCredentialsId);
+    }
+
+    @DataBoundSetter
+    public void setVaultTmpPath(String vaultTmpPath) {
+        this.vaultTmpPath = vaultTmpPath;
     }
 
     @DataBoundSetter
@@ -187,6 +193,10 @@ public class AnsibleAdhocStep extends AbstractStepImpl {
 
     public String getVaultCredentialsId() {
         return vaultCredentialsId;
+    }
+
+    public String getVaultTmpPath() {
+        return vaultTmpPath;
     }
 
     public boolean isBecome() {
@@ -305,6 +315,7 @@ public class AnsibleAdhocStep extends AbstractStepImpl {
             builder.setBecomeUser(step.getBecomeUser());
             builder.setCredentialsId(step.getCredentialsId());
             builder.setVaultCredentialsId(step.getVaultCredentialsId());
+            builder.setVaultTmpPath(step.getVaultTmpPath());
             builder.setForks(step.getForks());
             builder.setExtraVars(step.getExtraVars());
             builder.setAdditionalParameters(step.getExtras());

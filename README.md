@@ -72,6 +72,7 @@ See also [jenkins.io](https://jenkins.io/doc/pipeline/steps/ansible/) documentat
 | Inventory inline content               | inventoryContent   | CLI arg: `-i`: See the Inventory section for additional details. |
 | Credentials                            | credentialsId      | The Jenkins credential to use for the SSH connection. See the Authentication section for additional details. |
 | Vault Credentials                      | vaultCredentialsId | CLI arg: `--vault-password-file`: The Jenkins credential to use as the vault credential. See the Vault Credentials section for additional details. |
+| Vault temp path                        | vaultTmpPath       | Path where to store temporary vault secrets files, ssh key files, etc... Default is in workspace. |
 | sudo                                   | become             | CLI arg: `-s` |
 | sudo user                              | becomeUser         | CLI arg: `-U` |
 | Number of parallel processes           | forks              | CLI arg: `-f` |
@@ -123,6 +124,7 @@ for documentation extracted from the online help of the plugin.
 | Inventory inline content               | inventoryContent    | CLI arg: `-i`: See the inventory section for details.         |
 | Credentials                            | credentialsId       | The Jenkins credential to use for the SSH connection. See the Authentication section for additional details |
 | Vault Credentials                      | vaultCredentialsId  | The Jenkins credential to use as the vault credential. See the Vault Credentials section for more details |
+| Vault temp path                        | vaultTmpPath        | Path where to store temporary vault secrets files, ssh key files, etc... rkspace. |
 | sudo                                   | sudo                | CLI arg: `-s`                                                 |
 | sudo user                              | sudoUser            | CLI arg: `-U`                                                 |
 | Host subset                            | limit               | CLI arg: `-l`                                                 |
@@ -269,6 +271,7 @@ See also [jenkins.io Pipeline step](https://jenkins.io/doc/pipeline/steps/ansibl
 | Action                                 | action                | Mandatory. The name of the action to use. Interactive operations such as create, edit, and view are not supported. |
 | Vault Credentials                      | vaultCredentialsId    | CLI arg: `--vault-password-file`. The Jenkins credential to use as the vault credential. See the Vault Credentials section for more details |
 | New Vault Credentials                  | newVaultCredentialsId | CLI arg: `--new-vault-password-file`. The Jenkins credential to use as the vault credential. See the Vault Credentials section for more details |
+| Vault temp path                        | vaultTmpPath          | Path where to store temporary vault secrets files, ssh key files, etc... Default is in workspace. |
 | Content                                | content               | The content to encrypt with the 'encrypt_string' action.      |
 | Input                                  | input                 | The file to encrypt with the encrypt actions.                 |
 | Output                                 | output                | CLI arg: `--output`                                           |

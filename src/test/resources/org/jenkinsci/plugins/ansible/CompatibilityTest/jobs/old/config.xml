@@ -19,6 +19,7 @@
             <startAtTask></startAtTask>
             <credentialsId></credentialsId>
             <vaultCredentialsId></vaultCredentialsId>
+            <vaultTmpPath></vaultTmpPath>
             <sudo>false</sudo>
             <sudoUser></sudoUser>
             <forks>5</forks>
@@ -31,6 +32,7 @@
         <org.jenkinsci.plugins.ansible.AnsibleAdHocCommandBuilder plugin="ansible@0.8">
             <credentialsId></credentialsId>
             <vaultCredentialsId></vaultCredentialsId>
+            <vaultTmpPath></vaultTmpPath>
             <hostPattern>one.example.com</hostPattern>
             <module></module>
             <command></command>
