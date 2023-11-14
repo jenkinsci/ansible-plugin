@@ -18,6 +18,21 @@ sources:
     github:
       token: '{{ requiredEnv .github.token }}'
       username: '{{ .github.username }}'
+  bom:
+    name: Get latest BOM line
+    kind: jenkins
+    spec:
+      release: stable
+    transformers:
+      - trimsuffix: ".(.*)$"
+      - trimsuffix: ".2"
+      - trimsuffix: ".3"
+      - trimsuffix: ".4"
+      - addprefix: "bom-"
+      - addsuffix: ".x"
+    github:
+      token: '{{ requiredEnv .github.token }}'
+      username: '{{ .github.username }}'
 targets:
   jenkins:
     name: Update Jenkins Version
@@ -28,13 +43,24 @@ targets:
       file: pom.xml
       matchpattern: '<jenkins.version>(.*)</jenkins.version>'
       replacepattern: '<jenkins.version>{{ source `jenkins` }}</jenkins.version>'
+  bom:
+    name: Ensure Jenkins BOM version
+    sourceid: jenkins
+    scmid: github
+    kind: file
+    spec:
+      file: pom.xml
+      matchpattern: '<artifactId>bom-(.*).x</artifactId>'
+      replacepattern: '<artifactId>{{ source `bom` }}</artifactId>'
 actions:
   jenkins:
     title: Bump Jenkins version {{ source "jenkins" }}
+    disablepipelineurl: true
     kind: github/pullrequest
     scmid: github
     targets:
       - jenkins
+      - bom
     spec:
       labels:
         - dependencies
