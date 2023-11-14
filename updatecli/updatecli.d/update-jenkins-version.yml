@@ -24,7 +24,7 @@ sources:
     spec:
       release: stable
     transformers:
-      - trimsuffix: ".(.*)$"
+      - trimsuffix: ".1"
       - trimsuffix: ".2"
       - trimsuffix: ".3"
       - trimsuffix: ".4"
