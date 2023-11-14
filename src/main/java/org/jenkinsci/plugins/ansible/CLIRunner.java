@@ -45,6 +45,7 @@ public class CLIRunner
     {
         PrintStream logger = listener.getLogger();
         try {
+            this.ws.mkdirs();
             return launcher.launch()
                     .pwd(ws)
                     .envs(environment)
