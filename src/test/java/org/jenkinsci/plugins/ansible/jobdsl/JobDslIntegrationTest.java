@@ -1,16 +1,34 @@
 package org.jenkinsci.plugins.ansible.jobdsl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assume.assumeFalse;
 
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.CredentialsScope;
+import com.cloudbees.plugins.credentials.CredentialsStore;
+import com.cloudbees.plugins.credentials.domains.Domain;
+import hudson.model.FreeStyleBuild;
+import hudson.model.FreeStyleProject;
+import hudson.model.ParameterValue;
+import hudson.model.ParametersAction;
+import hudson.model.StringParameterValue;
+import hudson.util.Secret;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.lang3.SystemUtils;
 import org.hamcrest.Matcher;
 import org.jenkinsci.plugins.ansible.AnsibleAdHocCommandBuilder;
 import org.jenkinsci.plugins.ansible.AnsiblePlaybookBuilder;
 import org.jenkinsci.plugins.ansible.AnsibleVaultBuilder;
 import org.jenkinsci.plugins.ansible.InventoryContent;
 import org.jenkinsci.plugins.ansible.InventoryPath;
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
+import org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -21,6 +39,7 @@ import org.jvnet.hudson.test.JenkinsRule;
  */
 public class JobDslIntegrationTest {
     public static final String ANSIBLE_DSL_GROOVY_PLAYBOOK = "jobdsl/playbook.groovy";
+    public static final String ANSIBLE_DSL_GROOVY_EXPANDER = "jobdsl/expander.groovy";
     public static final String ANSIBLE_DSL_GROOVY_SECURITY_630 = "jobdsl/security630.groovy";
     public static final String ANSIBLE_DSL_GROOVY_PLAYBOOK_LEGACY = "jobdsl/legacyPlaybook.groovy";
     public static final String ANSIBLE_DSL_GROOVY_ADHOC = "jobdsl/adhoc.groovy";
@@ -67,6 +86,48 @@ public class JobDslIntegrationTest {
         assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
         assertThat("extraVar.value", step.extraVars.get(0).getSecretValue().getPlainText(), is("value"));
         assertThat("extraVar.hidden", step.extraVars.get(0).isHidden(), is(true));
+    }
+
+    @Test
+    @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_EXPANDER)
+    public void shouldCreateJobWithVarExpander() throws Exception {
+
+        assumeFalse(SystemUtils.IS_OS_WINDOWS);
+
+        // Add credentials
+        StringCredentials vaultCredentials = new StringCredentialsImpl(
+                CredentialsScope.GLOBAL,
+                "vaultCredentialsString",
+                "test username password",
+                Secret.fromString("test-secret"));
+        StringCredentials credentials = new StringCredentialsImpl(
+                CredentialsScope.GLOBAL, "credentialsString", "test credentials", Secret.fromString("test"));
+        CredentialsStore store =
+                CredentialsProvider.lookupStores(jenkins.jenkins).iterator().next();
+        store.addCredentials(Domain.global(), vaultCredentials);
+        store.addCredentials(Domain.global(), credentials);
+
+        // Create job via jobdsl with var expander
+        AnsiblePlaybookBuilder step = dsl.getGeneratedJob().getBuildersList().get(AnsiblePlaybookBuilder.class);
+        assertThat("Should add playbook builder", step, notNullValue());
+        assertThat("playbook", step.playbook, is("playbook.yml"));
+        assertThat("inventory", step.inventory, (Matcher) isA(InventoryPath.class));
+        assertThat("vaultCredentialsId", step.vaultCredentialsId, is("${vault_credentials_id}"));
+        assertThat("credentialsId", step.credentialsId, is("${credentials_id}"));
+
+        List<ParameterValue> parameters = new ArrayList<>();
+        parameters.add(new StringParameterValue("inventory_repository", "inventory"));
+        parameters.add(new StringParameterValue("vault_credentials_id", "vaultCredentialsString"));
+        parameters.add(new StringParameterValue("credentials_id", "credentialsString"));
+        ParametersAction parametersAction = new ParametersAction(parameters);
+
+        FreeStyleProject freeStyleProject = jenkins.getInstance().getItemByFullName("ansible", FreeStyleProject.class);
+        FreeStyleBuild build =
+                freeStyleProject.scheduleBuild2(0, parametersAction).get();
+        assertThat(
+                build.getLog(),
+                allOf(containsString(
+                        "ansible-playbook playbook.yml -i inventory/inventory.yml -f 5 --vault-password-file ")));
     }
 
     @Test
