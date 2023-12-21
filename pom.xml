@@ -30,6 +30,7 @@
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/ansible-plugin</gitHubRepo>
     <jenkins.version>2.426.2</jenkins.version>
+    <spotless.check.skip>false</spotless.check.skip>
   </properties>
   <dependencyManagement>
     <dependencies>
