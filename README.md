@@ -430,6 +430,7 @@ steps {
         skippedTags(String tags)
         startAtTask(String task)
         credentialsId(String id)
+        vaultCredentialsId(String id)
         become(boolean become = true)
         becomeUser(String user = 'root')
         sudo(boolean sudo = true)
@@ -437,7 +438,7 @@ steps {
         forks(int forks = 5)
         unbufferedOutput(boolean unbufferedOutput = true)
         colorizedOutput(boolean colorizedOutput = false)
-        hostKeyChecking(boolean hostKeyChecking = false)
+        disableHostKeyChecking(boolean disableHostKeyChecking = false)
         additionalParameters(String params)
         extraVars {
             extraVar(String key, String value, boolean hidden)
@@ -449,6 +450,7 @@ steps {
         inventoryPath(String path)
         inventoryContent(String content, boolean dynamic = false)
         credentialsId(String id)
+        vaultCredentialsId(String id)
         hostPattern(String pattern)
         become(boolean become = true)
         becomeUser(String user = 'root')
@@ -457,11 +459,21 @@ steps {
         forks(int forks = 5)
         unbufferedOutput(boolean unbufferedOutput = true)
         colorizedOutput(boolean colorizedOutput = false)
-        hostKeyChecking(boolean hostKeyChecking = false)
+        disableHostKeyChecking(boolean disableHostKeyChecking = false)
         additionalParameters(String params)
         extraVars {
             extraVar(String key, String value, boolean hidden)
         }
+    }
+    
+    ansibleVault {
+        ansibleName(String name)
+        action(String action)
+        vaultCredentialsId(String id)
+        newVaultCredentialsId(String id)
+        content(String content)
+        input(String input)
+        output(String output)
     }
 }
 ```
