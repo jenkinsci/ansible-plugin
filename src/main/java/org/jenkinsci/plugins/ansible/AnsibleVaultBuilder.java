@@ -131,12 +131,17 @@ public class AnsibleVaultBuilder extends Builder implements SimpleBuildStep {
             invocation.setAction(action);
             invocation.setVaultCredentials(
                     StringUtils.isNotBlank(vaultCredentialsId)
-                            ? CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run)
+                            ? CredentialsProvider.findCredentialById(
+                                    run.getEnvironment(listener).expand(vaultCredentialsId),
+                                    StandardCredentials.class,
+                                    run)
                             : null);
             invocation.setNewVaultCredentials(
                     StringUtils.isNotBlank(newVaultCredentialsId)
                             ? CredentialsProvider.findCredentialById(
-                                    newVaultCredentialsId, StandardCredentials.class, run)
+                                    run.getEnvironment(listener).expand(newVaultCredentialsId),
+                                    StandardCredentials.class,
+                                    run)
                             : null);
             invocation.setVaultTmpPath(
                     StringUtils.isNotBlank(vaultTmpPath) ? new FilePath(new File(vaultTmpPath)) : null);

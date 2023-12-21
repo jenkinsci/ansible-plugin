@@ -274,12 +274,17 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep {
             invocation.setCredentials(
                     StringUtils.isNotBlank(credentialsId)
                             ? CredentialsProvider.findCredentialById(
-                                    credentialsId, StandardUsernameCredentials.class, run)
+                                    run.getEnvironment(listener).expand(credentialsId),
+                                    StandardUsernameCredentials.class,
+                                    run)
                             : null,
                     copyCredentialsInWorkspace);
             invocation.setVaultCredentials(
                     StringUtils.isNotBlank(vaultCredentialsId)
-                            ? CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run)
+                            ? CredentialsProvider.findCredentialById(
+                                    run.getEnvironment(listener).expand(vaultCredentialsId),
+                                    StandardCredentials.class,
+                                    run)
                             : null);
             invocation.setVaultTmpPath(
                     StringUtils.isNotBlank(vaultTmpPath) ? new FilePath(new File(vaultTmpPath)) : null);
