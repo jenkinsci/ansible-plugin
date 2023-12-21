@@ -31,6 +31,8 @@ Jenkins jobs.
 
 3.  Repeat for any additional desired installations
 
+There is no automatic ansible installation possible using Global Tools.
+
 ### OS User PATH
 
 Ansible can also be added to the PATH user used by the Jenkins executor
@@ -39,6 +41,18 @@ through normal OS tools outside of Jenkins and is not covered by this
 guide.
 
 ------------------------------------------------------------------------
+
+## Supported versions
+
+The plugin is tested against supported ansible-core versions (https://endoflife.date/ansible-core). It might work with older versions, but this is not guaranteed.
+
+See `PipelineTest.java`
+
+```java
+private static Stream<String> ansibleVersions() {
+    return Stream.of("2.14.13", "2.15.8", "2.16.2");
+}
+```
 
 ## Adhoc
 
@@ -289,122 +303,9 @@ a "Secret text" or a "Secret file".
 
 ------------------------------------------------------------------------
 
-## Open Issues
-
-[View issues in Jira](https://issues.jenkins.io/secure/IssueNavigator.jspa?reset=true&jqlQuery=component%20=%20ansible-plugin%20AND%20status%20in%20%28Open,%20%22In%20Progress%22,%20Reopened%29&tempMax=1000&src=confmacro)
-
-------------------------------------------------------------------------
-
 ## Changelog
 
-#### Version 1.0 (26 March 2018)
-
-*  [Fix security issue](https://jenkins.io/security/advisory/2018-03-26/#SECURITY-630):
-            Do not disable host key verification by default. **This may
-            break existing configurations as host key verification will
-            be enabled everywhere by default.**
-
-#### Version 0.8.0 (16 Jan 2018)
-
-*  Add support for Ansible Vault
-            [JENKINS-48499](https://issues.jenkins.io/browse/JENKINS-48499)
-*   Add hostKeyChecking option to pipeline [JENKINS-42445](https://issues.jenkins.io/browse/JENKINS-42445)
-
-#### Version 0.6.2 (3 Jan 2017)
-
-*  Fix blocker bug when launched from a pipeline
-            [JENKINS-40780](https://issues.jenkins.io/browse/JENKINS-40780)
-
-#### Version 0.6.1 (1 Jan 2017)
-
-*  Use latest parent project definition in order to deploy
-            plugin (thanks
-            to [alecharp](https://github.com/alecharp) for the help and
-            the PR)
-
-#### Version 0.6 (31 Dec 2016)
-
-**WARN: 0.6.x version will be the last one to support Jenkins 1.xxx and
-Ansible 1.x - The 0.7.x and next releases will require Jenkins 2.32.1
-(or higher) and Ansible 2.2 (or higher)**
-
-*  Add a "do not specify" option for
-            inventory [JENKINS-34627](https://issues.jenkins.io/browse/JENKINS-34627)
-* Support inventoryContent in pipeline (thanks
-            to [leewin12](https://github.com/leewin12) for the PR)
-* Add support of extra variables in jobdsl (thanks
-            to [pawbur](https://github.com/pawbur) for the PR)
-* Support empty forks (number of parallel processes)
-            parameter [JENKINS-39438](https://issues.jenkins.io/browse/JENKINS-39438)
-* Escape '%' character in private key path (thanks
-            to [ewollesen](https://github.com/ewollesen) for the PR)
-* Omit ansible option when expanded environment variable is
-            empty (thanks to [vjestin](https://github.com/vjestin) for
-            the PR)
-* Add the --forks parameter configurable in pipeline step
-            (thanks to
-            [anguswilliams](https://github.com/anguswilliams) for the
-            PR)
-* Fix usage of environment variable in ansiblePlaybook
-            pipeline step (thanks to
-            [thomasKalmar](https://github.com/thomasKalmar)
-            and [barthorre](https://github.com/barthorre) for the
-            PR) [JENKINS-38289](https://issues.jenkins.io/browse/JENKINS-38289)
-
-#### Version 0.5 (5 May 2016)
-
-*  Add support for ansible extra variables
-            [JENKINS-29863](https://issues.jenkins.io/browse/JENKINS-29863)
-* Improve Pipeline plugin
-            integration [JENKINS-32911](https://issues.jenkins.io/browse/JENKINS-32911)
-* Add the possibility to use the default inventory file
-            (thanks to Johann Schmitz for the PR)
-* Add colorized output in pipeline jobs (thanks to
-            Kirill Merkushev for the PR)
-* Make Jenkins build variables available as environment
-            variables for ansible (thanks to Kevin Mooney for the
-            PR) [JENKINS-29284](https://issues.jenkins.io/browse/JENKINS-29284)
-
-#### Version 0.4 (25 December 2015)
-
-*  Support for password protected SSH
-            keys [JENKINS-30656](https://issues.jenkins.io/browse/JENKINS-30656)
-* Initial support for the workflow
-            plugin [JENKINS-30398](https://issues.jenkins.io/browse/JENKINS-30398)
-* Add support for Job DSL plugin (thanks to Kirill Merkushev
-            for the
-            PR) [JENKINS-31790](https://issues.jenkins.io/browse/JENKINS-31790)
-
-#### Version 0.3.1 (15 July 2015)
-
-*  Fix execution on slave
-            nodes [JENKINS-29294](https://issues.jenkins.io/browse/JENKINS-29294)
-
-#### Version 0.3 (20 June 2015)
-
-*  Add support for password based SSH authentication (with
-            sshpass)
-* Environment variables can be used in Module and Module
-            arguments text field in Ad-hoc command builder
-* Environment variables can be used in inline inventory text
-            box
-            [JENKINS-28547](https://issues.jenkins.io/browse/JENKINS-28547)
-
-#### Version 0.2 (11 May 2015)
-
-*  Fix NullPointerException when no credentials are selected
-* Fix --skippedTags parameter configuration which was ignored
-* Fix NullPointerException and print an error message in the
-            build console when the inventory is not set in the job
-            configuration
-
-#### Version 0.1 (01 May 2015)
-
-*  Initial version
-
-This plugin gives the possibility to run [Ansible](http://www.ansible.com/) ad-hoc command or playbooks as a build step.
-
-[![Build Status](https://ci.jenkins.io/buildStatus/icon?job=Plugins/ansible-plugin/master)](https://ci.jenkins.io/job/Plugins/job/ansible-plugin/job/master/)
+Changelog is now published on GitHub release.
 
 ## Using Jenkins Build and Environment Variables
 

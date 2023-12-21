@@ -266,6 +266,7 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep {
             throws InterruptedException, IOException {
         try {
             CLIRunner runner = new CLIRunner(run, ws, launcher, listener);
+            Computer computer = node.toComputer();
             String exe = AnsibleInstallation.getExecutable(
                     ansibleName, AnsibleCommand.ANSIBLE_PLAYBOOK, node, listener, envVars);
             AnsiblePlaybookInvocation invocation = new AnsiblePlaybookInvocation(exe, run, ws, listener, envVars);
@@ -295,7 +296,9 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep {
                                     run)
                             : null);
             invocation.setVaultTmpPath(
-                    StringUtils.isNotBlank(vaultTmpPath) ? new FilePath(new File(vaultTmpPath)) : null);
+                    StringUtils.isNotBlank(vaultTmpPath)
+                            ? new FilePath(computer.getChannel(), new File(vaultTmpPath).getAbsolutePath())
+                            : null);
             invocation.setExtraVars(extraVars);
             invocation.setAdditionalParameters(additionalParameters);
             invocation.setDisableHostKeyCheck(disableHostKeyChecking);
