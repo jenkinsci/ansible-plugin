@@ -15,9 +15,8 @@
   <description>Ansible support in Jenkins</description>
   <licenses>
     <license>
-      <name>Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
+      <name>MIT License</name>
+      <url>https://opensource.org/license/mit/</url>
     </license>
   </licenses>
   <scm>
