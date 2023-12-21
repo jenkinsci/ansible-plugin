@@ -15,21 +15,19 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import java.io.IOException;
-
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
+import java.io.IOException;
 import jenkins.model.Jenkins;
 
 /**
  * Common Ansible inventory.
  */
-public abstract class Inventory implements Describable<Inventory>
-{
+public abstract class Inventory implements Describable<Inventory> {
     /**
      * @see hudson.model.Describable#getDescriptor()
      */
@@ -41,8 +39,7 @@ public abstract class Inventory implements Describable<Inventory>
     protected abstract InventoryHandler getHandler();
 
     public void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, TaskListener listener)
-            throws InterruptedException, IOException
-    {
+            throws InterruptedException, IOException {
         getHandler().addArgument(args, workspace, envVars, listener);
     }
 
@@ -50,7 +47,7 @@ public abstract class Inventory implements Describable<Inventory>
         getHandler().tearDown(listener);
     }
 
-    public abstract static class InventoryDescriptor extends Descriptor<Inventory> { }
+    public abstract static class InventoryDescriptor extends Descriptor<Inventory> {}
 
     protected static interface InventoryHandler {
 
@@ -59,5 +56,4 @@ public abstract class Inventory implements Describable<Inventory>
 
         void tearDown(TaskListener listener) throws InterruptedException, IOException;
     }
-
 }

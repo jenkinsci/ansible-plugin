@@ -20,9 +20,8 @@ public class AnsibleJobDslExtension extends ContextExtensionPoint {
         AnsibleContext context = new AnsibleContext();
         executeInContext(closure, context);
 
-        AnsibleAdHocCommandBuilder adhoc = new AnsibleAdHocCommandBuilder(
-                context.getHostPattern(), context.getInventory(), module, command
-        );
+        AnsibleAdHocCommandBuilder adhoc =
+                new AnsibleAdHocCommandBuilder(context.getHostPattern(), context.getInventory(), module, command);
 
         adhoc.setAdditionalParameters(context.getAdditionalParameters());
         adhoc.setAnsibleName(context.getAnsibleName());

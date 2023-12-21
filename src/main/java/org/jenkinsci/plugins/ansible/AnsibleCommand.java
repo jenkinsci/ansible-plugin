@@ -19,7 +19,9 @@ package org.jenkinsci.plugins.ansible;
  * The command to be launched
  */
 public enum AnsibleCommand {
-    ANSIBLE("ansible"), ANSIBLE_PLAYBOOK("ansible-playbook"), ANSIBLE_VAULT("ansible-vault");
+    ANSIBLE("ansible"),
+    ANSIBLE_PLAYBOOK("ansible-playbook"),
+    ANSIBLE_VAULT("ansible-vault");
 
     private final String name;
 

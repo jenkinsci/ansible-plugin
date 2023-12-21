@@ -13,13 +13,7 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import java.io.IOException;
-
-import org.jenkinsci.plugins.plaincredentials.FileCredentials;
-import org.jenkinsci.plugins.plaincredentials.StringCredentials;
-
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
-
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.FilePath;
@@ -28,33 +22,34 @@ import hudson.model.BuildListener;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
+import java.io.IOException;
+import org.jenkinsci.plugins.plaincredentials.FileCredentials;
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
 /**
  * Invoke the ansible-vault command
- * 
+ *
  * @author Michael Cresswell
  */
 public class AnsibleVaultInvocation extends AbstractAnsibleInvocation<AnsibleVaultInvocation> {
 
-	private String action;
-	private String content;
-	private String input;
-	private String output;
+    private String action;
+    private String content;
+    private String input;
+    private String output;
     private StandardCredentials newVaultCredentials;
-    
+
     private FilePath newVaultPassword = null;
-    
+
     private FilePath ws = null;
 
     protected AnsibleVaultInvocation(String exe, AbstractBuild<?, ?> build, BuildListener listener, EnvVars envVars)
-            throws IOException, InterruptedException, AnsibleInvocationException
-    {
+            throws IOException, InterruptedException, AnsibleInvocationException {
         this(exe, build, build.getWorkspace(), listener, envVars);
     }
 
     public AnsibleVaultInvocation(String exe, Run<?, ?> build, FilePath ws, TaskListener listener, EnvVars envVars)
-            throws IOException, InterruptedException, AnsibleInvocationException
-    {
+            throws IOException, InterruptedException, AnsibleInvocationException {
         super(exe, build, ws, listener, envVars);
         this.ws = ws;
     }
@@ -63,13 +58,14 @@ public class AnsibleVaultInvocation extends AbstractAnsibleInvocation<AnsibleVau
         this.action = action;
         return this;
     }
-    
+
     private ArgumentListBuilder appendAction(ArgumentListBuilder args) throws AbortException {
-		if (!"edit".equals(action) && !"create".equals(action) && !"view".equals(action)) {
-			args.add(action);
-		} else {
-			throw new AbortException(action + ": ansible-plugin does not support interactive vault actions such as create, edit, or view.");
-		}
+        if (!"edit".equals(action) && !"create".equals(action) && !"view".equals(action)) {
+            args.add(action);
+        } else {
+            throw new AbortException(action
+                    + ": ansible-plugin does not support interactive vault actions such as create, edit, or view.");
+        }
         return args;
     }
 
@@ -77,7 +73,7 @@ public class AnsibleVaultInvocation extends AbstractAnsibleInvocation<AnsibleVau
         this.content = content;
         return this;
     }
-    
+
     private ArgumentListBuilder appendContent(ArgumentListBuilder args) {
         if (content != null && !content.isEmpty()) {
             args.addMasked(content);
@@ -89,7 +85,7 @@ public class AnsibleVaultInvocation extends AbstractAnsibleInvocation<AnsibleVau
         this.input = input;
         return this;
     }
-    
+
     private ArgumentListBuilder appendInput(ArgumentListBuilder args) {
         if (input != null && !input.isEmpty()) {
             args.add(input);
@@ -103,18 +99,19 @@ public class AnsibleVaultInvocation extends AbstractAnsibleInvocation<AnsibleVau
     }
 
     protected ArgumentListBuilder appendNewVaultPasswordFile(ArgumentListBuilder args)
-            throws IOException, InterruptedException
-    {
-        if(newVaultCredentials != null){
+            throws IOException, InterruptedException {
+        if (newVaultCredentials != null) {
             FilePath tmpPath = vaultTmpPath != null ? vaultTmpPath : ws;
             if (newVaultCredentials instanceof FileCredentials) {
-                FileCredentials secretFile = (FileCredentials)newVaultCredentials;
+                FileCredentials secretFile = (FileCredentials) newVaultCredentials;
                 newVaultPassword = Utils.createVaultPasswordFile(newVaultPassword, tmpPath, secretFile);
-                args.add("--new-vault-password-file").add(newVaultPassword.getRemote().replace("%", "%%"));
+                args.add("--new-vault-password-file")
+                        .add(newVaultPassword.getRemote().replace("%", "%%"));
             } else if (newVaultCredentials instanceof StringCredentials) {
-                StringCredentials secretText = (StringCredentials)newVaultCredentials;
+                StringCredentials secretText = (StringCredentials) newVaultCredentials;
                 newVaultPassword = Utils.createVaultPasswordFile(newVaultPassword, tmpPath, secretText);
-                args.add("--new-vault-password-file").add(newVaultPassword.getRemote().replace("%", "%%"));
+                args.add("--new-vault-password-file")
+                        .add(newVaultPassword.getRemote().replace("%", "%%"));
             }
         }
         return args;
@@ -124,7 +121,7 @@ public class AnsibleVaultInvocation extends AbstractAnsibleInvocation<AnsibleVau
         this.output = output;
         return this;
     }
-    
+
     private ArgumentListBuilder appendOutput(ArgumentListBuilder args) {
         if (output != null && !output.isEmpty()) {
             args.add(output);
@@ -133,7 +130,8 @@ public class AnsibleVaultInvocation extends AbstractAnsibleInvocation<AnsibleVau
     }
 
     @Override
-    protected ArgumentListBuilder buildCommandLine() throws InterruptedException, AnsibleInvocationException, IOException {
+    protected ArgumentListBuilder buildCommandLine()
+            throws InterruptedException, AnsibleInvocationException, IOException {
         ArgumentListBuilder args = new ArgumentListBuilder();
         prependPasswordCredentials(args);
         appendExecutable(args);

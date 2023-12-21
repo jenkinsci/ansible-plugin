@@ -15,11 +15,6 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import java.io.IOException;
-import java.io.File;
-import java.util.List;
-import javax.annotation.Nonnull;
-
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
@@ -37,6 +32,10 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import javax.annotation.Nonnull;
 import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -46,8 +45,7 @@ import org.kohsuke.stapler.QueryParameter;
 /**
  * A builder which wraps an Ansible playbook invocation.
  */
-public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
-{
+public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep {
 
     public final String playbook;
 
@@ -100,11 +98,22 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
     public List<ExtraVar> extraVars;
 
     @Deprecated
-    public AnsiblePlaybookBuilder(String ansibleName, String playbook, Inventory inventory, String limit, String tags,
-                                  String skippedTags, String startAtTask, String credentialsId, boolean sudo,
-                                  String sudoUser, int forks, boolean unbufferedOutput, boolean colorizedOutput,
-                                  boolean hostKeyChecking, String additionalParameters)
-    {
+    public AnsiblePlaybookBuilder(
+            String ansibleName,
+            String playbook,
+            Inventory inventory,
+            String limit,
+            String tags,
+            String skippedTags,
+            String startAtTask,
+            String credentialsId,
+            boolean sudo,
+            String sudoUser,
+            int forks,
+            boolean unbufferedOutput,
+            boolean colorizedOutput,
+            boolean hostKeyChecking,
+            String additionalParameters) {
         this.ansibleName = ansibleName;
         this.playbook = playbook;
         this.inventory = inventory;
@@ -118,7 +127,7 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
         this.forks = forks;
         this.unbufferedOutput = unbufferedOutput;
         this.colorizedOutput = colorizedOutput;
-        //this.hostKeyChecking = hostKeyChecking;
+        // this.hostKeyChecking = hostKeyChecking;
         this.additionalParameters = additionalParameters;
     }
 
@@ -229,9 +238,9 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
     }
 
     @Override
-    public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener)
-            throws InterruptedException, IOException
-    {
+    public void perform(
+            @Nonnull Run<?, ?> run, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener)
+            throws InterruptedException, IOException {
         Computer computer = ws.toComputer();
         Node node;
         if (computer == null || (node = computer.getNode()) == null) {
@@ -240,12 +249,18 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
         perform(run, node, ws, launcher, listener, run.getEnvironment(listener));
     }
 
-    public void perform(@Nonnull Run<?, ?> run, @Nonnull Node node, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener, EnvVars envVars)
-            throws InterruptedException, IOException
-    {
+    public void perform(
+            @Nonnull Run<?, ?> run,
+            @Nonnull Node node,
+            @Nonnull FilePath ws,
+            @Nonnull Launcher launcher,
+            @Nonnull TaskListener listener,
+            EnvVars envVars)
+            throws InterruptedException, IOException {
         try {
             CLIRunner runner = new CLIRunner(run, ws, launcher, listener);
-            String exe = AnsibleInstallation.getExecutable(ansibleName, AnsibleCommand.ANSIBLE_PLAYBOOK, node, listener, envVars);
+            String exe = AnsibleInstallation.getExecutable(
+                    ansibleName, AnsibleCommand.ANSIBLE_PLAYBOOK, node, listener, envVars);
             AnsiblePlaybookInvocation invocation = new AnsiblePlaybookInvocation(exe, run, ws, listener, envVars);
             invocation.setPlaybook(playbook);
             invocation.setInventory(inventory);
@@ -256,12 +271,18 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
             invocation.setBecome(become, becomeUser);
             invocation.setSudo(sudo, sudoUser);
             invocation.setForks(forks);
-            invocation.setCredentials(StringUtils.isNotBlank(credentialsId) ?
-                CredentialsProvider.findCredentialById(credentialsId, StandardUsernameCredentials.class, run) : null,
-                copyCredentialsInWorkspace);
-            invocation.setVaultCredentials(StringUtils.isNotBlank(vaultCredentialsId) ?
-                CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run) : null);
-            invocation.setVaultTmpPath(StringUtils.isNotBlank(vaultTmpPath) ? new FilePath(new File(vaultTmpPath)) : null);
+            invocation.setCredentials(
+                    StringUtils.isNotBlank(credentialsId)
+                            ? CredentialsProvider.findCredentialById(
+                                    credentialsId, StandardUsernameCredentials.class, run)
+                            : null,
+                    copyCredentialsInWorkspace);
+            invocation.setVaultCredentials(
+                    StringUtils.isNotBlank(vaultCredentialsId)
+                            ? CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run)
+                            : null);
+            invocation.setVaultTmpPath(
+                    StringUtils.isNotBlank(vaultTmpPath) ? new FilePath(new File(vaultTmpPath)) : null);
             invocation.setExtraVars(extraVars);
             invocation.setAdditionalParameters(additionalParameters);
             invocation.setDisableHostKeyCheck(disableHostKeyChecking);
@@ -286,8 +307,7 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep
     }
 
     @Extension
-    public static final class DescriptorImpl extends AbstractAnsibleBuilderDescriptor
-    {
+    public static final class DescriptorImpl extends AbstractAnsibleBuilderDescriptor {
         public DescriptorImpl() {
             super("Invoke Ansible Playbook");
         }

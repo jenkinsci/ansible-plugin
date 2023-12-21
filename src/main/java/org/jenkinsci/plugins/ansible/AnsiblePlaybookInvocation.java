@@ -15,8 +15,6 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import java.io.IOException;
-
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
@@ -24,6 +22,7 @@ import hudson.model.BuildListener;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
+import java.io.IOException;
 
 /**
  * Invoke the ansible-playbook command
@@ -37,14 +36,12 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
     private String startAtTask;
 
     protected AnsiblePlaybookInvocation(String exe, AbstractBuild<?, ?> build, BuildListener listener, EnvVars envVars)
-            throws IOException, InterruptedException, AnsibleInvocationException
-    {
+            throws IOException, InterruptedException, AnsibleInvocationException {
         this(exe, build, build.getWorkspace(), listener, envVars);
     }
 
     public AnsiblePlaybookInvocation(String exe, Run<?, ?> build, FilePath ws, TaskListener listener, EnvVars envVars)
-            throws IOException, InterruptedException, AnsibleInvocationException
-    {
+            throws IOException, InterruptedException, AnsibleInvocationException {
         super(exe, build, ws, listener, envVars);
     }
 
@@ -99,7 +96,8 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
     }
 
     @Override
-    protected ArgumentListBuilder buildCommandLine() throws InterruptedException, AnsibleInvocationException, IOException {
+    protected ArgumentListBuilder buildCommandLine()
+            throws InterruptedException, AnsibleInvocationException, IOException {
         ArgumentListBuilder args = new ArgumentListBuilder();
         prependPasswordCredentials(args);
         appendExecutable(args);

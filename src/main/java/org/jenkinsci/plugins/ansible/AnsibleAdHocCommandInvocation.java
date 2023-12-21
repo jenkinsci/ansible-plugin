@@ -15,8 +15,6 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import java.io.IOException;
-
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
@@ -24,6 +22,7 @@ import hudson.model.BuildListener;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
+import java.io.IOException;
 
 /**
  * Invoke the ansible command
@@ -35,14 +34,13 @@ public class AnsibleAdHocCommandInvocation extends AbstractAnsibleInvocation<Ans
     private String command;
 
     protected AnsibleAdHocCommandInvocation(String exe, AbstractBuild<?, ?> build, BuildListener listener)
-            throws IOException, InterruptedException, AnsibleInvocationException
-    {
+            throws IOException, InterruptedException, AnsibleInvocationException {
         super(exe, build, build.getWorkspace(), listener, build.getEnvironment(listener));
     }
 
-    public AnsibleAdHocCommandInvocation(String exe, Run<?, ?> build, FilePath ws, TaskListener listener, EnvVars envVars)
-            throws IOException, InterruptedException, AnsibleInvocationException
-    {
+    public AnsibleAdHocCommandInvocation(
+            String exe, Run<?, ?> build, FilePath ws, TaskListener listener, EnvVars envVars)
+            throws IOException, InterruptedException, AnsibleInvocationException {
         super(exe, build, ws, listener, envVars);
     }
 
@@ -78,8 +76,7 @@ public class AnsibleAdHocCommandInvocation extends AbstractAnsibleInvocation<Ans
 
     @Override
     protected ArgumentListBuilder buildCommandLine()
-            throws InterruptedException, AnsibleInvocationException, IOException
-    {
+            throws InterruptedException, AnsibleInvocationException, IOException {
         ArgumentListBuilder args = new ArgumentListBuilder();
         prependPasswordCredentials(args);
         appendExecutable(args);
@@ -96,5 +93,4 @@ public class AnsibleAdHocCommandInvocation extends AbstractAnsibleInvocation<Ans
         appendAdditionalParameters(args);
         return args;
     }
-
 }

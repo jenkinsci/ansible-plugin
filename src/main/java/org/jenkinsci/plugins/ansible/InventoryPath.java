@@ -26,8 +26,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 /**
  * Path to a file containing an Ansible inventory
  */
-public class InventoryPath extends Inventory
-{
+public class InventoryPath extends Inventory {
     public final String path;
 
     @DataBoundConstructor
@@ -36,21 +35,17 @@ public class InventoryPath extends Inventory
     }
 
     @Override
-    protected InventoryHandler getHandler()
-    {
-        return new InventoryHandler()
-        {
-            public void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, TaskListener listener)
-            {
+    protected InventoryHandler getHandler() {
+        return new InventoryHandler() {
+            public void addArgument(
+                    ArgumentListBuilder args, FilePath workspace, EnvVars envVars, TaskListener listener) {
                 String expandedPath = envVars.expand(InventoryPath.this.path);
                 if (StringUtils.isNotEmpty(expandedPath)) {
                     args.add("-i").add(expandedPath);
                 }
             }
 
-            public void tearDown(TaskListener listener)
-            {
-            }
+            public void tearDown(TaskListener listener) {}
         };
     }
 
@@ -62,5 +57,4 @@ public class InventoryPath extends Inventory
             return "File or host list";
         }
     }
-
 }

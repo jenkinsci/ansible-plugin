@@ -25,25 +25,19 @@ import org.kohsuke.stapler.DataBoundConstructor;
 /**
  * Path to a file containing an Ansible inventory
  */
-public class InventoryDoNotSpecify extends Inventory
-{
+public class InventoryDoNotSpecify extends Inventory {
     @DataBoundConstructor
-    public InventoryDoNotSpecify() {
-    }
+    public InventoryDoNotSpecify() {}
 
     @Override
-    protected InventoryHandler getHandler()
-    {
-        return new InventoryHandler()
-        {
-            public void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, TaskListener listener)
-            {
+    protected InventoryHandler getHandler() {
+        return new InventoryHandler() {
+            public void addArgument(
+                    ArgumentListBuilder args, FilePath workspace, EnvVars envVars, TaskListener listener) {
                 // Do nothing
             }
 
-            public void tearDown(TaskListener listener)
-            {
-            }
+            public void tearDown(TaskListener listener) {}
         };
     }
 
@@ -55,5 +49,4 @@ public class InventoryDoNotSpecify extends Inventory
             return "Do not specify Inventory";
         }
     }
-
 }

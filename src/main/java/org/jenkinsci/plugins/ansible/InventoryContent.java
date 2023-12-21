@@ -15,20 +15,18 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import java.io.IOException;
-
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
+import java.io.IOException;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Inline content for Ansible inventory. Inventory may be dynamic or not.
  */
-public class InventoryContent extends Inventory
-{
+public class InventoryContent extends Inventory {
     public final String content;
     public final boolean dynamic;
 
@@ -41,12 +39,11 @@ public class InventoryContent extends Inventory
     }
 
     @Override
-    protected InventoryHandler getHandler()
-    {
+    protected InventoryHandler getHandler() {
         return new InventoryHandler() {
-            public void addArgument(ArgumentListBuilder args, FilePath workspace, EnvVars envVars, TaskListener listener)
-                    throws InterruptedException, IOException
-            {
+            public void addArgument(
+                    ArgumentListBuilder args, FilePath workspace, EnvVars envVars, TaskListener listener)
+                    throws InterruptedException, IOException {
                 inventory = createInventoryFile(inventory, workspace, envVars.expand(content));
                 args.add("-i").add(inventory);
             }
@@ -55,9 +52,10 @@ public class InventoryContent extends Inventory
                 Utils.deleteTempFile(inventory, listener);
             }
 
-            private FilePath createInventoryFile(FilePath inventory, FilePath workspace, String content) throws IOException, InterruptedException {
+            private FilePath createInventoryFile(FilePath inventory, FilePath workspace, String content)
+                    throws IOException, InterruptedException {
                 inventory = workspace.createTextTempFile("inventory", ".ini", content, false);
-                inventory.chmod(dynamic ? 0500 :  0400);
+                inventory.chmod(dynamic ? 0500 : 0400);
                 return inventory;
             }
         };
@@ -71,5 +69,4 @@ public class InventoryContent extends Inventory
             return "Inline content";
         }
     }
-
 }

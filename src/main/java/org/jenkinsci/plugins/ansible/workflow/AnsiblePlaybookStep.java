@@ -18,10 +18,6 @@ package org.jenkinsci.plugins.ansible.workflow;
 import static com.cloudbees.plugins.credentials.CredentialsMatchers.anyOf;
 import static com.cloudbees.plugins.credentials.CredentialsMatchers.instanceOf;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
@@ -34,19 +30,21 @@ import hudson.*;
 import hudson.model.Computer;
 import hudson.model.Item;
 import hudson.model.Node;
-import hudson.model.Project;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ListBoxModel;
 import hudson.util.Secret;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.ansible.AnsibleInstallation;
 import org.jenkinsci.plugins.ansible.AnsiblePlaybookBuilder;
 import org.jenkinsci.plugins.ansible.ExtraVar;
 import org.jenkinsci.plugins.ansible.Inventory;
-import org.jenkinsci.plugins.ansible.InventoryPath;
 import org.jenkinsci.plugins.ansible.InventoryContent;
+import org.jenkinsci.plugins.ansible.InventoryPath;
 import org.jenkinsci.plugins.plaincredentials.FileCredentials;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
@@ -84,6 +82,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     private boolean colorized = false;
     private int forks = 0;
     private boolean disableHostKeyChecking = false;
+
     @Deprecated
     @SuppressWarnings("unused")
     @SuppressFBWarnings("URF_UNREAD_FIELD")
@@ -196,8 +195,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
 
     @DataBoundSetter
     @Deprecated
-    public void setHostKeyChecking(boolean hostKeyChecking) {
-    }
+    public void setHostKeyChecking(boolean hostKeyChecking) {}
 
     public String getInstallation() {
         return installation;
@@ -305,8 +303,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             return "Invoke an ansible playbook";
         }
 
-        public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item,
-                                                     @QueryParameter String credentialsId) {
+        public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item, @QueryParameter String credentialsId) {
 
             StandardListBoxModel result = new StandardListBoxModel();
             if (item == null) {
@@ -314,38 +311,34 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
                     return result.includeCurrentValue(credentialsId);
                 }
             } else {
-                if (!item.hasPermission(Item.EXTENDED_READ)
-                        && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+                if (!item.hasPermission(Item.EXTENDED_READ) && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
                     return result.includeCurrentValue(credentialsId);
                 }
             }
 
             return result.includeEmptyValue()
-                    .withMatching(anyOf(
-                            instanceOf(SSHUserPrivateKey.class),
-                            instanceOf(UsernamePasswordCredentials.class)),
+                    .withMatching(
+                            anyOf(instanceOf(SSHUserPrivateKey.class), instanceOf(UsernamePasswordCredentials.class)),
                             CredentialsProvider.lookupCredentials(StandardUsernameCredentials.class, item))
                     .includeCurrentValue(credentialsId);
         }
 
-        public ListBoxModel doFillVaultCredentialsIdItems(@AncestorInPath Item item,
-                                                          @QueryParameter String vaultCredentialsId) {
+        public ListBoxModel doFillVaultCredentialsIdItems(
+                @AncestorInPath Item item, @QueryParameter String vaultCredentialsId) {
             StandardListBoxModel result = new StandardListBoxModel();
             if (item == null) {
                 if (!Jenkins.getActiveInstance().hasPermission(Jenkins.ADMINISTER)) {
                     return result.includeCurrentValue(vaultCredentialsId);
                 }
             } else {
-                if (!item.hasPermission(Item.EXTENDED_READ)
-                        && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+                if (!item.hasPermission(Item.EXTENDED_READ) && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
                     return result.includeCurrentValue(vaultCredentialsId);
                 }
             }
 
             return result.includeEmptyValue()
-                    .withMatching(anyOf(
-                            instanceOf(FileCredentials.class),
-                            instanceOf(StringCredentials.class)),
+                    .withMatching(
+                            anyOf(instanceOf(FileCredentials.class), instanceOf(StringCredentials.class)),
                             CredentialsProvider.lookupCredentials(StandardCredentials.class, item))
                     .includeCurrentValue(vaultCredentialsId);
         }
@@ -373,7 +366,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
         private transient Launcher launcher;
 
         @StepContextParameter
-        private transient Run<?,?> run;
+        private transient Run<?, ?> run;
 
         @StepContextParameter
         private transient FilePath ws;
@@ -389,44 +382,41 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
                 return null;
             }
             List<ExtraVar> extraVarList = new ArrayList<>();
-            for (Map.Entry<String, Object> entry: extraVars.entrySet()) {
+            for (Map.Entry<String, Object> entry : extraVars.entrySet()) {
                 ExtraVar var = new ExtraVar();
                 var.setKey(entry.getKey());
                 Object o = entry.getValue();
                 if (o instanceof Map) {
-                    var.setSecretValue(getSecretFromScalarValue(((Map<?,?>)o).get("value")));
-                    Object hidden = ((Map<?,?>)o).get("hidden");
+                    var.setSecretValue(getSecretFromScalarValue(((Map<?, ?>) o).get("value")));
+                    Object hidden = ((Map<?, ?>) o).get("hidden");
                     // If we are given a Boolean value for hidden, respect that.
                     // Otherwise if omitted or explictly null or any other type adopt the safe default of hidden=true.
                     if (hidden instanceof Boolean) {
-                        var.setHidden((Boolean)hidden);
+                        var.setHidden((Boolean) hidden);
                     } else {
                         var.setHidden(true);
                     }
                 } else {
                     var.setSecretValue(getSecretFromScalarValue(o));
-                    // Consistent with above: for a scalar value effectively hidden is omitted so adopt the safe default of hidden=true.
+                    // Consistent with above: for a scalar value effectively hidden is omitted so adopt the safe default
+                    // of hidden=true.
                     var.setHidden(true);
                 }
                 extraVarList.add(var);
             }
             return extraVarList;
         }
-        
+
         private static Secret getSecretFromScalarValue(Object o) {
             if (o instanceof String) {
-                return Secret.fromString((String)o);
-            }
-            else if (o instanceof Boolean) {
+                return Secret.fromString((String) o);
+            } else if (o instanceof Boolean) {
                 return Secret.fromString(o.toString());
-            }
-            else if (o instanceof Number) {
+            } else if (o instanceof Number) {
                 return Secret.fromString(o.toString());
-            }
-            else if (o instanceof Secret) {
-                return (Secret)o;
-            } 
-            else {
+            } else if (o instanceof Secret) {
+                return (Secret) o;
+            } else {
                 return null;
             }
         }
@@ -437,10 +427,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             if (StringUtils.isNotBlank(step.getInventory())) {
                 inventory = new InventoryPath(step.getInventory());
             } else if (StringUtils.isNotBlank(step.getInventoryContent())) {
-                inventory = new InventoryContent(
-                        step.getInventoryContent(),
-                        step.isDynamicInventory()
-                );
+                inventory = new InventoryContent(step.getInventoryContent(), step.isDynamicInventory());
             }
             AnsiblePlaybookBuilder builder = new AnsiblePlaybookBuilder(step.getPlaybook(), inventory);
             builder.setAnsibleName(step.getInstallation());
@@ -469,5 +456,4 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             return null;
         }
     }
-
 }

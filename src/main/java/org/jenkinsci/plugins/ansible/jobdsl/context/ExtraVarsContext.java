@@ -1,12 +1,10 @@
 package org.jenkinsci.plugins.ansible.jobdsl.context;
 
+import hudson.util.Secret;
 import java.util.ArrayList;
 import java.util.List;
-
 import javaposse.jobdsl.dsl.Context;
 import org.jenkinsci.plugins.ansible.ExtraVar;
-
-import hudson.util.Secret;
 
 /**
  * @author pawbur (Pawel Burchard)

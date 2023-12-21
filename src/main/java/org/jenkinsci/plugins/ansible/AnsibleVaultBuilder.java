@@ -13,10 +13,6 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import java.io.IOException;
-import java.io.File;
-import javax.annotation.Nonnull;
-
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import hudson.AbortException;
@@ -32,6 +28,9 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
+import java.io.File;
+import java.io.IOException;
+import javax.annotation.Nonnull;
 import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -40,14 +39,13 @@ import org.kohsuke.stapler.QueryParameter;
 
 /**
  * A builder which wraps an Ansible vault invocation.
- * 
+ *
  * @author Michael Cresswell
  */
-public class AnsibleVaultBuilder extends Builder implements SimpleBuildStep
-{
+public class AnsibleVaultBuilder extends Builder implements SimpleBuildStep {
 
     public String ansibleName = null;
-    
+
     public String action = "encrypt_string";
 
     public String vaultCredentialsId = null;
@@ -61,11 +59,9 @@ public class AnsibleVaultBuilder extends Builder implements SimpleBuildStep
     public String input = null;
 
     public String output = null;
-    
+
     @DataBoundConstructor
-    public AnsibleVaultBuilder() {
-    	
-    }
+    public AnsibleVaultBuilder() {}
 
     @DataBoundSetter
     public void setAnsibleName(String ansibleName) {
@@ -108,9 +104,9 @@ public class AnsibleVaultBuilder extends Builder implements SimpleBuildStep
     }
 
     @Override
-    public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener)
-            throws InterruptedException, IOException
-    {
+    public void perform(
+            @Nonnull Run<?, ?> run, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener)
+            throws InterruptedException, IOException {
         Computer computer = ws.toComputer();
         Node node;
         if (computer == null || (node = computer.getNode()) == null) {
@@ -119,19 +115,31 @@ public class AnsibleVaultBuilder extends Builder implements SimpleBuildStep
         perform(run, node, ws, launcher, listener, run.getEnvironment(listener));
     }
 
-    public void perform(@Nonnull Run<?, ?> run, @Nonnull Node node, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener, EnvVars envVars)
-            throws InterruptedException, IOException
-    {
+    public void perform(
+            @Nonnull Run<?, ?> run,
+            @Nonnull Node node,
+            @Nonnull FilePath ws,
+            @Nonnull Launcher launcher,
+            @Nonnull TaskListener listener,
+            EnvVars envVars)
+            throws InterruptedException, IOException {
         try {
             CLIRunner runner = new CLIRunner(run, ws, launcher, listener);
-            String exe = AnsibleInstallation.getExecutable(ansibleName, AnsibleCommand.ANSIBLE_VAULT, node, listener, envVars);
+            String exe = AnsibleInstallation.getExecutable(
+                    ansibleName, AnsibleCommand.ANSIBLE_VAULT, node, listener, envVars);
             AnsibleVaultInvocation invocation = new AnsibleVaultInvocation(exe, run, ws, listener, envVars);
             invocation.setAction(action);
-            invocation.setVaultCredentials(StringUtils.isNotBlank(vaultCredentialsId) ?
-                    CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run) : null);
-            invocation.setNewVaultCredentials(StringUtils.isNotBlank(newVaultCredentialsId) ?
-                    CredentialsProvider.findCredentialById(newVaultCredentialsId, StandardCredentials.class, run) : null);
-            invocation.setVaultTmpPath(StringUtils.isNotBlank(vaultTmpPath) ? new FilePath(new File(vaultTmpPath)) : null);
+            invocation.setVaultCredentials(
+                    StringUtils.isNotBlank(vaultCredentialsId)
+                            ? CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run)
+                            : null);
+            invocation.setNewVaultCredentials(
+                    StringUtils.isNotBlank(newVaultCredentialsId)
+                            ? CredentialsProvider.findCredentialById(
+                                    newVaultCredentialsId, StandardCredentials.class, run)
+                            : null);
+            invocation.setVaultTmpPath(
+                    StringUtils.isNotBlank(vaultTmpPath) ? new FilePath(new File(vaultTmpPath)) : null);
             invocation.setContent(content);
             invocation.setInput(input);
             invocation.setOutput(output);
@@ -154,8 +162,7 @@ public class AnsibleVaultBuilder extends Builder implements SimpleBuildStep
     }
 
     @Extension
-    public static final class DescriptorImpl extends AbstractAnsibleBuilderDescriptor
-    {
+    public static final class DescriptorImpl extends AbstractAnsibleBuilderDescriptor {
         public DescriptorImpl() {
             super("Invoke Ansible Vault");
         }

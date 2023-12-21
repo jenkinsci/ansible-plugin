@@ -19,7 +19,6 @@ import hudson.Extension;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
 import hudson.util.Secret;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
@@ -34,8 +33,7 @@ public class ExtraVar extends AbstractDescribableImpl<ExtraVar> {
     public boolean hidden = true;
 
     @DataBoundConstructor
-    public ExtraVar() {
-    }
+    public ExtraVar() {}
 
     protected Object readResolve() {
         if (value != null) {
@@ -74,7 +72,8 @@ public class ExtraVar extends AbstractDescribableImpl<ExtraVar> {
     @Extension
     public static class DescriptorImpl extends Descriptor<ExtraVar> {
 
-        public String getDisplayName() { return ""; }
+        public String getDisplayName() {
+            return "";
+        }
     }
-
 }

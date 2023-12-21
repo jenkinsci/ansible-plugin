@@ -1,9 +1,5 @@
 package org.jenkinsci.plugins.ansible;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Map;
-
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -11,6 +7,9 @@ import hudson.model.BuildListener;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,8 +18,7 @@ import hudson.util.ArgumentListBuilder;
  * Time: 22:56
  * To change this template use File | Settings | File Templates.
  */
-public class CLIRunner
-{
+public class CLIRunner {
     private final Launcher launcher;
     private final Run<?, ?> build;
     private final TaskListener listener;
@@ -41,19 +39,19 @@ public class CLIRunner
     }
 
     public boolean execute(ArgumentListBuilder args, Map<String, String> environment)
-            throws IOException, InterruptedException
-    {
+            throws IOException, InterruptedException {
         PrintStream logger = listener.getLogger();
         try {
             this.ws.mkdirs();
             return launcher.launch()
-                    .pwd(ws)
-                    .envs(environment)
-                    .cmds(args)
-                    .stdout(logger)
-                    .stderr(logger).join() == 0;
-        }
-        finally {
+                            .pwd(ws)
+                            .envs(environment)
+                            .cmds(args)
+                            .stdout(logger)
+                            .stderr(logger)
+                            .join()
+                    == 0;
+        } finally {
             logger.flush();
         }
     }
