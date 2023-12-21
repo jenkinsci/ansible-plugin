@@ -15,19 +15,17 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.util.List;
-
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import hudson.util.Secret;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 import org.jenkinsci.plugins.plaincredentials.FileCredentials;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
-class Utils
-{
+class Utils {
     /**
      * Copy the SSH private key into a temporary file.
      *
@@ -37,7 +35,8 @@ class Utils
      * @throws IOException
      * @throws InterruptedException
      */
-    static FilePath createSshKeyFile(FilePath key, FilePath tmpPath, SSHUserPrivateKey credentials, boolean inThisDir) throws IOException, InterruptedException {
+    static FilePath createSshKeyFile(FilePath key, FilePath tmpPath, SSHUserPrivateKey credentials, boolean inThisDir)
+            throws IOException, InterruptedException {
         StringBuilder sb = new StringBuilder();
         List<String> privateKeys = credentials.getPrivateKeys();
         for (String s : privateKeys) {
@@ -48,7 +47,9 @@ class Utils
         return key;
     }
 
-    static FilePath createSshAskPassFile(FilePath script, FilePath tmpPath, SSHUserPrivateKey credentials, boolean inThisDir) throws IOException, InterruptedException {
+    static FilePath createSshAskPassFile(
+            FilePath script, FilePath tmpPath, SSHUserPrivateKey credentials, boolean inThisDir)
+            throws IOException, InterruptedException {
         StringBuilder sb = new StringBuilder();
         sb.append("#! /bin/sh\n").append("/bin/echo \"" + Secret.toString(credentials.getPassphrase()) + "\"");
         script = tmpPath.createTextTempFile("ssh", ".sh", sb.toString(), inThisDir);
@@ -65,7 +66,8 @@ class Utils
      * @throws IOException
      * @throws InterruptedException
      */
-    static FilePath createVaultPasswordFile(FilePath key, FilePath tmpPath, FileCredentials credentials) throws IOException, InterruptedException {
+    static FilePath createVaultPasswordFile(FilePath key, FilePath tmpPath, FileCredentials credentials)
+            throws IOException, InterruptedException {
         try (InputStream content = credentials.getContent()) {
             key = tmpPath.createTempFile("vault", ".password");
             key.copyFrom(content);
@@ -83,8 +85,10 @@ class Utils
      * @throws IOException
      * @throws InterruptedException
      */
-    static FilePath createVaultPasswordFile(FilePath key, FilePath tmpPath, StringCredentials credentials) throws IOException, InterruptedException {
-        key = tmpPath.createTextTempFile("vault", ".password", credentials.getSecret().getPlainText(), true);
+    static FilePath createVaultPasswordFile(FilePath key, FilePath tmpPath, StringCredentials credentials)
+            throws IOException, InterruptedException {
+        key = tmpPath.createTextTempFile(
+                "vault", ".password", credentials.getSecret().getPlainText(), true);
         key.chmod(0400);
         return key;
     }

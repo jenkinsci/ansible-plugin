@@ -18,8 +18,6 @@ package org.jenkinsci.plugins.ansible.workflow;
 import static com.cloudbees.plugins.credentials.CredentialsMatchers.anyOf;
 import static com.cloudbees.plugins.credentials.CredentialsMatchers.instanceOf;
 
-import java.util.List;
-
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
@@ -33,14 +31,15 @@ import hudson.model.Project;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ListBoxModel;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.ansible.AnsibleAdHocCommandBuilder;
 import org.jenkinsci.plugins.ansible.AnsibleInstallation;
 import org.jenkinsci.plugins.ansible.ExtraVar;
 import org.jenkinsci.plugins.ansible.Inventory;
-import org.jenkinsci.plugins.ansible.InventoryPath;
 import org.jenkinsci.plugins.ansible.InventoryContent;
 import org.jenkinsci.plugins.ansible.InventoryDoNotSpecify;
+import org.jenkinsci.plugins.ansible.InventoryPath;
 import org.jenkinsci.plugins.plaincredentials.FileCredentials;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
@@ -56,9 +55,9 @@ import org.kohsuke.stapler.DataBoundSetter;
  */
 public class AnsibleAdhocStep extends AbstractStepImpl {
 
-	private String hosts;
-	private String module;
-	private String moduleArguments;
+    private String hosts;
+    private String module;
+    private String moduleArguments;
     private String inventory;
     private String inventoryContent;
     private boolean dynamicInventory = false;
@@ -75,9 +74,9 @@ public class AnsibleAdhocStep extends AbstractStepImpl {
     private boolean hostKeyChecking = false;
 
     @DataBoundConstructor
-	public AnsibleAdhocStep(String hosts) {
-		this.hosts = hosts;
-	}
+    public AnsibleAdhocStep(String hosts) {
+        this.hosts = hosts;
+    }
 
     @DataBoundSetter
     public void setModule(String module) {
@@ -246,20 +245,18 @@ public class AnsibleAdhocStep extends AbstractStepImpl {
 
         public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Project project) {
             return new StandardListBoxModel()
-                .withEmptySelection()
-                .withMatching(anyOf(
-                    instanceOf(SSHUserPrivateKey.class),
-                    instanceOf(UsernamePasswordCredentials.class)),
-                    CredentialsProvider.lookupCredentials(StandardUsernameCredentials.class, project));
+                    .withEmptySelection()
+                    .withMatching(
+                            anyOf(instanceOf(SSHUserPrivateKey.class), instanceOf(UsernamePasswordCredentials.class)),
+                            CredentialsProvider.lookupCredentials(StandardUsernameCredentials.class, project));
         }
 
         public ListBoxModel doFillVaultCredentialsIdItems(@AncestorInPath Project project) {
             return new StandardListBoxModel()
-                .withEmptySelection()
-                .withMatching(anyOf(
-                    instanceOf(FileCredentials.class),
-                    instanceOf(StringCredentials.class)),
-                    CredentialsProvider.lookupCredentials(StandardCredentials.class, project));
+                    .withEmptySelection()
+                    .withMatching(
+                            anyOf(instanceOf(FileCredentials.class), instanceOf(StringCredentials.class)),
+                            CredentialsProvider.lookupCredentials(StandardCredentials.class, project));
         }
 
         public ListBoxModel doFillInstallationItems() {
@@ -285,7 +282,7 @@ public class AnsibleAdhocStep extends AbstractStepImpl {
         private transient Launcher launcher;
 
         @StepContextParameter
-        private transient Run<?,?> run;
+        private transient Run<?, ?> run;
 
         @StepContextParameter
         private transient FilePath ws;
@@ -302,14 +299,12 @@ public class AnsibleAdhocStep extends AbstractStepImpl {
             if (StringUtils.isNotBlank(step.getInventory())) {
                 inventory = new InventoryPath(step.getInventory());
             } else if (StringUtils.isNotBlank(step.getInventoryContent())) {
-                inventory = new InventoryContent(
-                        step.getInventoryContent(),
-                        step.isDynamicInventory()
-                );
+                inventory = new InventoryContent(step.getInventoryContent(), step.isDynamicInventory());
             } else {
-            	inventory = new InventoryDoNotSpecify();
+                inventory = new InventoryDoNotSpecify();
             }
-            AnsibleAdHocCommandBuilder builder = new AnsibleAdHocCommandBuilder(step.getHosts(), inventory, step.getModule(), step.getModuleArguments());
+            AnsibleAdHocCommandBuilder builder = new AnsibleAdHocCommandBuilder(
+                    step.getHosts(), inventory, step.getModule(), step.getModuleArguments());
             builder.setAnsibleName(step.getInstallation());
             builder.setBecome(step.isBecome());
             builder.setBecomeUser(step.getBecomeUser());
@@ -325,5 +320,4 @@ public class AnsibleAdhocStep extends AbstractStepImpl {
             return null;
         }
     }
-
 }

@@ -26,15 +26,14 @@ import hudson.slaves.NodeSpecific;
 import hudson.tools.ToolDescriptor;
 import hudson.tools.ToolInstallation;
 import hudson.tools.ToolProperty;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.List;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * {@code ToolInstallation} for Ansible
@@ -48,18 +47,23 @@ public class AnsibleInstallation extends ToolInstallation
     }
 
     public AnsibleInstallation forEnvironment(EnvVars environment) {
-        return new AnsibleInstallation(getName(), environment.expand(getHome()), getProperties().toList());
+        return new AnsibleInstallation(
+                getName(), environment.expand(getHome()), getProperties().toList());
     }
 
     public AnsibleInstallation forNode(Node node, TaskListener log) throws IOException, InterruptedException {
-        return new AnsibleInstallation(getName(), translateFor(node, log), getProperties().toList());
+        return new AnsibleInstallation(
+                getName(), translateFor(node, log), getProperties().toList());
     }
 
-    public static String getExecutable(String name, AnsibleCommand command, Node node, TaskListener listener, EnvVars env) throws IOException, InterruptedException {
+    public static String getExecutable(
+            String name, AnsibleCommand command, Node node, TaskListener listener, EnvVars env)
+            throws IOException, InterruptedException {
         if (name != null) {
             Jenkins j = Jenkins.getInstance();
             if (j != null) {
-                for (AnsibleInstallation tool : j.getDescriptorByType(DescriptorImpl.class).getInstallations()) {
+                for (AnsibleInstallation tool :
+                        j.getDescriptorByType(DescriptorImpl.class).getInstallations()) {
                     if (tool.getName().equals(name)) {
                         if (node != null) {
                             tool = tool.forNode(node, listener);
@@ -85,7 +89,8 @@ public class AnsibleInstallation extends ToolInstallation
     }
 
     public static AnsibleInstallation[] allInstallations() {
-        AnsibleInstallation.DescriptorImpl ansibleDescriptor = Jenkins.getActiveInstance().getDescriptorByType(AnsibleInstallation.DescriptorImpl.class);
+        AnsibleInstallation.DescriptorImpl ansibleDescriptor =
+                Jenkins.getActiveInstance().getDescriptorByType(AnsibleInstallation.DescriptorImpl.class);
         return ansibleDescriptor.getInstallations();
     }
 
@@ -97,7 +102,7 @@ public class AnsibleInstallation extends ToolInstallation
             }
             return installations[0];
         } else {
-            for (AnsibleInstallation installation: installations) {
+            for (AnsibleInstallation installation : installations) {
                 if (ansibleInstallation.equals(installation.getName())) {
                     return installation;
                 }

@@ -15,12 +15,6 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
@@ -32,6 +26,11 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 import hudson.util.Secret;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.plaincredentials.FileCredentials;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
@@ -65,9 +64,9 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     private boolean copyCredentialsInWorkspace = false;
     private final FilePath ws;
 
-    protected AbstractAnsibleInvocation(String exe, Run<?, ?> build, FilePath ws, TaskListener listener, EnvVars envVars)
-            throws IOException, InterruptedException, AnsibleInvocationException
-    {
+    protected AbstractAnsibleInvocation(
+            String exe, Run<?, ?> build, FilePath ws, TaskListener listener, EnvVars envVars)
+            throws IOException, InterruptedException, AnsibleInvocationException {
         this.build = build;
         this.ws = ws;
         this.envVars = envVars;
@@ -90,11 +89,10 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     }
 
     protected ArgumentListBuilder appendInventory(ArgumentListBuilder args)
-            throws IOException, InterruptedException, AnsibleInvocationException
-    {
+            throws IOException, InterruptedException, AnsibleInvocationException {
         if (inventory == null) {
-//            throw new AnsibleInvocationException(
-//                    "The inventory of hosts and groups is not defined. Check the job configuration.");
+            //            throw new AnsibleInvocationException(
+            //                    "The inventory of hosts and groups is not defined. Check the job configuration.");
             return args;
         }
         inventory.addArgument(args, ws, envVars, listener);
@@ -119,10 +117,12 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     }
 
     public ArgumentListBuilder appendExtraVars(ArgumentListBuilder args) {
-        if (extraVars != null && ! extraVars.isEmpty()) {
+        if (extraVars != null && !extraVars.isEmpty()) {
             for (ExtraVar var : extraVars) {
                 if (var.getSecretValue() == null) {
-                    listener.getLogger().println("[WARN] Omitting extra var " + var.getKey() + ": check value is a supported type.");
+                    listener.getLogger()
+                            .println(
+                                    "[WARN] Omitting extra var " + var.getKey() + ": check value is a supported type.");
                     continue;
                 }
                 args.add("-e");
@@ -186,7 +186,8 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
             if (StringUtils.isNotBlank(expandedValue)) {
                 args.add(option).add(expandedValue);
             } else {
-                listener.getLogger().println("[WARNING] parameter " + value + " is empty. Omitting option '" + option + "'.");
+                listener.getLogger()
+                        .println("[WARNING] parameter " + value + " is empty. Omitting option '" + option + "'.");
             }
         }
     }
@@ -197,7 +198,8 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
             if (StringUtils.isNotBlank(expandedValue)) {
                 args.addKeyValuePair("", key, expandedValue, false);
             } else {
-                listener.getLogger().println("[WARNING] parameter " + value + " is empty. Omitting option '" + key + "'.");
+                listener.getLogger()
+                        .println("[WARNING] parameter " + value + " is empty. Omitting option '" + key + "'.");
             }
         }
     }
@@ -224,18 +226,16 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
 
     protected ArgumentListBuilder prependPasswordCredentials(ArgumentListBuilder args) {
         if (credentials instanceof UsernamePasswordCredentials) {
-            UsernamePasswordCredentials passwordCredentials = (UsernamePasswordCredentials)credentials;
+            UsernamePasswordCredentials passwordCredentials = (UsernamePasswordCredentials) credentials;
             args.add("sshpass").addMasked("-p" + Secret.toString(passwordCredentials.getPassword()));
         }
         return args;
     }
 
-    protected ArgumentListBuilder appendCredentials(ArgumentListBuilder args)
-            throws IOException, InterruptedException
-    {
+    protected ArgumentListBuilder appendCredentials(ArgumentListBuilder args) throws IOException, InterruptedException {
         if (credentials instanceof SSHUserPrivateKey) {
             FilePath tmpPath = vaultTmpPath != null ? vaultTmpPath : ws;
-            SSHUserPrivateKey privateKeyCredentials = (SSHUserPrivateKey)credentials;
+            SSHUserPrivateKey privateKeyCredentials = (SSHUserPrivateKey) credentials;
             key = Utils.createSshKeyFile(key, tmpPath, privateKeyCredentials, copyCredentialsInWorkspace);
             args.add("--private-key").add(key.getRemote().replace("%", "%%"));
             args.add("-u").add(privateKeyCredentials.getUsername());
@@ -244,7 +244,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
                 environment.put("SSH_ASKPASS", script.getRemote());
                 // inspired from https://github.com/jenkinsci/git-client-plugin/pull/168
                 // but does not work with MacOSX
-                if (! environment.containsKey("DISPLAY")) {
+                if (!environment.containsKey("DISPLAY")) {
                     environment.put("DISPLAY", ":123.456");
                 }
             }
@@ -256,16 +256,15 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     }
 
     protected ArgumentListBuilder appendVaultPasswordFile(ArgumentListBuilder args)
-            throws IOException, InterruptedException
-    {
-        if(vaultCredentials != null){
+            throws IOException, InterruptedException {
+        if (vaultCredentials != null) {
             FilePath tmpPath = vaultTmpPath != null ? vaultTmpPath : ws;
             if (vaultCredentials instanceof FileCredentials) {
-                FileCredentials secretFile = (FileCredentials)vaultCredentials;
+                FileCredentials secretFile = (FileCredentials) vaultCredentials;
                 vaultPassword = Utils.createVaultPasswordFile(vaultPassword, tmpPath, secretFile);
                 args.add("--vault-password-file").add(vaultPassword.getRemote().replace("%", "%%"));
             } else if (vaultCredentials instanceof StringCredentials) {
-                StringCredentials secretText = (StringCredentials)vaultCredentials;
+                StringCredentials secretText = (StringCredentials) vaultCredentials;
                 vaultPassword = Utils.createVaultPasswordFile(vaultPassword, tmpPath, secretText);
                 args.add("--vault-password-file").add(vaultPassword.getRemote().replace("%", "%%"));
             }
@@ -294,7 +293,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
         return (T) this;
     }
 
-    abstract protected ArgumentListBuilder buildCommandLine()
+    protected abstract ArgumentListBuilder buildCommandLine()
             throws InterruptedException, AnsibleInvocationException, IOException;
 
     public boolean execute(CLIRunner runner) throws IOException, InterruptedException, AnsibleInvocationException {

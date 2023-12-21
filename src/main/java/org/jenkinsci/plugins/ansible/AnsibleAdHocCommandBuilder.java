@@ -15,11 +15,6 @@
  */
 package org.jenkinsci.plugins.ansible;
 
-import java.io.IOException;
-import java.io.File;
-import java.util.List;
-import javax.annotation.Nonnull;
-
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
@@ -35,6 +30,10 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import javax.annotation.Nonnull;
 import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -65,7 +64,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
      */
     public final Inventory inventory;
 
-    public final  String module;
+    public final String module;
 
     public final String command;
 
@@ -95,11 +94,20 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
     public List<ExtraVar> extraVars;
 
     @Deprecated
-    public AnsibleAdHocCommandBuilder(String ansibleName, String hostPattern, Inventory inventory, String module,
-                                      String command, String credentialsId, boolean sudo, String sudoUser, int forks,
-                                      boolean unbufferedOutput, boolean colorizedOutput, boolean hostKeyChecking,
-                                      String additionalParameters)
-    {
+    public AnsibleAdHocCommandBuilder(
+            String ansibleName,
+            String hostPattern,
+            Inventory inventory,
+            String module,
+            String command,
+            String credentialsId,
+            boolean sudo,
+            String sudoUser,
+            int forks,
+            boolean unbufferedOutput,
+            boolean colorizedOutput,
+            boolean hostKeyChecking,
+            String additionalParameters) {
         this.ansibleName = ansibleName;
         this.hostPattern = hostPattern;
         this.inventory = inventory;
@@ -112,7 +120,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
         this.unbufferedOutput = unbufferedOutput;
         this.colorizedOutput = colorizedOutput;
         // ignored because of SECURITY-630
-        //this.hostKeyChecking = hostKeyChecking;
+        // this.hostKeyChecking = hostKeyChecking;
         this.additionalParameters = additionalParameters;
     }
 
@@ -143,7 +151,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
     public void setVaultTmpPath(String vaultTmpPath) {
         this.vaultTmpPath = vaultTmpPath;
     }
-    
+
     public void setBecome(boolean become) {
         this.become = become;
     }
@@ -200,7 +208,9 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
     }
 
     @Override
-    public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener) throws InterruptedException, IOException {
+    public void perform(
+            @Nonnull Run<?, ?> run, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener)
+            throws InterruptedException, IOException {
         try {
             CLIRunner runner = new CLIRunner(run, ws, launcher, listener);
             Computer computer = ws.toComputer();
@@ -208,8 +218,10 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
                 throw new AbortException("The ansible ad-hoc command build step requires to be launched on a node");
             }
             EnvVars envVars = run.getEnvironment(listener);
-            String exe = AnsibleInstallation.getExecutable(ansibleName, AnsibleCommand.ANSIBLE, computer.getNode(), listener, envVars);
-            AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation(exe, run, ws, listener, envVars);
+            String exe = AnsibleInstallation.getExecutable(
+                    ansibleName, AnsibleCommand.ANSIBLE, computer.getNode(), listener, envVars);
+            AnsibleAdHocCommandInvocation invocation =
+                    new AnsibleAdHocCommandInvocation(exe, run, ws, listener, envVars);
             invocation.setHostPattern(hostPattern);
             invocation.setInventory(inventory);
             invocation.setModule(module);
@@ -217,13 +229,17 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
             invocation.setBecome(become, becomeUser);
             invocation.setSudo(sudo, sudoUser);
             invocation.setForks(forks);
-            invocation.setCredentials(StringUtils.isNotBlank(credentialsId) ?
-                    CredentialsProvider.findCredentialById(credentialsId, StandardUsernameCredentials.class, run) :
-                    null);
-            invocation.setVaultCredentials(StringUtils.isNotBlank(vaultCredentialsId) ?
-                    CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run) :
-                    null);
-            invocation.setVaultTmpPath(StringUtils.isNotBlank(vaultTmpPath) ? new FilePath(new File(vaultTmpPath)) : null);
+            invocation.setCredentials(
+                    StringUtils.isNotBlank(credentialsId)
+                            ? CredentialsProvider.findCredentialById(
+                                    credentialsId, StandardUsernameCredentials.class, run)
+                            : null);
+            invocation.setVaultCredentials(
+                    StringUtils.isNotBlank(vaultCredentialsId)
+                            ? CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run)
+                            : null);
+            invocation.setVaultTmpPath(
+                    StringUtils.isNotBlank(vaultTmpPath) ? new FilePath(new File(vaultTmpPath)) : null);
             invocation.setExtraVars(extraVars);
             invocation.setAdditionalParameters(additionalParameters);
             invocation.setDisableHostKeyCheck(disableHostKeyChecking);

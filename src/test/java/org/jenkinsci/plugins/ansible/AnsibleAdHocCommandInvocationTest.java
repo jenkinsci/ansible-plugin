@@ -1,12 +1,10 @@
 package org.jenkinsci.plugins.ansible;
 
-import static org.mockito.Mockito.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.aMapWithSize;
-
-import java.util.Map;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.mockito.Mockito.*;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
@@ -16,6 +14,7 @@ import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 import hudson.util.Secret;
+import java.util.Map;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -35,9 +34,10 @@ public class AnsibleAdHocCommandInvocationTest {
         Inventory inventory = new InventoryPath("/tmp/hosts");
         BuildListener listener = mock(BuildListener.class);
         CLIRunner runner = mock(CLIRunner.class);
-        AbstractBuild<?,?> build = mock(AbstractBuild.class);
+        AbstractBuild<?, ?> build = mock(AbstractBuild.class);
         when(build.getEnvironment(any(TaskListener.class))).thenReturn(new EnvVars());
-        AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
+        AnsibleAdHocCommandInvocation invocation =
+                new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
         invocation.setHostPattern("localhost");
         invocation.setInventory(inventory);
         invocation.setModule("ping");
@@ -48,7 +48,6 @@ public class AnsibleAdHocCommandInvocationTest {
         ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
         verify(runner).execute(argument.capture(), anyMap());
         assertThat(argument.getValue().toString(), is("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5"));
-
     }
 
     @Test
@@ -57,9 +56,10 @@ public class AnsibleAdHocCommandInvocationTest {
         Inventory inventory = new InventoryPath("/tmp/hosts");
         BuildListener listener = mock(BuildListener.class);
         CLIRunner runner = mock(CLIRunner.class);
-        AbstractBuild<?,?> build = mock(AbstractBuild.class);
+        AbstractBuild<?, ?> build = mock(AbstractBuild.class);
         when(build.getEnvironment(any(TaskListener.class))).thenReturn(new EnvVars());
-        AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
+        AnsibleAdHocCommandInvocation invocation =
+                new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
         invocation.setHostPattern("localhost");
         invocation.setInventory(inventory);
         invocation.setModule("ping");
@@ -70,7 +70,6 @@ public class AnsibleAdHocCommandInvocationTest {
         ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
         verify(runner).execute(argument.capture(), anyMap());
         assertThat(argument.getValue().toString(), is("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping"));
-
     }
 
     @Test
@@ -79,9 +78,10 @@ public class AnsibleAdHocCommandInvocationTest {
         Inventory inventory = new InventoryPath("/tmp/hosts");
         BuildListener listener = mock(BuildListener.class);
         CLIRunner runner = mock(CLIRunner.class);
-        AbstractBuild<?,?> build = mock(AbstractBuild.class);
+        AbstractBuild<?, ?> build = mock(AbstractBuild.class);
         when(build.getEnvironment(any(TaskListener.class))).thenReturn(new EnvVars());
-        AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
+        AnsibleAdHocCommandInvocation invocation =
+                new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
         invocation.setHostPattern("localhost");
         invocation.setInventory(inventory);
         invocation.setModule("ping");
@@ -95,10 +95,9 @@ public class AnsibleAdHocCommandInvocationTest {
         ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
         verify(runner).execute(any(ArgumentListBuilder.class), argument.capture());
 
-        assertThat((Map<String, String>)argument.getValue(), hasEntry("PYTHONUNBUFFERED", "1"));
-        assertThat((Map<String, String>)argument.getValue(), hasEntry("ANSIBLE_FORCE_COLOR", "true"));
-        assertThat((Map<String, String>)argument.getValue(), hasEntry("ANSIBLE_HOST_KEY_CHECKING", "False"));
-
+        assertThat((Map<String, String>) argument.getValue(), hasEntry("PYTHONUNBUFFERED", "1"));
+        assertThat((Map<String, String>) argument.getValue(), hasEntry("ANSIBLE_FORCE_COLOR", "true"));
+        assertThat((Map<String, String>) argument.getValue(), hasEntry("ANSIBLE_HOST_KEY_CHECKING", "False"));
     }
 
     @Test
@@ -107,15 +106,16 @@ public class AnsibleAdHocCommandInvocationTest {
         Inventory inventory = new InventoryPath("/tmp/hosts");
         BuildListener listener = mock(BuildListener.class);
         CLIRunner runner = mock(CLIRunner.class);
-        AbstractBuild<?,?> build = mock(AbstractBuild.class);
+        AbstractBuild<?, ?> build = mock(AbstractBuild.class);
         when(build.getEnvironment(any(TaskListener.class))).thenReturn(new EnvVars());
-        AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
+        AnsibleAdHocCommandInvocation invocation =
+                new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
         invocation.setHostPattern("localhost");
         invocation.setInventory(inventory);
         invocation.setModule("ping");
         invocation.setForks(5);
         invocation.setColorizedOutput(true);
-        //invocation.setDisableHostKeyCheck(true);
+        // invocation.setDisableHostKeyCheck(true);
         invocation.setUnbufferedOutput(true);
         // When
         invocation.execute(runner);
@@ -123,13 +123,10 @@ public class AnsibleAdHocCommandInvocationTest {
         ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
         verify(runner).execute(any(ArgumentListBuilder.class), argument.capture());
 
-        assertThat((Map<String, String>)argument.getValue(), aMapWithSize(2));
-        assertThat((Map<String, String>)argument.getValue(), hasEntry("PYTHONUNBUFFERED", "1"));
-        assertThat((Map<String, String>)argument.getValue(), hasEntry("ANSIBLE_FORCE_COLOR", "true"));
-
-
+        assertThat((Map<String, String>) argument.getValue(), aMapWithSize(2));
+        assertThat((Map<String, String>) argument.getValue(), hasEntry("PYTHONUNBUFFERED", "1"));
+        assertThat((Map<String, String>) argument.getValue(), hasEntry("ANSIBLE_FORCE_COLOR", "true"));
     }
-
 
     @Test
     @Ignore("build.getWorkspace() cannot be mocked")
@@ -140,9 +137,10 @@ public class AnsibleAdHocCommandInvocationTest {
         when(pkey.getUsername()).thenReturn("mylogin");
         BuildListener listener = mock(BuildListener.class);
         CLIRunner runner = mock(CLIRunner.class);
-        AbstractBuild<?,?> build = mock(AbstractBuild.class);
+        AbstractBuild<?, ?> build = mock(AbstractBuild.class);
         when(build.getEnvironment(any(TaskListener.class))).thenReturn(new EnvVars());
-        AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
+        AnsibleAdHocCommandInvocation invocation =
+                new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
         invocation.setHostPattern("localhost");
         invocation.setInventory(inventory);
         invocation.setModule("ping");
@@ -154,8 +152,9 @@ public class AnsibleAdHocCommandInvocationTest {
         ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
         verify(runner).execute(argument.capture(), anyMap());
 
-        assertThat(argument.getValue().toString(), is("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5 --private-key .+ -u mylogin"));
-
+        assertThat(
+                argument.getValue().toString(),
+                is("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5 --private-key .+ -u mylogin"));
     }
 
     @Test
@@ -168,9 +167,10 @@ public class AnsibleAdHocCommandInvocationTest {
         when(password.getPassword()).thenReturn(Secret.fromString("aStrongSecretPassword"));
         BuildListener listener = mock(BuildListener.class);
         CLIRunner runner = mock(CLIRunner.class);
-        AbstractBuild<?,?> build = mock(AbstractBuild.class);
+        AbstractBuild<?, ?> build = mock(AbstractBuild.class);
         when(build.getEnvironment(any(TaskListener.class))).thenReturn(new EnvVars());
-        AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
+        AnsibleAdHocCommandInvocation invocation =
+                new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
         invocation.setHostPattern("localhost");
         invocation.setInventory(inventory);
         invocation.setModule("ping");
@@ -182,10 +182,10 @@ public class AnsibleAdHocCommandInvocationTest {
         ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
         verify(runner).execute(argument.capture(), anyMap());
 
-        assertThat(argument.getValue().toString(), is("sshpass ****** /usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5 " +
-                                                        "-u" +
-                                                        " mylogin -k"));
-
+        assertThat(
+                argument.getValue().toString(),
+                is("sshpass ****** /usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5 " + "-u"
+                        + " mylogin -k"));
     }
 
     @Test
@@ -194,11 +194,12 @@ public class AnsibleAdHocCommandInvocationTest {
         Inventory inventory = new InventoryPath("/tmp/hosts");
         BuildListener listener = mock(BuildListener.class);
         CLIRunner runner = mock(CLIRunner.class);
-        AbstractBuild<?,?> build = mock(AbstractBuild.class);
+        AbstractBuild<?, ?> build = mock(AbstractBuild.class);
         EnvVars vars = new EnvVars();
         vars.put("MODULE", "ping");
         when(build.getEnvironment(any(TaskListener.class))).thenReturn(vars);
-        AnsibleAdHocCommandInvocation invocation = new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
+        AnsibleAdHocCommandInvocation invocation =
+                new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
         invocation.setHostPattern("localhost");
         invocation.setInventory(inventory);
         invocation.setModule("${MODULE}");
@@ -210,7 +211,5 @@ public class AnsibleAdHocCommandInvocationTest {
         verify(runner).execute(argument.capture(), anyMap());
 
         assertThat(argument.getValue().toString(), is("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5"));
-
-
     }
 }

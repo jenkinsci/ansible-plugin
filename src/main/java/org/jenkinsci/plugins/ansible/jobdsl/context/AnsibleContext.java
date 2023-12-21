@@ -1,15 +1,13 @@
 package org.jenkinsci.plugins.ansible.jobdsl.context;
 
-import java.util.List;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.util.List;
 import javaposse.jobdsl.dsl.Context;
 import javaposse.jobdsl.plugin.ContextExtensionPoint;
 import org.jenkinsci.plugins.ansible.ExtraVar;
 import org.jenkinsci.plugins.ansible.Inventory;
 import org.jenkinsci.plugins.ansible.InventoryContent;
 import org.jenkinsci.plugins.ansible.InventoryPath;
-
 
 /**
  * @author lanwen (Merkushev Kirill)
@@ -33,10 +31,12 @@ public class AnsibleContext implements Context {
     private boolean unbufferedOutput = true;
     private boolean colorizedOutput = false;
     private boolean disableHostKeyChecking = false;
+
     @Deprecated
     @SuppressWarnings("unused")
     @SuppressFBWarnings("URF_UNREAD_FIELD")
     private transient boolean hostKeyChecking = true;
+
     private String additionalParameters;
     ExtraVarsContext extraVarsContext = new ExtraVarsContext();
 
@@ -98,7 +98,7 @@ public class AnsibleContext implements Context {
     public void output(String output) {
         this.output = output;
     }
-    
+
     public void become(boolean become) {
         this.become = become;
     }
@@ -260,8 +260,8 @@ public class AnsibleContext implements Context {
     }
 
     @Deprecated
-    public void hostKeyChecking(boolean hostKeyChecking) {
-    }
+    public void hostKeyChecking(boolean hostKeyChecking) {}
+
     @Deprecated
     public boolean isHostKeyChecking() {
         return true;

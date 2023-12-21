@@ -1,9 +1,9 @@
 package org.jenkinsci.plugins.ansible.jobdsl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.hamcrest.Matcher;
 import org.jenkinsci.plugins.ansible.AnsibleAdHocCommandBuilder;
@@ -67,7 +67,6 @@ public class JobDslIntegrationTest {
         assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
         assertThat("extraVar.value", step.extraVars.get(0).getSecretValue().getPlainText(), is("value"));
         assertThat("extraVar.hidden", step.extraVars.get(0).isHidden(), is(true));
-
     }
 
     @Test
@@ -96,13 +95,13 @@ public class JobDslIntegrationTest {
         assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
         assertThat("extraVar.value", step.extraVars.get(0).getSecretValue().getPlainText(), is("value"));
         assertThat("extraVar.hidden", step.extraVars.get(0).isHidden(), is(true));
-
     }
 
     @Test
     @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_ADHOC)
     public void shouldCreateJobAdhocDsl() throws Exception {
-        AnsibleAdHocCommandBuilder step = dsl.getGeneratedJob().getBuildersList().get(AnsibleAdHocCommandBuilder.class);
+        AnsibleAdHocCommandBuilder step =
+                dsl.getGeneratedJob().getBuildersList().get(AnsibleAdHocCommandBuilder.class);
         assertThat("Should add adhoc builder", step, notNullValue());
 
         assertThat("module", step.module, is("module"));
@@ -128,7 +127,6 @@ public class JobDslIntegrationTest {
         assertThat("action", step.action, is("encrypt_string"));
         assertThat("content", step.content, is("my_secret"));
         assertThat("vaultCredentialsId", step.vaultCredentialsId, is("ansible_vault_credentials"));
-
     }
 
     @Test
@@ -141,6 +139,5 @@ public class JobDslIntegrationTest {
         assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
         assertThat("extraVar.value", step.extraVars.get(0).getSecretValue().getPlainText(), is("value"));
         assertThat("extraVar.hidden", step.extraVars.get(0).isHidden(), is(true));
-
     }
 }

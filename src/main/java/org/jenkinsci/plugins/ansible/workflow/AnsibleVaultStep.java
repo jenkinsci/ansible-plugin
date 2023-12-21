@@ -26,7 +26,6 @@ import hudson.*;
 import hudson.model.Computer;
 import hudson.model.Item;
 import hudson.model.Node;
-import hudson.model.Project;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ListBoxModel;
@@ -59,9 +58,7 @@ public class AnsibleVaultStep extends AbstractStepImpl {
     private String output = null;
 
     @DataBoundConstructor
-    public AnsibleVaultStep() {
-    	
-    }
+    public AnsibleVaultStep() {}
 
     @DataBoundSetter
     public void setAction(String action) {
@@ -152,13 +149,13 @@ public class AnsibleVaultStep extends AbstractStepImpl {
             return "Invoke ansible vault";
         }
 
-        public ListBoxModel doFillVaultCredentialsIdItems(@AncestorInPath Item item,
-                                                          @QueryParameter String vaultCredentialsId) {
+        public ListBoxModel doFillVaultCredentialsIdItems(
+                @AncestorInPath Item item, @QueryParameter String vaultCredentialsId) {
             return fillVaultCredentials(item, vaultCredentialsId);
         }
 
-        public ListBoxModel doFillNewVaultCredentialsIdItems(@AncestorInPath Item item,
-                                                             @QueryParameter String newVaultCredentialsId) {
+        public ListBoxModel doFillNewVaultCredentialsIdItems(
+                @AncestorInPath Item item, @QueryParameter String newVaultCredentialsId) {
             return fillVaultCredentials(item, newVaultCredentialsId);
         }
 
@@ -170,7 +167,6 @@ public class AnsibleVaultStep extends AbstractStepImpl {
             return model;
         }
 
-
         private ListBoxModel fillVaultCredentials(Item item, String credentialsId) {
             StandardListBoxModel result = new StandardListBoxModel();
             if (item == null) {
@@ -178,16 +174,14 @@ public class AnsibleVaultStep extends AbstractStepImpl {
                     return result.includeCurrentValue(credentialsId);
                 }
             } else {
-                if (!item.hasPermission(Item.EXTENDED_READ)
-                        && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+                if (!item.hasPermission(Item.EXTENDED_READ) && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
                     return result.includeCurrentValue(credentialsId);
                 }
             }
 
             return result.includeEmptyValue()
-                    .withMatching(anyOf(
-                            instanceOf(FileCredentials.class),
-                            instanceOf(StringCredentials.class)),
+                    .withMatching(
+                            anyOf(instanceOf(FileCredentials.class), instanceOf(StringCredentials.class)),
                             CredentialsProvider.lookupCredentials(StandardCredentials.class, item))
                     .includeCurrentValue(credentialsId);
         }
@@ -207,7 +201,7 @@ public class AnsibleVaultStep extends AbstractStepImpl {
         private transient Launcher launcher;
 
         @StepContextParameter
-        private transient Run<?,?> run;
+        private transient Run<?, ?> run;
 
         @StepContextParameter
         private transient FilePath ws;
@@ -237,5 +231,4 @@ public class AnsibleVaultStep extends AbstractStepImpl {
             return null;
         }
     }
-
 }
