@@ -70,6 +70,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     private String vaultCredentialsId;
     private String vaultTmpPath = null;
     private boolean become = false;
+    private boolean checkMode = false;
     private String becomeUser = "root";
     private boolean sudo = false;
     private String sudoUser = "root";
@@ -131,6 +132,11 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
     @DataBoundSetter
     public void setBecomeUser(String becomeUser) {
         this.becomeUser = Util.fixEmptyAndTrim(becomeUser);
+    }
+
+    @DataBoundSetter
+    public void setCheckMode(boolean checkMode) {
+        this.checkMode = checkMode;
     }
 
     @DataBoundSetter
@@ -235,6 +241,10 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
 
     public String getBecomeUser() {
         return becomeUser;
+    }
+
+    public boolean isCheckMode() {
+        return checkMode;
     }
 
     public boolean isSudo() {
@@ -433,6 +443,7 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
             builder.setAnsibleName(step.getInstallation());
             builder.setBecome(step.isBecome());
             builder.setBecomeUser(step.getBecomeUser());
+            builder.setCheckMode(step.isCheckMode());
             builder.setSudo(step.isSudo());
             builder.setSudoUser(step.getSudoUser());
             builder.setCredentialsId(step.getCredentialsId(), true);

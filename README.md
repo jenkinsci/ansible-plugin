@@ -430,6 +430,7 @@ steps {
         skippedTags(String tags)
         startAtTask(String task)
         credentialsId(String id)
+        checkMode(boolean checkMode = false)
         become(boolean become = true)
         becomeUser(String user = 'root')
         sudo(boolean sudo = true)
@@ -477,6 +478,7 @@ steps {
         credentialsId('credsid')
         become(true)
         becomeUser("user")
+        checkMode(false)
         extraVars {
             extraVar("key1", "value1", false)
             extraVar("key2", "value2", true)

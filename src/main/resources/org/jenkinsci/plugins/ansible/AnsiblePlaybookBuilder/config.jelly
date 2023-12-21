@@ -42,6 +42,10 @@
     </f:entry>
   </f:optionalBlock>
 
+  <f:entry title="${%check mode}" field="checkMode">
+    <f:checkbox default="false" />
+  </f:entry>
+
   <f:optionalBlock name="sudo" title="${%sudo}" checked="${instance.sudo}" inline="true" help="${descriptor.getHelpFile('sudo')}">
      <f:entry title="${%sudo user}" field="sudoUser">
        <f:textbox />

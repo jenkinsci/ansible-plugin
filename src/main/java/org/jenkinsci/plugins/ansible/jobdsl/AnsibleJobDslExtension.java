@@ -58,6 +58,7 @@ public class AnsibleJobDslExtension extends ContextExtensionPoint {
         plbook.setDisableHostKeyChecking(context.isDisableHostKeyChecking());
         plbook.setBecome(context.isBecome());
         plbook.setBecomeUser(context.getBecomeUser());
+        plbook.setCheckMode(context.isCheckMode());
         plbook.setSudo(context.isSudo());
         plbook.setSudoUser(context.getSudoUser());
         plbook.setUnbufferedOutput(context.isUnbufferedOutput());

@@ -28,6 +28,7 @@ public class AnsibleContext implements Context {
     private boolean sudo = false;
     private String sudoUser = "root";
     private int forks = 5;
+    private boolean checkMode = false;
     private boolean unbufferedOutput = true;
     private boolean colorizedOutput = false;
     private boolean disableHostKeyChecking = false;
@@ -105,6 +106,10 @@ public class AnsibleContext implements Context {
 
     public void becomeUser(String becomeUser) {
         this.becomeUser = becomeUser;
+    }
+
+    public void checkMode(boolean checkMode) {
+        this.checkMode = checkMode;
     }
 
     public void sudo(boolean sudo) {
@@ -225,6 +230,10 @@ public class AnsibleContext implements Context {
 
     public boolean isColorizedOutput() {
         return colorizedOutput;
+    }
+
+    public boolean isCheckMode() {
+        return checkMode;
     }
 
     public boolean isDisableHostKeyChecking() {

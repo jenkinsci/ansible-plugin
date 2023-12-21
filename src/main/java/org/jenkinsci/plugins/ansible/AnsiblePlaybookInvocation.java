@@ -34,6 +34,7 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
     private String tags;
     private String skippedTags;
     private String startAtTask;
+    private boolean checkMode;
 
     protected AnsiblePlaybookInvocation(String exe, AbstractBuild<?, ?> build, BuildListener listener, EnvVars envVars)
             throws IOException, InterruptedException, AnsibleInvocationException {
@@ -47,6 +48,11 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
 
     public AnsiblePlaybookInvocation setPlaybook(String playbook) {
         this.playbook = playbook;
+        return this;
+    }
+
+    public AnsiblePlaybookInvocation setCheckMode(boolean checkMode) {
+        this.checkMode = checkMode;
         return this;
     }
 
@@ -95,6 +101,13 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
         return args;
     }
 
+    protected ArgumentListBuilder appendCheckMode(ArgumentListBuilder args) {
+        if (checkMode) {
+            args.add("--check");
+        }
+        return args;
+    }
+
     @Override
     protected ArgumentListBuilder buildCommandLine()
             throws InterruptedException, AnsibleInvocationException, IOException {
@@ -108,6 +121,7 @@ public class AnsiblePlaybookInvocation extends AbstractAnsibleInvocation<Ansible
         appendSkippedTags(args);
         appendStartTask(args);
         appendBecome(args);
+        appendCheckMode(args);
         appendSudo(args);
         appendForks(args);
         appendCredentials(args);
