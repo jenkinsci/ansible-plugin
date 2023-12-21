@@ -74,6 +74,8 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep {
 
     public String becomeUser = "root";
 
+    public boolean checkMode = false;
+
     public boolean sudo = false;
 
     public String sudoUser = "root";
@@ -197,6 +199,11 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep {
     }
 
     @DataBoundSetter
+    public void setCheckMode(boolean checkMode) {
+        this.checkMode = checkMode;
+    }
+
+    @DataBoundSetter
     public void setSudoUser(String sudoUser) {
         this.sudoUser = sudoUser;
     }
@@ -269,6 +276,7 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep {
             invocation.setSkippedTags(skippedTags);
             invocation.setStartTask(startAtTask);
             invocation.setBecome(become, becomeUser);
+            invocation.setCheckMode(checkMode);
             invocation.setSudo(sudo, sudoUser);
             invocation.setForks(forks);
             invocation.setCredentials(

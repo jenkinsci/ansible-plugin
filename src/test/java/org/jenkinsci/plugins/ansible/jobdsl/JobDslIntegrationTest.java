@@ -40,6 +40,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 public class JobDslIntegrationTest {
     public static final String ANSIBLE_DSL_GROOVY_PLAYBOOK = "jobdsl/playbook.groovy";
     public static final String ANSIBLE_DSL_GROOVY_EXPANDER = "jobdsl/expander.groovy";
+    public static final String ANSIBLE_DSL_GROOVY_CHECK_MODE = "jobdsl/checkMode.groovy";
     public static final String ANSIBLE_DSL_GROOVY_SECURITY_630 = "jobdsl/security630.groovy";
     public static final String ANSIBLE_DSL_GROOVY_PLAYBOOK_LEGACY = "jobdsl/legacyPlaybook.groovy";
     public static final String ANSIBLE_DSL_GROOVY_ADHOC = "jobdsl/adhoc.groovy";
@@ -76,6 +77,7 @@ public class JobDslIntegrationTest {
         assertThat("credentialsId", step.credentialsId, is("credsid"));
         assertThat("become", step.become, is(true));
         assertThat("becomeUser", step.becomeUser, is("user"));
+        assertThat("checkMode", step.checkMode, is(false));
         assertThat("sudo", step.sudo, is(false));
         assertThat("sudoUser", step.sudoUser, is("root"));
         assertThat("forks", step.forks, is(6));
@@ -86,6 +88,18 @@ public class JobDslIntegrationTest {
         assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
         assertThat("extraVar.value", step.extraVars.get(0).getSecretValue().getPlainText(), is("value"));
         assertThat("extraVar.hidden", step.extraVars.get(0).isHidden(), is(true));
+    }
+
+    @Test
+    @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_CHECK_MODE)
+    public void shouldCreateJobWithCheckMode() throws Exception {
+        AnsiblePlaybookBuilder step = dsl.getGeneratedJob().getBuildersList().get(AnsiblePlaybookBuilder.class);
+        assertThat("Should add playbook builder", step, notNullValue());
+
+        assertThat("playbook", step.playbook, is("path/playbook.yml"));
+        assertThat("inventory", step.inventory, (Matcher) isA(InventoryPath.class));
+        assertThat("ansibleName", step.ansibleName, is("1.9.4"));
+        assertThat("checkMode", step.checkMode, is(true));
     }
 
     @Test

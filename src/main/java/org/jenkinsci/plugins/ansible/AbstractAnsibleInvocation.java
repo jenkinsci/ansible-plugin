@@ -52,7 +52,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
     protected boolean sudo;
     protected String sudoUser;
     protected StandardCredentials vaultCredentials;
-    protected FilePath vaultTmpPath;
+    protected FilePath vaultTmpPath = null;
     protected StandardUsernameCredentials credentials;
     protected List<ExtraVar> extraVars;
     protected String additionalParameters;

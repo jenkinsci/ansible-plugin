@@ -58,6 +58,17 @@ public class PipelineTest {
     }
 
     @Test
+    public void testMinimalCheckModePipeline() throws Exception {
+        String pipeline = IOUtils.toString(
+                PipelineTest.class.getResourceAsStream("/pipelines/minimalCheckMode.groovy"), StandardCharsets.UTF_8);
+        WorkflowJob workflowJob = jenkins.createProject(WorkflowJob.class);
+        workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
+        WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
+        jenkins.waitForCompletion(run1);
+        assertThat(run1.getLog(), allOf(containsString("ansible-playbook playbook.yml --check")));
+    }
+
+    @Test
     public void testExtraVarsHiddenString() throws Exception {
         String pipeline = IOUtils.toString(
                 PipelineTest.class.getResourceAsStream("/pipelines/extraVarsHiddenString.groovy"),

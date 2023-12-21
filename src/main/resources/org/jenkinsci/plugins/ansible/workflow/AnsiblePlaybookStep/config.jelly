@@ -18,6 +18,9 @@
     <f:entry field="vaultTmpPath" title="Vault tmp path">
         <f:textbox/>
     </f:entry>
+    <f:entry field="checkMode" title="Check mode">
+        <f:checkbox/>
+    </f:entry>
     <f:entry field="become" title="Use become">
         <f:checkbox/>
     </f:entry>
