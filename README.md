@@ -1,4 +1,10 @@
-# Jenkins Ansible Plugin
+# Ansible Plugin
+
+![Build](https://ci.jenkins.io/job/Plugins/job/ansible-plugin/job/main/badge/icon)
+![Contributors](https://img.shields.io/github/contributors/jenkinsci/ansible-plugin.svg?color=blue)
+[![GitHub release](https://img.shields.io/github/release/jenkinsci/ansible-plugin.svg?label=changelog)](https://github.com/jenkinsci/ansible-plugin/releases/latest)
+[![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/ansible.svg?color=blue)](https://plugins.jenkins.io/ansible)
+[![GitHub license](https://img.shields.io/github/license/jenkinsci/ansible-plugin)](https://github.com/jenkinsci/ansible-plugin/blob/main/LICENSE.md)
 
 This plugin allows to execute [Ansible](http://www.ansible.com/) tasks as a job build step.
 
@@ -556,3 +562,11 @@ node {
     }
 }
 ```
+
+## Contributing
+
+Refer to our [contribution guidelines](https://github.com/jenkinsci/.github/blob/master/CONTRIBUTING.md)
+
+## LICENSE
+
+Licensed under MIT, see [LICENSE](LICENSE.md)

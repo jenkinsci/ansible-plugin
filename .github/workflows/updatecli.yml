@@ -2,8 +2,6 @@ name: updatecli
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 3 * * *'
 
 jobs:
   updatecli:
