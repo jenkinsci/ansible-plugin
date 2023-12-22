@@ -125,6 +125,7 @@ public class AnsibleVaultBuilder extends Builder implements SimpleBuildStep {
             throws InterruptedException, IOException {
         try {
             CLIRunner runner = new CLIRunner(run, ws, launcher, listener);
+            Computer computer = node.toComputer();
             String exe = AnsibleInstallation.getExecutable(
                     ansibleName, AnsibleCommand.ANSIBLE_VAULT, node, listener, envVars);
             AnsibleVaultInvocation invocation = new AnsibleVaultInvocation(exe, run, ws, listener, envVars);
@@ -144,7 +145,9 @@ public class AnsibleVaultBuilder extends Builder implements SimpleBuildStep {
                                     run)
                             : null);
             invocation.setVaultTmpPath(
-                    StringUtils.isNotBlank(vaultTmpPath) ? new FilePath(new File(vaultTmpPath)) : null);
+                    StringUtils.isNotBlank(vaultTmpPath)
+                            ? new FilePath(computer.getChannel(), new File(vaultTmpPath).getAbsolutePath())
+                            : null);
             invocation.setContent(content);
             invocation.setInput(input);
             invocation.setOutput(output);

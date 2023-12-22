@@ -130,7 +130,7 @@ public class JobDslIntegrationTest {
         assertThat("credentialsId", step.credentialsId, is("${credentials_id}"));
 
         List<ParameterValue> parameters = new ArrayList<>();
-        parameters.add(new StringParameterValue("inventory_repository", "inventory"));
+        parameters.add(new StringParameterValue("inventory_repository", "/ansible"));
         parameters.add(new StringParameterValue("vault_credentials_id", "vaultCredentialsString"));
         parameters.add(new StringParameterValue("credentials_id", "credentialsString"));
         ParametersAction parametersAction = new ParametersAction(parameters);
@@ -141,7 +141,7 @@ public class JobDslIntegrationTest {
         assertThat(
                 build.getLog(),
                 allOf(containsString(
-                        "ansible-playbook playbook.yml -i inventory/inventory.yml -f 5 --vault-password-file ")));
+                        "ansible-playbook playbook.yml -i /ansible/inventory.yml -f 5 --vault-password-file ")));
     }
 
     @Test

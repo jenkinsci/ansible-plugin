@@ -6,16 +6,12 @@ import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.mockito.Mockito.*;
 
-import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserPrivateKey;
-import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import hudson.EnvVars;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
-import hudson.util.Secret;
 import java.util.Map;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -126,66 +122,6 @@ public class AnsibleAdHocCommandInvocationTest {
         assertThat((Map<String, String>) argument.getValue(), aMapWithSize(2));
         assertThat((Map<String, String>) argument.getValue(), hasEntry("PYTHONUNBUFFERED", "1"));
         assertThat((Map<String, String>) argument.getValue(), hasEntry("ANSIBLE_FORCE_COLOR", "true"));
-    }
-
-    @Test
-    @Ignore("build.getWorkspace() cannot be mocked")
-    public void should_handle_private_key_credentials() throws Exception {
-        // Given
-        Inventory inventory = new InventoryPath("/tmp/hosts");
-        SSHUserPrivateKey pkey = mock(SSHUserPrivateKey.class);
-        when(pkey.getUsername()).thenReturn("mylogin");
-        BuildListener listener = mock(BuildListener.class);
-        CLIRunner runner = mock(CLIRunner.class);
-        AbstractBuild<?, ?> build = mock(AbstractBuild.class);
-        when(build.getEnvironment(any(TaskListener.class))).thenReturn(new EnvVars());
-        AnsibleAdHocCommandInvocation invocation =
-                new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
-        invocation.setHostPattern("localhost");
-        invocation.setInventory(inventory);
-        invocation.setModule("ping");
-        invocation.setCredentials(pkey);
-        invocation.setForks(5);
-        // When
-        invocation.execute(runner);
-        // Then
-        ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
-        verify(runner).execute(argument.capture(), anyMap());
-
-        assertThat(
-                argument.getValue().toString(),
-                is("/usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5 --private-key .+ -u mylogin"));
-    }
-
-    @Test
-    @Ignore("Secret can neither be instanced nor mocked")
-    public void should_handle_password_credentials() throws Exception {
-        // Given
-        Inventory inventory = new InventoryPath("/tmp/hosts");
-        StandardUsernamePasswordCredentials password = mock(StandardUsernamePasswordCredentials.class);
-        when(password.getUsername()).thenReturn("mylogin");
-        when(password.getPassword()).thenReturn(Secret.fromString("aStrongSecretPassword"));
-        BuildListener listener = mock(BuildListener.class);
-        CLIRunner runner = mock(CLIRunner.class);
-        AbstractBuild<?, ?> build = mock(AbstractBuild.class);
-        when(build.getEnvironment(any(TaskListener.class))).thenReturn(new EnvVars());
-        AnsibleAdHocCommandInvocation invocation =
-                new AnsibleAdHocCommandInvocation("/usr/local/bin/ansible", build, listener);
-        invocation.setHostPattern("localhost");
-        invocation.setInventory(inventory);
-        invocation.setModule("ping");
-        invocation.setCredentials(password);
-        invocation.setForks(5);
-        // When
-        invocation.execute(runner);
-        // Then
-        ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
-        verify(runner).execute(argument.capture(), anyMap());
-
-        assertThat(
-                argument.getValue().toString(),
-                is("sshpass ****** /usr/local/bin/ansible localhost -i /tmp/hosts -m ping -f 5 " + "-u"
-                        + " mylogin -k"));
     }
 
     @Test

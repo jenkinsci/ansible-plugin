@@ -50,6 +50,7 @@ class Utils {
     static FilePath createSshAskPassFile(
             FilePath script, FilePath tmpPath, SSHUserPrivateKey credentials, boolean inThisDir)
             throws IOException, InterruptedException {
+        tmpPath.mkdirs();
         StringBuilder sb = new StringBuilder();
         sb.append("#! /bin/sh\n").append("/bin/echo \"" + Secret.toString(credentials.getPassphrase()) + "\"");
         script = tmpPath.createTextTempFile("ssh", ".sh", sb.toString(), inThisDir);
@@ -69,6 +70,7 @@ class Utils {
     static FilePath createVaultPasswordFile(FilePath key, FilePath tmpPath, FileCredentials credentials)
             throws IOException, InterruptedException {
         try (InputStream content = credentials.getContent()) {
+            tmpPath.mkdirs();
             key = tmpPath.createTempFile("vault", ".password");
             key.copyFrom(content);
             key.chmod(0400);
@@ -87,6 +89,7 @@ class Utils {
      */
     static FilePath createVaultPasswordFile(FilePath key, FilePath tmpPath, StringCredentials credentials)
             throws IOException, InterruptedException {
+        tmpPath.mkdirs();
         key = tmpPath.createTextTempFile(
                 "vault", ".password", credentials.getSecret().getPlainText(), true);
         key.chmod(0400);

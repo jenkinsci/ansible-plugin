@@ -239,7 +239,9 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
                             ? CredentialsProvider.findCredentialById(vaultCredentialsId, StandardCredentials.class, run)
                             : null);
             invocation.setVaultTmpPath(
-                    StringUtils.isNotBlank(vaultTmpPath) ? new FilePath(new File(vaultTmpPath)) : null);
+                    StringUtils.isNotBlank(vaultTmpPath)
+                            ? new FilePath(computer.getChannel(), new File(vaultTmpPath).getAbsolutePath())
+                            : null);
             invocation.setExtraVars(extraVars);
             invocation.setAdditionalParameters(additionalParameters);
             invocation.setDisableHostKeyCheck(disableHostKeyChecking);
