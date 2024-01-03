@@ -1,6 +1,8 @@
 # Ansible Plugin
 
 ![Build](https://ci.jenkins.io/job/Plugins/job/ansible-plugin/job/main/badge/icon)
+[![Coverage](https://ci.jenkins.io/job/Plugins/job/ansible-plugin/job/main/badge/icon?status=${instructionCoverage}&subject=coverage&color=${colorInstructionCoverage})](https://ci.jenkins.io/job/Plugins/job/ansible-plugin/job/main)
+[![LOC](https://ci.jenkins.io/job/Plugins/job/ansible-plugin/job/main/badge/icon?job=test&status=${lineOfCode}&subject=line%20of%20code&color=blue)](https://ci.jenkins.io/job/Plugins/job/ansible-plugin/job/main)
 ![Contributors](https://img.shields.io/github/contributors/jenkinsci/ansible-plugin.svg?color=blue)
 [![GitHub release](https://img.shields.io/github/release/jenkinsci/ansible-plugin.svg?label=changelog)](https://github.com/jenkinsci/ansible-plugin/releases/latest)
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/ansible.svg?color=blue)](https://plugins.jenkins.io/ansible)
