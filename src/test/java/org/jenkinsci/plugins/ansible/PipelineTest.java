@@ -39,7 +39,7 @@ public class PipelineTest {
 
     // Test and support only supported ansible version (https://endoflife.date/ansible-core)
     private static Stream<String> ansibleVersions() {
-        return Stream.of("2.14.13", "2.15.8", "2.16.2");
+        return Stream.of("2.14.14", "2.15.9", "2.16.3");
     }
 
     @ParameterizedTest
