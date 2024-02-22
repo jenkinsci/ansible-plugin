@@ -32,7 +32,7 @@
     <spotless.check.skip>false</spotless.check.skip>
 
     <!-- Test dependencies version -->
-    <testcontainer.version>1.19.5</testcontainer.version>
+    <testcontainer.version>1.19.6</testcontainer.version>
 
   </properties>
   <dependencyManagement>
