@@ -52,7 +52,7 @@ See `PipelineTest.java`
 
 ```java
 private static Stream<String> ansibleVersions() {
-    return Stream.of("2.14.13", "2.15.8", "2.16.2");
+    return Stream.of("2.14.15", "2.15.10", "2.16.6");
 }
 ```
 
