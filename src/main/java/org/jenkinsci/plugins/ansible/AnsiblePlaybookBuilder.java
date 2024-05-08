@@ -18,6 +18,7 @@ package org.jenkinsci.plugins.ansible;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.AbortException;
 import hudson.EnvVars;
@@ -35,7 +36,6 @@ import hudson.util.FormValidation;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import javax.annotation.Nonnull;
 import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -266,7 +266,7 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep {
 
     @Override
     public void perform(
-            @Nonnull Run<?, ?> run, @Nonnull FilePath ws, @Nonnull Launcher launcher, @Nonnull TaskListener listener)
+            @NonNull Run<?, ?> run, @NonNull FilePath ws, @NonNull Launcher launcher, @NonNull TaskListener listener)
             throws InterruptedException, IOException {
         Computer computer = ws.toComputer();
         Node node;
@@ -277,11 +277,11 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep {
     }
 
     public void perform(
-            @Nonnull Run<?, ?> run,
-            @Nonnull Node node,
-            @Nonnull FilePath ws,
-            @Nonnull Launcher launcher,
-            @Nonnull TaskListener listener,
+            @NonNull Run<?, ?> run,
+            @NonNull Node node,
+            @NonNull FilePath ws,
+            @NonNull Launcher launcher,
+            @NonNull TaskListener listener,
             EnvVars envVars)
             throws InterruptedException, IOException {
         try {
