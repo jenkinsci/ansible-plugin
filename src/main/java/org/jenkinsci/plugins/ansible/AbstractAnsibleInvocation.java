@@ -131,7 +131,17 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
                     value = Util.singleQuote(value);
                 }
                 StringBuilder sb = new StringBuilder();
-                sb.append(envVars.expand(var.getKey())).append("=").append(value);
+                // assuming Groovy representation for Boolean values
+                if (value.equals("true") || value.equals("false")) {
+                    // JSON format is required for Boolean variables
+                    sb.append("{\"")
+                            .append(envVars.expand(var.getKey()))
+                            .append("\":")
+                            .append(value)
+                            .append("}");
+                } else {
+                    sb.append(envVars.expand(var.getKey())).append("=").append(value);
+                }
                 if (var.isHidden()) {
                     args.addMasked(sb.toString());
                 } else {
