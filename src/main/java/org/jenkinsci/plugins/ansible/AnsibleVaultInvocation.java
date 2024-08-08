@@ -124,7 +124,7 @@ public class AnsibleVaultInvocation extends AbstractAnsibleInvocation<AnsibleVau
 
     private ArgumentListBuilder appendOutput(ArgumentListBuilder args) {
         if (output != null && !output.isEmpty()) {
-            args.add(output);
+            args.add("--output").add(output);
         }
         return args;
     }
