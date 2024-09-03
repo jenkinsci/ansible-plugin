@@ -28,7 +28,7 @@
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/ansible-plugin</gitHubRepo>
-    <jenkins.version>2.440.3</jenkins.version>
+    <jenkins.version>2.462.1</jenkins.version>
     <spotless.check.skip>false</spotless.check.skip>
 
     <!-- Test dependencies version -->
@@ -59,7 +59,6 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>job-dsl</artifactId>
-      <version>1.87</version>
       <optional>true</optional>
     </dependency>
     <dependency>
