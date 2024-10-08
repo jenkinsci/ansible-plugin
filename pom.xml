@@ -28,7 +28,7 @@
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/ansible-plugin</gitHubRepo>
-    <jenkins.version>2.462.1</jenkins.version>
+    <jenkins.version>2.462.3</jenkins.version>
     <spotless.check.skip>false</spotless.check.skip>
 
     <!-- Test dependencies version -->
