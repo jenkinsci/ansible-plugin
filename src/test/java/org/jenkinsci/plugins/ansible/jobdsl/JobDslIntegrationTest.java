@@ -3,25 +3,31 @@ package org.jenkinsci.plugins.ansible.jobdsl;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assume.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.domains.Domain;
+import com.google.common.io.Resources;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.ParameterValue;
 import hudson.model.ParametersAction;
 import hudson.model.StringParameterValue;
 import hudson.util.Secret;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import javaposse.jobdsl.plugin.ExecuteDslScripts;
+import javaposse.jobdsl.plugin.LookupStrategy;
+import javaposse.jobdsl.plugin.RemovedJobAction;
+import javaposse.jobdsl.plugin.RemovedViewAction;
 import org.apache.commons.lang3.SystemUtils;
-import org.hamcrest.Matcher;
 import org.jenkinsci.plugins.ansible.AnsibleAdHocCommandBuilder;
 import org.jenkinsci.plugins.ansible.AnsiblePlaybookBuilder;
 import org.jenkinsci.plugins.ansible.AnsibleVaultBuilder;
@@ -29,46 +35,43 @@ import org.jenkinsci.plugins.ansible.InventoryContent;
 import org.jenkinsci.plugins.ansible.InventoryPath;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.RuleChain;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 /**
  * @author lanwen (Merkushev Kirill)
  */
-public class JobDslIntegrationTest {
-    public static final String ANSIBLE_DSL_GROOVY_PLAYBOOK = "jobdsl/playbook.groovy";
-    public static final String ANSIBLE_DSL_GROOVY_EXPANDER = "jobdsl/expander.groovy";
-    public static final String ANSIBLE_DSL_GROOVY_CHECK_MODE = "jobdsl/checkMode.groovy";
-    public static final String ANSIBLE_DSL_GROOVY_SECURITY_630 = "jobdsl/security630.groovy";
-    public static final String ANSIBLE_DSL_GROOVY_PLAYBOOK_LEGACY = "jobdsl/legacyPlaybook.groovy";
-    public static final String ANSIBLE_DSL_GROOVY_ADHOC = "jobdsl/adhoc.groovy";
-    public static final String ANSIBLE_DSL_GROOVY_VAULT = "jobdsl/vault.groovy";
-    public static final String ANSIBLE_DSL_GROOVY_PLAYBOOK_BUILDER = "jobdsl/playbookBuilder.groovy";
+@WithJenkins
+class JobDslIntegrationTest {
+    private static final String JOB_NAME_IN_DSL_SCRIPT = "ansible";
 
-    public JenkinsRule jenkins = new JenkinsRule();
-    public DslJobRule dsl = new DslJobRule(jenkins);
-
-    @Rule
-    public RuleChain chain = RuleChain.outerRule(jenkins).around(dsl);
+    private static final String ANSIBLE_DSL_GROOVY_PLAYBOOK = "jobdsl/playbook.groovy";
+    private static final String ANSIBLE_DSL_GROOVY_EXPANDER = "jobdsl/expander.groovy";
+    private static final String ANSIBLE_DSL_GROOVY_CHECK_MODE = "jobdsl/checkMode.groovy";
+    private static final String ANSIBLE_DSL_GROOVY_SECURITY_630 = "jobdsl/security630.groovy";
+    private static final String ANSIBLE_DSL_GROOVY_PLAYBOOK_LEGACY = "jobdsl/legacyPlaybook.groovy";
+    private static final String ANSIBLE_DSL_GROOVY_ADHOC = "jobdsl/adhoc.groovy";
+    private static final String ANSIBLE_DSL_GROOVY_VAULT = "jobdsl/vault.groovy";
+    private static final String ANSIBLE_DSL_GROOVY_PLAYBOOK_BUILDER = "jobdsl/playbookBuilder.groovy";
 
     @Test
-    @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_SECURITY_630)
-    public void shouldCreateJobSecurity630Dsl() throws Exception {
-        AnsiblePlaybookBuilder step = dsl.getGeneratedJob().getBuildersList().get(AnsiblePlaybookBuilder.class);
+    void shouldCreateJobSecurity630Dsl(JenkinsRule r) throws Exception {
+        AnsiblePlaybookBuilder step = generateJob(r, ANSIBLE_DSL_GROOVY_SECURITY_630)
+                .getBuildersList()
+                .get(AnsiblePlaybookBuilder.class);
         assertThat("Should add playbook builder", step, notNullValue());
         assertThat("disableHostKeyChecking", step.disableHostKeyChecking, is(false));
     }
 
     @Test
-    @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_PLAYBOOK)
-    public void shouldCreateJobWithPlaybookDsl() throws Exception {
-        AnsiblePlaybookBuilder step = dsl.getGeneratedJob().getBuildersList().get(AnsiblePlaybookBuilder.class);
+    void shouldCreateJobWithPlaybookDsl(JenkinsRule r) throws Exception {
+        AnsiblePlaybookBuilder step =
+                generateJob(r, ANSIBLE_DSL_GROOVY_PLAYBOOK).getBuildersList().get(AnsiblePlaybookBuilder.class);
         assertThat("Should add playbook builder", step, notNullValue());
 
         assertThat("playbook", step.playbook, is("path/playbook.yml"));
-        assertThat("inventory", step.inventory, (Matcher) isA(InventoryPath.class));
+        assertThat("inventory", step.inventory, isA(InventoryPath.class));
         assertThat("ansibleName", step.ansibleName, is("1.9.4"));
         assertThat("limit", step.limit, is("retry.limit"));
         assertThat("tags", step.tags, is("one,two"));
@@ -91,20 +94,19 @@ public class JobDslIntegrationTest {
     }
 
     @Test
-    @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_CHECK_MODE)
-    public void shouldCreateJobWithCheckMode() throws Exception {
-        AnsiblePlaybookBuilder step = dsl.getGeneratedJob().getBuildersList().get(AnsiblePlaybookBuilder.class);
+    void shouldCreateJobWithCheckMode(JenkinsRule r) throws Exception {
+        AnsiblePlaybookBuilder step =
+                generateJob(r, ANSIBLE_DSL_GROOVY_CHECK_MODE).getBuildersList().get(AnsiblePlaybookBuilder.class);
         assertThat("Should add playbook builder", step, notNullValue());
 
         assertThat("playbook", step.playbook, is("path/playbook.yml"));
-        assertThat("inventory", step.inventory, (Matcher) isA(InventoryPath.class));
+        assertThat("inventory", step.inventory, isA(InventoryPath.class));
         assertThat("ansibleName", step.ansibleName, is("1.9.4"));
         assertThat("checkMode", step.checkMode, is(true));
     }
 
     @Test
-    @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_EXPANDER)
-    public void shouldCreateJobWithVarExpander() throws Exception {
+    void shouldCreateJobWithVarExpander(JenkinsRule r) throws Exception {
 
         assumeFalse(SystemUtils.IS_OS_WINDOWS);
 
@@ -117,15 +119,16 @@ public class JobDslIntegrationTest {
         StringCredentials credentials = new StringCredentialsImpl(
                 CredentialsScope.GLOBAL, "credentialsString", "test credentials", Secret.fromString("test"));
         CredentialsStore store =
-                CredentialsProvider.lookupStores(jenkins.jenkins).iterator().next();
+                CredentialsProvider.lookupStores(r.jenkins).iterator().next();
         store.addCredentials(Domain.global(), vaultCredentials);
         store.addCredentials(Domain.global(), credentials);
 
         // Create job via jobdsl with var expander
-        AnsiblePlaybookBuilder step = dsl.getGeneratedJob().getBuildersList().get(AnsiblePlaybookBuilder.class);
+        AnsiblePlaybookBuilder step =
+                generateJob(r, ANSIBLE_DSL_GROOVY_EXPANDER).getBuildersList().get(AnsiblePlaybookBuilder.class);
         assertThat("Should add playbook builder", step, notNullValue());
         assertThat("playbook", step.playbook, is("playbook.yml"));
-        assertThat("inventory", step.inventory, (Matcher) isA(InventoryPath.class));
+        assertThat("inventory", step.inventory, isA(InventoryPath.class));
         assertThat("vaultCredentialsId", step.vaultCredentialsId, is("${vault_credentials_id}"));
         assertThat("credentialsId", step.credentialsId, is("${credentials_id}"));
 
@@ -135,7 +138,7 @@ public class JobDslIntegrationTest {
         parameters.add(new StringParameterValue("credentials_id", "credentialsString"));
         ParametersAction parametersAction = new ParametersAction(parameters);
 
-        FreeStyleProject freeStyleProject = jenkins.getInstance().getItemByFullName("ansible", FreeStyleProject.class);
+        FreeStyleProject freeStyleProject = r.getInstance().getItemByFullName("ansible", FreeStyleProject.class);
         FreeStyleBuild build =
                 freeStyleProject.scheduleBuild2(0, parametersAction).get();
         assertThat(
@@ -145,13 +148,14 @@ public class JobDslIntegrationTest {
     }
 
     @Test
-    @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_PLAYBOOK_LEGACY)
-    public void shouldCreateJobWithLegacyPlaybookDsl() throws Exception {
-        AnsiblePlaybookBuilder step = dsl.getGeneratedJob().getBuildersList().get(AnsiblePlaybookBuilder.class);
+    void shouldCreateJobWithLegacyPlaybookDsl(JenkinsRule r) throws Exception {
+        AnsiblePlaybookBuilder step = generateJob(r, ANSIBLE_DSL_GROOVY_PLAYBOOK_LEGACY)
+                .getBuildersList()
+                .get(AnsiblePlaybookBuilder.class);
         assertThat("Should add playbook builder", step, notNullValue());
 
         assertThat("playbook", step.playbook, is("path/playbook.yml"));
-        assertThat("inventory", step.inventory, (Matcher) isA(InventoryPath.class));
+        assertThat("inventory", step.inventory, isA(InventoryPath.class));
         assertThat("ansibleName", step.ansibleName, is("1.9.4"));
         assertThat("limit", step.limit, is("retry.limit"));
         assertThat("tags", step.tags, is("one,two"));
@@ -173,14 +177,13 @@ public class JobDslIntegrationTest {
     }
 
     @Test
-    @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_ADHOC)
-    public void shouldCreateJobAdhocDsl() throws Exception {
+    void shouldCreateJobAdhocDsl(JenkinsRule r) throws Exception {
         AnsibleAdHocCommandBuilder step =
-                dsl.getGeneratedJob().getBuildersList().get(AnsibleAdHocCommandBuilder.class);
+                generateJob(r, ANSIBLE_DSL_GROOVY_ADHOC).getBuildersList().get(AnsibleAdHocCommandBuilder.class);
         assertThat("Should add adhoc builder", step, notNullValue());
 
         assertThat("module", step.module, is("module"));
-        assertThat("inventory", step.inventory, (Matcher) isA(InventoryContent.class));
+        assertThat("inventory", step.inventory, isA(InventoryContent.class));
         assertThat("ansibleName", step.ansibleName, is("1.9.1"));
 
         assertThat("credentialsId", step.credentialsId, is("credsid"));
@@ -194,9 +197,9 @@ public class JobDslIntegrationTest {
     }
 
     @Test
-    @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_VAULT)
-    public void shouldCreateJobWithVaultDsl() throws Exception {
-        AnsibleVaultBuilder step = dsl.getGeneratedJob().getBuildersList().get(AnsibleVaultBuilder.class);
+    void shouldCreateJobWithVaultDsl(JenkinsRule r) throws Exception {
+        AnsibleVaultBuilder step =
+                generateJob(r, ANSIBLE_DSL_GROOVY_VAULT).getBuildersList().get(AnsibleVaultBuilder.class);
         assertThat("Should add playbook builder", step, notNullValue());
 
         assertThat("action", step.action, is("encrypt_string"));
@@ -205,14 +208,33 @@ public class JobDslIntegrationTest {
     }
 
     @Test
-    @DslJobRule.WithJobDsl(ANSIBLE_DSL_GROOVY_PLAYBOOK_BUILDER)
-    public void shouldCreateJobWithPlaybookBuilderDsl() throws Exception {
-        AnsiblePlaybookBuilder step = dsl.getGeneratedJob().getBuildersList().get(AnsiblePlaybookBuilder.class);
+    void shouldCreateJobWithPlaybookBuilderDsl(JenkinsRule r) throws Exception {
+        AnsiblePlaybookBuilder step = generateJob(r, ANSIBLE_DSL_GROOVY_PLAYBOOK_BUILDER)
+                .getBuildersList()
+                .get(AnsiblePlaybookBuilder.class);
         assertThat("Should add playbook builder", step, notNullValue());
 
         assertThat("playbook", step.playbook, is("path/playbook.yml"));
         assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
         assertThat("extraVar.value", step.extraVars.get(0).getSecretValue().getPlainText(), is("value"));
         assertThat("extraVar.hidden", step.extraVars.get(0).isHidden(), is(true));
+    }
+
+    private static FreeStyleProject generateJob(JenkinsRule rule, String script) throws Exception {
+        FreeStyleProject job = rule.createFreeStyleProject();
+        String scriptText = Resources.toString(Resources.getResource(script), StandardCharsets.UTF_8);
+
+        ExecuteDslScripts builder = new ExecuteDslScripts();
+        builder.setScriptText(scriptText);
+        builder.setRemovedJobAction(RemovedJobAction.DELETE);
+        builder.setRemovedViewAction(RemovedViewAction.DELETE);
+        builder.setLookupStrategy(LookupStrategy.JENKINS_ROOT);
+        job.getBuildersList().add(builder);
+
+        rule.buildAndAssertSuccess(job);
+
+        assertThat(rule.getInstance().getJobNames(), hasItem(is(JOB_NAME_IN_DSL_SCRIPT)));
+
+        return rule.getInstance().getItemByFullName(JOB_NAME_IN_DSL_SCRIPT, FreeStyleProject.class);
     }
 }
