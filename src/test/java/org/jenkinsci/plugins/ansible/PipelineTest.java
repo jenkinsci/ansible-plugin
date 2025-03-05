@@ -9,6 +9,7 @@ import com.cloudbees.plugins.credentials.SystemCredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
+import hudson.model.Result;
 import hudson.plugins.sshslaves.SSHLauncher;
 import hudson.plugins.sshslaves.verifiers.NonVerifyingKeyVerificationStrategy;
 import hudson.slaves.DumbSlave;
@@ -35,7 +36,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @WithJenkins
 @Testcontainers(disabledWithoutDocker = true)
-public class PipelineTest {
+class PipelineTest {
 
     // Test and support only supported ansible version (https://endoflife.date/ansible-core)
     private static Stream<String> ansibleVersions() {
@@ -44,7 +45,7 @@ public class PipelineTest {
 
     @ParameterizedTest
     @MethodSource("ansibleVersions")
-    public void testMinimalPipeline(String ansibleVersion, JenkinsRule jenkins) throws Exception {
+    void testMinimalPipeline(String ansibleVersion, JenkinsRule jenkins) throws Exception {
         try (AnsibleAgent agent = setupAnsibleAgent(ansibleVersion, jenkins)) {
             String pipeline = IOUtils.toString(
                     PipelineTest.class.getResourceAsStream("/pipelines/minimal.groovy"), StandardCharsets.UTF_8);
@@ -52,14 +53,14 @@ public class PipelineTest {
             workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
             WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
             jenkins.waitForCompletion(run1);
-            assertThat(run1.getResult(), equalTo(hudson.model.Result.SUCCESS));
+            assertThat(run1.getResult(), equalTo(Result.SUCCESS));
             assertThat(run1.getLog(), allOf(containsString("ansible-playbook /ansible/playbook.yml")));
         }
     }
 
     @ParameterizedTest
     @MethodSource("ansibleVersions")
-    public void testMinimalCheckModePipeline(String ansibleVersion, JenkinsRule jenkins) throws Exception {
+    void testMinimalCheckModePipeline(String ansibleVersion, JenkinsRule jenkins) throws Exception {
         try (AnsibleAgent agent = setupAnsibleAgent(ansibleVersion, jenkins)) {
             String pipeline = IOUtils.toString(
                     PipelineTest.class.getResourceAsStream("/pipelines/minimalCheckMode.groovy"),
@@ -68,14 +69,14 @@ public class PipelineTest {
             workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
             WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
             jenkins.waitForCompletion(run1);
-            assertThat(run1.getResult(), equalTo(hudson.model.Result.SUCCESS));
+            assertThat(run1.getResult(), equalTo(Result.SUCCESS));
             assertThat(run1.getLog(), allOf(containsString("ansible-playbook /ansible/playbook.yml --check")));
         }
     }
 
     @ParameterizedTest
     @MethodSource("ansibleVersions")
-    public void testExtraVarsHiddenString(String ansibleVersion, JenkinsRule jenkins) throws Exception {
+    void testExtraVarsHiddenString(String ansibleVersion, JenkinsRule jenkins) throws Exception {
         try (AnsibleAgent agent = setupAnsibleAgent(ansibleVersion, jenkins)) {
             String pipeline = IOUtils.toString(
                     PipelineTest.class.getResourceAsStream("/pipelines/extraVarsHiddenString.groovy"),
@@ -84,14 +85,14 @@ public class PipelineTest {
             workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
             WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
             jenkins.waitForCompletion(run1);
-            assertThat(run1.getResult(), equalTo(hudson.model.Result.SUCCESS));
+            assertThat(run1.getResult(), equalTo(Result.SUCCESS));
             assertThat(run1.getLog(), allOf(containsString("ansible-playbook /ansible/playbook.yml -e ********")));
         }
     }
 
     @ParameterizedTest
     @MethodSource("ansibleVersions")
-    public void testExtraVarsMap(String ansibleVersion, JenkinsRule jenkins) throws Exception {
+    void testExtraVarsMap(String ansibleVersion, JenkinsRule jenkins) throws Exception {
         try (AnsibleAgent agent = setupAnsibleAgent(ansibleVersion, jenkins)) {
             String pipeline = IOUtils.toString(
                     PipelineTest.class.getResourceAsStream("/pipelines/extraVarsMap.groovy"), StandardCharsets.UTF_8);
@@ -99,7 +100,7 @@ public class PipelineTest {
             workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
             WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
             jenkins.waitForCompletion(run1);
-            assertThat(run1.getResult(), equalTo(hudson.model.Result.SUCCESS));
+            assertThat(run1.getResult(), equalTo(Result.SUCCESS));
             assertThat(
                     run1.getLog(),
                     allOf(
@@ -110,7 +111,7 @@ public class PipelineTest {
 
     @ParameterizedTest
     @MethodSource("ansibleVersions")
-    public void testExtraVarsBoolean(String ansibleVersion, JenkinsRule jenkins) throws Exception {
+    void testExtraVarsBoolean(String ansibleVersion, JenkinsRule jenkins) throws Exception {
         try (AnsibleAgent agent = setupAnsibleAgent(ansibleVersion, jenkins)) {
             String pipeline = IOUtils.toString(
                     PipelineTest.class.getResourceAsStream("/pipelines/extraVarsBoolean.groovy"),
@@ -119,7 +120,7 @@ public class PipelineTest {
             workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
             WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
             jenkins.waitForCompletion(run1);
-            assertThat(run1.getResult(), equalTo(hudson.model.Result.SUCCESS));
+            assertThat(run1.getResult(), equalTo(Result.SUCCESS));
             assertThat(
                     run1.getLog(),
                     allOf(containsString("ansible-playbook /ansible/playbook.yml -e ******** -e ********")));
@@ -128,7 +129,7 @@ public class PipelineTest {
 
     @ParameterizedTest
     @MethodSource("ansibleVersions")
-    public void testExtraVarsNumeric(String ansibleVersion, JenkinsRule jenkins) throws Exception {
+    void testExtraVarsNumeric(String ansibleVersion, JenkinsRule jenkins) throws Exception {
         try (AnsibleAgent agent = setupAnsibleAgent(ansibleVersion, jenkins)) {
             String pipeline = IOUtils.toString(
                     PipelineTest.class.getResourceAsStream("/pipelines/extraVarsNumeric.groovy"),
@@ -137,14 +138,14 @@ public class PipelineTest {
             workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
             WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
             jenkins.waitForCompletion(run1);
-            assertThat(run1.getResult(), equalTo(hudson.model.Result.SUCCESS));
+            assertThat(run1.getResult(), equalTo(Result.SUCCESS));
             assertThat(run1.getLog(), allOf(containsString("ansible-playbook /ansible/playbook.yml -e ********")));
         }
     }
 
     @ParameterizedTest
     @MethodSource("ansibleVersions")
-    public void testAnsiblePlaybookSshPass(String ansibleVersion, JenkinsRule jenkins) throws Exception {
+    void testAnsiblePlaybookSshPass(String ansibleVersion, JenkinsRule jenkins) throws Exception {
         try (AnsibleAgent agent = setupAnsibleAgent(ansibleVersion, jenkins)) {
             UsernamePasswordCredentialsImpl usernamePassword = new UsernamePasswordCredentialsImpl(
                     CredentialsScope.GLOBAL,
@@ -163,7 +164,7 @@ public class PipelineTest {
             workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
             WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
             jenkins.waitForCompletion(run1);
-            assertThat(run1.getResult(), equalTo(hudson.model.Result.SUCCESS));
+            assertThat(run1.getResult(), equalTo(Result.SUCCESS));
             assertThat(
                     run1.getLog(),
                     allOf(containsString("sshpass ******** ansible-playbook /ansible/playbook.yml -u username -k")));
@@ -172,7 +173,7 @@ public class PipelineTest {
 
     @ParameterizedTest
     @MethodSource("ansibleVersions")
-    public void testVaultCredentialsFile(String ansibleVersion, JenkinsRule jenkins) throws Exception {
+    void testVaultCredentialsFile(String ansibleVersion, JenkinsRule jenkins) throws Exception {
         try (AnsibleAgent agent = setupAnsibleAgent(ansibleVersion, jenkins)) {
             FileCredentials vaultCredentials = new FileCredentialsImpl(
                     CredentialsScope.GLOBAL,
@@ -191,7 +192,7 @@ public class PipelineTest {
             workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
             WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
             jenkins.waitForCompletion(run1);
-            // assertThat(run1.getResult(), equalTo(hudson.model.Result.SUCCESS));
+            // assertThat(run1.getResult(), equalTo(Result.SUCCESS));
             assertThat(
                     run1.getLog(),
                     allOf(containsString("ansible-playbook /ansible/playbook.yml --vault-password-file ")));
@@ -200,7 +201,7 @@ public class PipelineTest {
 
     @ParameterizedTest
     @MethodSource("ansibleVersions")
-    public void testVaultCredentialsString(String ansibleVersion, JenkinsRule jenkins) throws Exception {
+    void testVaultCredentialsString(String ansibleVersion, JenkinsRule jenkins) throws Exception {
         try (AnsibleAgent agent = setupAnsibleAgent(ansibleVersion, jenkins)) {
             StringCredentials vaultCredentials = new StringCredentialsImpl(
                     CredentialsScope.GLOBAL,
@@ -218,7 +219,7 @@ public class PipelineTest {
             workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
             WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
             jenkins.waitForCompletion(run1);
-            assertThat(run1.getResult(), equalTo(hudson.model.Result.SUCCESS));
+            assertThat(run1.getResult(), equalTo(Result.SUCCESS));
             assertThat(
                     run1.getLog(),
                     allOf(containsString("ansible-playbook /ansible/playbook.yml --vault-password-file")));
@@ -227,7 +228,7 @@ public class PipelineTest {
 
     @ParameterizedTest
     @MethodSource("ansibleVersions")
-    public void testVaultCredentialsFileViaExtras(String ansibleVersion, JenkinsRule jenkins) throws Exception {
+    void testVaultCredentialsFileViaExtras(String ansibleVersion, JenkinsRule jenkins) throws Exception {
         try (AnsibleAgent agent = setupAnsibleAgent(ansibleVersion, jenkins)) {
             FileCredentials vaultCredentials = new FileCredentialsImpl(
                     CredentialsScope.GLOBAL,
@@ -246,7 +247,7 @@ public class PipelineTest {
             workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
             WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
             jenkins.waitForCompletion(run1);
-            assertThat(run1.getResult(), equalTo(hudson.model.Result.SUCCESS));
+            assertThat(run1.getResult(), equalTo(Result.SUCCESS));
             assertThat(
                     run1.getLog(),
                     allOf(containsString("ansible-playbook /ansible/playbook.yml --vault-password-file ")));
@@ -255,7 +256,7 @@ public class PipelineTest {
 
     @ParameterizedTest
     @MethodSource("ansibleVersions")
-    public void testAdhocCommand(String ansibleVersion, JenkinsRule jenkins) throws Exception {
+    void testAdhocCommand(String ansibleVersion, JenkinsRule jenkins) throws Exception {
         try (AnsibleAgent agent = setupAnsibleAgent(ansibleVersion, jenkins)) {
             String pipeline = IOUtils.toString(
                     PipelineTest.class.getResourceAsStream("/pipelines/adhocCommand.groovy"), StandardCharsets.UTF_8);
@@ -263,7 +264,7 @@ public class PipelineTest {
             workflowJob.setDefinition(new CpsFlowDefinition(pipeline, true));
             WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
             jenkins.waitForCompletion(run1);
-            assertThat(run1.getResult(), equalTo(hudson.model.Result.SUCCESS));
+            assertThat(run1.getResult(), equalTo(Result.SUCCESS));
             assertThat(
                     run1.getLog(),
                     allOf(containsString(
@@ -273,7 +274,7 @@ public class PipelineTest {
 
     @ParameterizedTest
     @MethodSource("ansibleVersions")
-    public void testVaultTmpPathString(String ansibleVersion, JenkinsRule jenkins) throws Exception {
+    void testVaultTmpPathString(String ansibleVersion, JenkinsRule jenkins) throws Exception {
         try (AnsibleAgent agent = setupAnsibleAgent(ansibleVersion, jenkins)) {
             FileCredentials vaultCredentials = new FileCredentialsImpl(
                     CredentialsScope.GLOBAL,
@@ -291,7 +292,7 @@ public class PipelineTest {
             workflowJob.setDefinition(new CpsFlowDefinition(pipeline, false));
             WorkflowRun run1 = workflowJob.scheduleBuild2(0).waitForStart();
             jenkins.waitForCompletion(run1);
-            // assertThat(run1.getResult(), equalTo(hudson.model.Result.SUCCESS));
+            // assertThat(run1.getResult(), equalTo(Result.SUCCESS));
             assertThat(
                     run1.getLog(),
                     allOf(containsString("ansible-playbook /ansible/playbook.yml --vault-password-file /ansible/tmp")));
@@ -299,7 +300,7 @@ public class PipelineTest {
     }
 
     @SuppressWarnings("resource")
-    private AnsibleAgent setupAnsibleAgent(String ansibleVersion, JenkinsRule jenkins) throws Exception {
+    private static AnsibleAgent setupAnsibleAgent(String ansibleVersion, JenkinsRule jenkins) throws Exception {
 
         // Start container
         GenericContainer<?> container = new GenericContainer<>(
@@ -332,9 +333,9 @@ public class PipelineTest {
 
     public static class AnsibleAgent implements Closeable {
 
-        private GenericContainer<?> container;
-        private DumbSlave agent;
-        private JenkinsRule rule;
+        private final GenericContainer<?> container;
+        private final DumbSlave agent;
+        private final JenkinsRule rule;
 
         public AnsibleAgent(GenericContainer<?> container, DumbSlave agent, JenkinsRule rule) {
             this.container = container;

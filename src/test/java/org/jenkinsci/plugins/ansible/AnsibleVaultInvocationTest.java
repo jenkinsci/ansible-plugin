@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.ansible;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import hudson.AbortException;
@@ -10,8 +11,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
-import java.io.IOException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 /**
@@ -19,12 +19,12 @@ import org.mockito.ArgumentCaptor;
  *
  * @author Michael Cresswell
  */
-public class AnsibleVaultInvocationTest {
+class AnsibleVaultInvocationTest {
 
-    private final String exe = "ansible-vault";
+    private static final String EXE = "ansible-vault";
 
     @Test
-    public void shouldGenerateEncryptString() throws Exception {
+    void shouldGenerateEncryptString() throws Exception {
         CLIRunner runner = mock(CLIRunner.class);
         AnsibleVaultInvocation invocation = getInvocation();
 
@@ -40,7 +40,7 @@ public class AnsibleVaultInvocationTest {
     }
 
     @Test
-    public void shouldGenerateEncrypt() throws Exception {
+    void shouldGenerateEncrypt() throws Exception {
         CLIRunner runner = mock(CLIRunner.class);
         AnsibleVaultInvocation invocation = getInvocation();
 
@@ -55,7 +55,7 @@ public class AnsibleVaultInvocationTest {
     }
 
     @Test
-    public void shouldGenerateDecrypt() throws Exception {
+    void shouldGenerateDecrypt() throws Exception {
         CLIRunner runner = mock(CLIRunner.class);
         AnsibleVaultInvocation invocation = getInvocation();
 
@@ -70,7 +70,7 @@ public class AnsibleVaultInvocationTest {
     }
 
     @Test
-    public void shouldGenerateRekey() throws Exception {
+    void shouldGenerateRekey() throws Exception {
         CLIRunner runner = mock(CLIRunner.class);
         AnsibleVaultInvocation invocation = getInvocation();
 
@@ -84,54 +84,50 @@ public class AnsibleVaultInvocationTest {
         assertThat(argument.getValue().toString(), is("ansible-vault rekey /tmp/my_var_file.yml"));
     }
 
-    @Test(expected = AbortException.class)
-    public void shouldNotGenerateView() throws Exception {
+    @Test
+    void shouldNotGenerateView() throws Exception {
         CLIRunner runner = mock(CLIRunner.class);
         AnsibleVaultInvocation invocation = getInvocation();
 
         invocation.setAction("view");
         invocation.setInput("/tmp/my_var_file.yml");
         // When
-        invocation.execute(runner);
+        assertThrows(AbortException.class, () -> invocation.execute(runner));
         // Then
-        ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
-        verify(runner).execute(argument.capture(), anyMap());
+        verifyNoInteractions(runner);
     }
 
-    @Test(expected = AbortException.class)
-    public void shouldNotGenerateEdit() throws Exception {
+    @Test
+    void shouldNotGenerateEdit() throws Exception {
         CLIRunner runner = mock(CLIRunner.class);
         AnsibleVaultInvocation invocation = getInvocation();
 
         invocation.setAction("edit");
         invocation.setInput("/tmp/my_var_file.yml");
         // When
-        invocation.execute(runner);
+        assertThrows(AbortException.class, () -> invocation.execute(runner));
         // Then
-        ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
-        verify(runner).execute(argument.capture(), anyMap());
+        verifyNoInteractions(runner);
     }
 
-    @Test(expected = AbortException.class)
-    public void shouldNotGenerateCreate() throws Exception {
+    @Test
+    void shouldNotGenerateCreate() throws Exception {
         CLIRunner runner = mock(CLIRunner.class);
         AnsibleVaultInvocation invocation = getInvocation();
 
         invocation.setAction("edit");
         invocation.setInput("/tmp/my_var_file.yml");
         // When
-        invocation.execute(runner);
+        assertThrows(AbortException.class, () -> invocation.execute(runner));
         // Then
-        ArgumentCaptor<ArgumentListBuilder> argument = ArgumentCaptor.forClass(ArgumentListBuilder.class);
-        verify(runner).execute(argument.capture(), anyMap());
+        verifyNoInteractions(runner);
     }
 
-    private AnsibleVaultInvocation getInvocation()
-            throws IOException, InterruptedException, AnsibleInvocationException {
+    private AnsibleVaultInvocation getInvocation() throws Exception {
         // Given
         BuildListener listener = mock(BuildListener.class);
         AbstractBuild<?, ?> build = mock(AbstractBuild.class);
         when(build.getEnvironment(any(TaskListener.class))).thenReturn(new EnvVars());
-        return new AnsibleVaultInvocation(exe, build, listener, new EnvVars());
+        return new AnsibleVaultInvocation(EXE, build, listener, new EnvVars());
     }
 }

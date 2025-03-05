@@ -12,7 +12,7 @@ import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 /**
@@ -22,10 +22,10 @@ import org.mockito.ArgumentCaptor;
  * Time: 19:30
  * To change this template use File | Settings | File Templates.
  */
-public class AnsibleAdHocCommandInvocationTest {
+class AnsibleAdHocCommandInvocationTest {
 
     @Test
-    public void should_generate_simple_invocation() throws Exception {
+    void should_generate_simple_invocation() throws Exception {
         // Given
         Inventory inventory = new InventoryPath("/tmp/hosts");
         BuildListener listener = mock(BuildListener.class);
@@ -47,7 +47,7 @@ public class AnsibleAdHocCommandInvocationTest {
     }
 
     @Test
-    public void should_generate_no_forks() throws Exception {
+    void should_generate_no_forks() throws Exception {
         // Given
         Inventory inventory = new InventoryPath("/tmp/hosts");
         BuildListener listener = mock(BuildListener.class);
@@ -69,7 +69,7 @@ public class AnsibleAdHocCommandInvocationTest {
     }
 
     @Test
-    public void should_generate_simple_invocation_with_env() throws Exception {
+    void should_generate_simple_invocation_with_env() throws Exception {
         // Given
         Inventory inventory = new InventoryPath("/tmp/hosts");
         BuildListener listener = mock(BuildListener.class);
@@ -88,16 +88,16 @@ public class AnsibleAdHocCommandInvocationTest {
         // When
         invocation.execute(runner);
         // Then
-        ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
+        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
         verify(runner).execute(any(ArgumentListBuilder.class), argument.capture());
 
-        assertThat((Map<String, String>) argument.getValue(), hasEntry("PYTHONUNBUFFERED", "1"));
-        assertThat((Map<String, String>) argument.getValue(), hasEntry("ANSIBLE_FORCE_COLOR", "true"));
-        assertThat((Map<String, String>) argument.getValue(), hasEntry("ANSIBLE_HOST_KEY_CHECKING", "False"));
+        assertThat(argument.getValue(), hasEntry("PYTHONUNBUFFERED", "1"));
+        assertThat(argument.getValue(), hasEntry("ANSIBLE_FORCE_COLOR", "true"));
+        assertThat(argument.getValue(), hasEntry("ANSIBLE_HOST_KEY_CHECKING", "False"));
     }
 
     @Test
-    public void secure_by_default_SEC_630() throws Exception {
+    void secure_by_default_SEC_630() throws Exception {
         // Given
         Inventory inventory = new InventoryPath("/tmp/hosts");
         BuildListener listener = mock(BuildListener.class);
@@ -116,16 +116,16 @@ public class AnsibleAdHocCommandInvocationTest {
         // When
         invocation.execute(runner);
         // Then
-        ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
+        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
         verify(runner).execute(any(ArgumentListBuilder.class), argument.capture());
 
-        assertThat((Map<String, String>) argument.getValue(), aMapWithSize(2));
-        assertThat((Map<String, String>) argument.getValue(), hasEntry("PYTHONUNBUFFERED", "1"));
-        assertThat((Map<String, String>) argument.getValue(), hasEntry("ANSIBLE_FORCE_COLOR", "true"));
+        assertThat(argument.getValue(), aMapWithSize(2));
+        assertThat(argument.getValue(), hasEntry("PYTHONUNBUFFERED", "1"));
+        assertThat(argument.getValue(), hasEntry("ANSIBLE_FORCE_COLOR", "true"));
     }
 
     @Test
-    public void should_handle_variables() throws Exception {
+    void should_handle_variables() throws Exception {
         // Given
         Inventory inventory = new InventoryPath("/tmp/hosts");
         BuildListener listener = mock(BuildListener.class);
