@@ -17,7 +17,7 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import java.util.List;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.ansible.Inventory.InventoryDescriptor;
 import org.jenkinsci.plugins.plaincredentials.FileCredentials;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
