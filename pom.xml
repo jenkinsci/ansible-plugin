@@ -37,7 +37,7 @@
     <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
 
     <!-- Test dependencies version -->
-    <testcontainer.version>1.21.4</testcontainer.version>
+    <testcontainer.version>2.0.3</testcontainer.version>
 
   </properties>
   <dependencyManagement>
@@ -116,12 +116,6 @@
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <version>${testcontainer.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers</artifactId>
       <version>${testcontainer.version}</version>
       <scope>test</scope>
@@ -139,6 +133,12 @@
           <artifactId>slf4j-api</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-junit-jupiter</artifactId>
+      <version>${testcontainer.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <repositories>
