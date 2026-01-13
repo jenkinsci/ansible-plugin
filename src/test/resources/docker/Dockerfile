@@ -1,4 +1,4 @@
-FROM jenkins/ssh-agent:5.46.0-jdk21
+FROM jenkins/ssh-agent:7.11.0-jdk21
 
 # Define build argument for ansible-core version
 ARG ANSIBLE_CORE_VERSION=
