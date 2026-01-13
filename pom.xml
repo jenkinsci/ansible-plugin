@@ -37,7 +37,7 @@
     <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
 
     <!-- Test dependencies version -->
-    <testcontainer.version>1.21.4</testcontainer.version>
+    <testcontainer.version>2.0.3</testcontainer.version>
 
   </properties>
   <dependencyManagement>
