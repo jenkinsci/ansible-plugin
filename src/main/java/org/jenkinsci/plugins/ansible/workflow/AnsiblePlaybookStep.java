@@ -406,11 +406,18 @@ public class AnsiblePlaybookStep extends AbstractStepImpl {
                     } else {
                         var.setHidden(true);
                     }
+                    Object autoTypeInference = ((Map<?, ?>) o).get("autoTypeInference");
+                    if (autoTypeInference instanceof Boolean) {
+                        var.setAutoTypeInference((Boolean) autoTypeInference);
+                    } else {
+                        var.setAutoTypeInference(true);
+                    }
                 } else {
                     var.setSecretValue(getSecretFromScalarValue(o));
                     // Consistent with above: for a scalar value effectively hidden is omitted so adopt the safe default
                     // of hidden=true.
                     var.setHidden(true);
+                    var.setAutoTypeInference(true);
                 }
                 extraVarList.add(var);
             }

@@ -132,7 +132,7 @@ abstract class AbstractAnsibleInvocation<T extends AbstractAnsibleInvocation<T>>
                 }
                 StringBuilder sb = new StringBuilder();
                 // assuming Groovy representation for Boolean values
-                if (value.equals("true") || value.equals("false")) {
+                if (var.isAutoTypeInference() && (value.equals("true") || value.equals("false"))) {
                     // JSON format is required for Boolean variables
                     sb.append("{\"")
                             .append(envVars.expand(var.getKey()))

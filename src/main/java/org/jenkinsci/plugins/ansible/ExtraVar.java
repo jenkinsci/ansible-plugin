@@ -36,6 +36,9 @@ public class ExtraVar extends AbstractDescribableImpl<ExtraVar> {
     @SuppressFBWarnings(value = "PA_PUBLIC_PRIMITIVE_ATTRIBUTE", justification = "Preserve API compatibility.")
     public boolean hidden = true;
 
+    @SuppressFBWarnings(value = "PA_PUBLIC_PRIMITIVE_ATTRIBUTE", justification = "Preserve API compatibility.")
+    public boolean autoTypeInference = true;
+
     @DataBoundConstructor
     public ExtraVar() {}
 
@@ -71,6 +74,15 @@ public class ExtraVar extends AbstractDescribableImpl<ExtraVar> {
 
     public boolean isHidden() {
         return hidden;
+    }
+
+    public boolean isAutoTypeInference() {
+        return autoTypeInference;
+    }
+
+    @DataBoundSetter
+    public void setAutoTypeInference(boolean autoTypeInference) {
+        this.autoTypeInference = autoTypeInference;
     }
 
     @Extension
