@@ -38,6 +38,7 @@
 
     <!-- Test dependencies version -->
     <testcontainer.version>2.0.3</testcontainer.version>
+    <ban-commons-lang-2.skip>false</ban-commons-lang-2.skip>
 
   </properties>
   <dependencyManagement>
