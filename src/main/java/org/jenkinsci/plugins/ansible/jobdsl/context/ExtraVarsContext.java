@@ -21,6 +21,10 @@ public class ExtraVarsContext implements Context {
         this.extraVars.add(extraVar);
     }
 
+    public void extraVar(String key, String value, boolean hidden) {
+        extraVar(key, value, hidden, true);
+    }
+
     public List<ExtraVar> getExtraVars() {
         return extraVars;
     }
