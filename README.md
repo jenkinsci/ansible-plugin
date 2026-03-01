@@ -344,7 +344,7 @@ steps {
         hostKeyChecking(boolean hostKeyChecking = false)
         additionalParameters(String params)
         extraVars {
-            extraVar(String key, String value, boolean hidden)
+            extraVar(String key, String value, boolean hidden, boolean autoTypeInference)
         }
     }
 
@@ -364,7 +364,7 @@ steps {
         hostKeyChecking(boolean hostKeyChecking = false)
         additionalParameters(String params)
         extraVars {
-            extraVar(String key, String value, boolean hidden)
+            extraVar(String key, String value, boolean hidden, boolean autoTypeInference)
         }
     }
 }
@@ -383,8 +383,8 @@ steps {
         becomeUser("user")
         checkMode(false)
         extraVars {
-            extraVar("key1", "value1", false)
-            extraVar("key2", "value2", true)
+            extraVar("key1", "value1", false, true)
+            extraVar("key2", "value2", true, false)
         }
     }
 }
@@ -408,6 +408,7 @@ steps {
                 key('key2')
                 secretValue(hudson.util.Secret.fromString('value2'))
                 hidden(true)
+                autoTypeInference(false)
             }
         }
     }
@@ -446,7 +447,8 @@ node {
             login: 'mylogin',
             toggle: true,
             forks: 8,
-            not_secret: [value: 'I want to see this in the logs', hidden: false]
+            not_secret: [value: 'I want to see this in the logs', hidden: false],
+            keep_string: [value: 'false', autoTypeInference: false]
         ])
 }
 ```

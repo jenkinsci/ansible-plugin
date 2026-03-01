@@ -91,6 +91,7 @@ class JobDslIntegrationTest {
         assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
         assertThat("extraVar.value", step.extraVars.get(0).getSecretValue().getPlainText(), is("value"));
         assertThat("extraVar.hidden", step.extraVars.get(0).isHidden(), is(true));
+        assertThat("extraVar.autoTypeInference", step.extraVars.get(0).isAutoTypeInference(), is(true));
     }
 
     @Test
@@ -174,6 +175,7 @@ class JobDslIntegrationTest {
         assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
         assertThat("extraVar.value", step.extraVars.get(0).getSecretValue().getPlainText(), is("value"));
         assertThat("extraVar.hidden", step.extraVars.get(0).isHidden(), is(true));
+        assertThat("extraVar.autoTypeInference", step.extraVars.get(0).isAutoTypeInference(), is(true));
     }
 
     @Test
@@ -218,6 +220,7 @@ class JobDslIntegrationTest {
         assertThat("extraVar.key", step.extraVars.get(0).getKey(), is("key"));
         assertThat("extraVar.value", step.extraVars.get(0).getSecretValue().getPlainText(), is("value"));
         assertThat("extraVar.hidden", step.extraVars.get(0).isHidden(), is(true));
+        assertThat("extraVar.autoTypeInference", step.extraVars.get(0).isAutoTypeInference(), is(true));
     }
 
     private static FreeStyleProject generateJob(JenkinsRule rule, String script) throws Exception {
