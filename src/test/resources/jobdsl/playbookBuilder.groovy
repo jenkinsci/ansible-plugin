@@ -11,6 +11,7 @@ freeStyleJob('ansible') {
                     key('key')
                     secretValue(hudson.util.Secret.fromString('value'))
                     hidden(true)
+                    autoTypeInference(true)
                 }
             }
         }
