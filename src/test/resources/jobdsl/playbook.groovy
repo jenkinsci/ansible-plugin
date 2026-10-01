@@ -9,14 +9,14 @@ freeStyleJob('ansible') {
             startAtTask('task')
             credentialsId('credsid')
             become(true)
-            becomeUser("user")
+            becomeUser('user')
             forks(6)
             unbufferedOutput(false)
             colorizedOutput(true)
             disableHostKeyChecking(false)
             additionalParameters('params')
             extraVars {
-                extraVar ("key","value",true)
+                extraVar('key', 'value', true, true)
             }
         }
     }
