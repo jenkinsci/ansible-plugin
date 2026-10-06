@@ -9,7 +9,7 @@ freeStyleJob('ansible') {
             startAtTask('task')
             credentialsId('credsid')
             sudo(true)
-            sudoUser("user")
+            sudoUser('user')
             forks(6)
             unbufferedOutput(false)
             colorizedOutput(true)
@@ -17,7 +17,7 @@ freeStyleJob('ansible') {
             disableHostKeyChecking(true)
             additionalParameters('params')
             extraVars {
-                extraVar ("key","value",true)
+                extraVar('key', 'value', true, true)
             }
         }
     }
