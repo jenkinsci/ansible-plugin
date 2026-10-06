@@ -204,6 +204,7 @@ public class AnsiblePlaybookBuilder extends Builder implements SimpleBuildStep {
         this.vaultTmpPath = vaultTmpPath;
     }
 
+    @DataBoundSetter
     public void setBecome(boolean become) {
         this.become = become;
     }
