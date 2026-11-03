@@ -166,6 +166,7 @@ public class AnsibleAdHocCommandBuilder extends Builder implements SimpleBuildSt
         this.vaultTmpPath = vaultTmpPath;
     }
 
+    @DataBoundSetter
     public void setBecome(boolean become) {
         this.become = become;
     }
