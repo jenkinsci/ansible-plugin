@@ -338,7 +338,7 @@ steps {
         forks(int forks = 5)
         unbufferedOutput(boolean unbufferedOutput = true)
         colorizedOutput(boolean colorizedOutput = false)
-        hostKeyChecking(boolean hostKeyChecking = false)
+        disableHostKeyChecking(boolean disableHostKeyChecking = false)
         additionalParameters(String params)
         extraVars {
             extraVar(String key, String value, boolean hidden)
@@ -358,7 +358,7 @@ steps {
         forks(int forks = 5)
         unbufferedOutput(boolean unbufferedOutput = true)
         colorizedOutput(boolean colorizedOutput = false)
-        hostKeyChecking(boolean hostKeyChecking = false)
+        disableHostKeyChecking(boolean disableHostKeyChecking = false)
         additionalParameters(String params)
         extraVars {
             extraVar(String key, String value, boolean hidden)
