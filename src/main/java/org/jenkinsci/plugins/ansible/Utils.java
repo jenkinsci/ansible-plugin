@@ -52,7 +52,11 @@ class Utils {
             throws IOException, InterruptedException {
         tmpPath.mkdirs();
         StringBuilder sb = new StringBuilder();
-        sb.append("#! /bin/sh\n").append("/bin/echo \"" + Secret.toString(credentials.getPassphrase()) + "\"");
+        String passphrase = Secret.toString(credentials.getPassphrase());
+        sb.append("#! /bin/sh\n")
+                .append("printf '%s\\n' '")
+                .append(passphrase.replace("'", "'\\''"))
+                .append("'\n");
         script = tmpPath.createTextTempFile("ssh", ".sh", sb.toString(), inThisDir);
         script.chmod(0700);
         return script;
